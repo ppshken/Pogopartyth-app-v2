@@ -32,7 +32,7 @@ try {
 
   if ($room['status'] !== 'active') {
     $db->rollBack();
-    jsonResponse(false, null, 'ห้องไม่อยู่ในสถานะ active', 409);
+    jsonResponse(false, null, 'หัวห้องทำการยกเลิกห้อง ไม่สามารถเข้าร่วมได้', 409);
   }
 
   if (strtotime($room['start_time']) <= time()) {

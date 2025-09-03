@@ -1,31 +1,22 @@
-// app/settings/profile-edit.tsx
+// app/(tabs)/settings/profile-edit.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Image,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,
+  ActivityIndicator, Image, Alert, KeyboardAvoidingView, Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { getProfile, updateProfile, updateAvatar } from "../../lib/user";
-import { showSnack } from "../..//components/Snackbar";
+import { showSnack } from "../../components/Snackbar"; // ✅ แก้ path
 
 type FullUser = {
   id: number;
   email: string;
   username: string;
   avatar?: string | null;
-  friend_code?: string | null;
-  trainer_name?: string | null;
+  friend_code?: string | null; // คาดว่าบันทึกแบบไม่มีเว้นวรรค
+  level?: number | null;
   created_at?: string | null;
 };
 
@@ -39,14 +30,33 @@ export default function ProfileEdit() {
   // ฟอร์ม
   const [username, setUsername] = useState("");
   const [friendCode, setFriendCode] = useState("");
+  const [level, setLevel] = useState("");            // เก็บเป็น string เพื่อคุม input
   const [avatar, setAvatar] = useState<string | null>(null); // preview
+
+  // รับเฉพาะตัวเลข สูงสุด 2 หลัก และคงอยู่ในช่วง 1–50
+  const handleLevelChange = (t: string) => {
+    const digits = t.replace(/\D/g, "").slice(0, 2);
+    if (!digits) return setLevel("");
+    const n = parseInt(digits, 10);
+    if (isNaN(n) || n < 1) return setLevel("");
+    if (n > 50) return setLevel("50");
+    setLevel(String(n));
+  };
+
+  // ฟังชั่นช่อง รหัสเพิ่มเพื่อน เว้นวรรคทุก 4 ตัว
+  function formatFriendCode(v: string) {
+    const digits = v.replace(/\D/g, "").slice(0, 12);
+    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const u = (await getProfile()) as FullUser;
       setUsername(u.username || "");
-      setFriendCode(u.friend_code || "");
+      // ถ้าเก็บ friend_code เป็นตัวเลขล้วน ให้ format ตอนแสดง
+      setFriendCode(formatFriendCode(u.friend_code || ""));
+      setLevel(u.level ? String(u.level) : "");
       setAvatar(u.avatar || null);
     } catch (e: any) {
       Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
@@ -86,7 +96,7 @@ export default function ProfileEdit() {
       await updateAvatar({ uri: avatar });
       showSnack({ text: "อัปเดตรูปโปรไฟล์แล้ว", variant: "success" });
       router.back();
-    } catch (e: any) {
+    } catch {
       showSnack({ text: "อัปโหลดไม่สำเร็จ", variant: "error" });
     } finally {
       setUploading(false);
@@ -94,31 +104,44 @@ export default function ProfileEdit() {
   };
 
   const onSave = async () => {
-    // ตรวจง่าย ๆ
     if (!username.trim()) {
-      Alert.alert("กรอกไม่ครบ", "กรุณากรอก Username");
+      showSnack({ text: "กรุณากรอกชื่อผู้ใช้", variant: "error" });
       return;
     }
+
+    // ตรวจ level (ถ้าใส่มา)
+    let levelNum: number | undefined = undefined;
+    if (level.trim() !== "") {
+      const n = parseInt(level, 10);
+      if (isNaN(n) || n < 1 || n > 50) {
+        showSnack({ text: "เลเวลต้องเป็น 1–50", variant: "error" });
+        return;
+      }
+      levelNum = n;
+    }
+
+    // ตัดช่องว่าง friend code ก่อนส่ง (อนุญาตว่างได้)
+    const fcDigits = friendCode.replace(/\s/g, "");
+    if (fcDigits && fcDigits.length !== 12) {
+      showSnack({ text: "รหัสเพื่อนต้องมี 12 หลัก", variant: "error" });
+      return;
+    }
+
     setSaving(true);
     try {
       await updateProfile({
         username: username.trim(),
-        friend_code: friendCode.trim() || undefined,
+        friend_code: fcDigits || undefined,
+        level: levelNum, // ✅ ส่ง level ไป API
       });
       showSnack({ text: "แก้ไขโปรไฟล์เรียบร้อย", variant: "success" });
       router.back();
-    } catch (e: any) {
+    } catch {
       showSnack({ text: "บันทึกไม่สำเร็จ", variant: "error" });
     } finally {
       setSaving(false);
     }
   };
-
-  // ฟังชั่นช่อง รหัสเพิ่มเพื่อน เว้นวรรค 4
-  function formatFriendCode(v: string) {
-    const digits = v.replace(/\D/g, "").slice(0, 12);
-    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
-  }
 
   if (loading) {
     return (
@@ -143,11 +166,7 @@ export default function ProfileEdit() {
               <Image source={{ uri: avatar }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarEmpty}>
-                <Ionicons
-                  name="person-circle-outline"
-                  size={56}
-                  color="#9CA3AF"
-                />
+                <Ionicons name="person-circle-outline" size={56} color="#9CA3AF" />
               </View>
             )}
 
@@ -165,11 +184,7 @@ export default function ProfileEdit() {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <>
-                    <Ionicons
-                      name="cloud-upload-outline"
-                      size={16}
-                      color="#fff"
-                    />
+                    <Ionicons name="cloud-upload-outline" size={16} color="#fff" />
                     <Text style={styles.primaryBtnText}>อัปโหลด</Text>
                   </>
                 )}
@@ -198,9 +213,19 @@ export default function ProfileEdit() {
             placeholder="เช่น 1234 5678 9012"
             placeholderTextColor="#9CA3AF"
             style={styles.input}
-            autoCapitalize="characters"
             keyboardType="number-pad"
-            maxLength={14}
+            maxLength={14} // 12 ตัว + เว้นวรรค 2 ช่อง
+          />
+
+          <Text style={styles.label}>เลเวล</Text>
+          <TextInput
+            value={level}
+            onChangeText={handleLevelChange}
+            placeholder="1-50"
+            placeholderTextColor="#9CA3AF"
+            style={styles.input}
+            keyboardType="number-pad"
+            maxLength={2} // ✅ แค่ 2 หลัก
           />
         </View>
 
@@ -225,13 +250,6 @@ export default function ProfileEdit() {
 }
 
 const styles = StyleSheet.create({
-  screenTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#111827",
-    marginBottom: 12,
-  },
-
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
@@ -274,18 +292,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 
-  outlineBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#111827",
-    backgroundColor: "#fff",
-  },
   outlineBtnText: { color: "#111827", fontWeight: "800" },
 
   primaryBtn: {

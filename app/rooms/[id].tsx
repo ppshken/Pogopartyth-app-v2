@@ -29,7 +29,8 @@ import {
   updateStatus, // invited / closed
   reviewRoom, // rating 1-5 + comment (ใช้ comment ใส่เหตุผลตอนไม่สำเร็จ)
 } from "../../lib/raid";
-import { showSnack } from "../..//components/Snackbar";
+import { showSnack } from "../../components/Snackbar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Member = {
   user_id: number;
@@ -126,6 +127,10 @@ function useCountdown(start: string) {
 }
 
 export default function RoomDetail() {
+  // ✅ hooks ทั้งหมดต้องอยู่ตรงนี้ (บนสุดเสมอ)
+  const insets = useSafeAreaInsets();
+  const [footerH, setFooterH] = useState(0);
+
   // ตีบอส - รีวิว ไม่สำเร็จ
   const [selectedReasonId, setSelectedReasonId] = useState<number | null>(null);
   const [customReason, setCustomReason] = useState("");
@@ -150,6 +155,8 @@ export default function RoomDetail() {
   const [resultModal, setResultModal] = useState(false); // เลือก สำเร็จ/ไม่สำเร็จ
   const [ratingModal, setRatingModal] = useState(false); // ให้คะแนน 1-5
   const [failureModal, setFailureModal] = useState(false); // กรอกเหตุผลไม่สำเร็จ
+  const [canceledRoom, setCanceledRoom] = useState(false); // ยกเลิกสร้างห้อง
+  const [exitRoom, setExitRoom] = useState(false); // ออกจากห้อง
   const [rating, setRating] = useState<number>(5);
 
   // ป้องกันสั่งปิดห้องซ้ำ
@@ -254,6 +261,8 @@ export default function RoomDetail() {
       ? "#EF4444"
       : room.status === "active"
       ? "#10B981"
+      : room.status === "canceled"
+      ? "#d0444bff"
       : "#111827";
 
   const statusText =
@@ -265,14 +274,31 @@ export default function RoomDetail() {
       ? "เต็ม"
       : room.status === "active"
       ? "เปิดรับ"
+      : room.status === "canceled"
+      ? "ยกเลิก"
       : room.status;
 
   // --- handlers ---
   const onJoinLeave = async () => {
     try {
       setLoading(true);
+      if (isMember && !isOwner) setExitRoom(true);
+      else if (!isMember) await joinRoom(room.id);
+      await load();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- handlers exitroom ---
+  const onExitroom = async () => {
+    try {
+      setLoading(true);
       if (isMember && !isOwner) await leaveRoom(room.id);
       else if (!isMember) await joinRoom(room.id);
+      setExitRoom(false);
       await load();
     } catch (e: any) {
       showSnack({ text: e.message, variant: "error" });
@@ -332,6 +358,20 @@ export default function RoomDetail() {
     }
   };
 
+  // ยกเลิกห้อง → เปลี่ยนสถานะเป็น canceled
+  const onCanceled = async () => {
+    try {
+      setLoading(true);
+      await updateStatus(room.id, "canceled");
+      showSnack({ text: "ยกเลิกห้องแล้วเรียบร้อย", variant: "success" });
+      router.back();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // เชิญในเกม → เปลี่ยนสถานะเป็น invited
   const onInvite = async () => {
     try {
@@ -345,6 +385,9 @@ export default function RoomDetail() {
       setLoading(false);
     }
   };
+
+  // เปิด modal ยกเลิกห้อง
+  const onCanceledRoom = () => setCanceledRoom(true);
 
   // เปิด modal “ตีบอสเสร็จ”
   const onBattleFinished = () => setResultModal(true);
@@ -410,226 +453,257 @@ export default function RoomDetail() {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: "#F9FAFB" }}
-      contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {/* Header */}
-      <View style={styles.headerCard}>
-        <Image source={{ uri: room.pokemon_image }} style={styles.cover} />
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={styles.title}>{room.boss}</Text>
-            <View style={[styles.badge, { backgroundColor: statusBg }]}>
-              <Text style={styles.badgeText}>{statusText}</Text>
+    <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          padding: 16,
+          // ✅ กันเนื้อหาโดนทับ ด้วยความสูง footer ที่วัดได้ + safe area
+          paddingBottom: Math.max(insets.bottom, 12) + footerH + 12,
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Header */}
+        <View style={styles.headerCard}>
+          <Image source={{ uri: room.pokemon_image }} style={styles.cover} />
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.title}>{room.boss}</Text>
+              <View style={[styles.badge, { backgroundColor: statusBg }]}>
+                <Text style={styles.badgeText}>{statusText}</Text>
+              </View>
             </View>
-          </View>
 
-          <View style={styles.lineRow}>
-            <Ionicons name="time-outline" size={16} color="#374151" />
-            <Text style={styles.lineText}>{countdownLabel}</Text>
-          </View>
-          <View style={styles.lineRow}>
-            <Ionicons name="people-outline" size={16} color="#374151" />
-            <Text style={styles.lineText}>
-              สมาชิก {room.current_members}/{room.max_members}
-            </Text>
-          </View>
+            <View style={styles.lineRow}>
+              <Ionicons name="time-outline" size={16} color="#374151" />
+              <Text style={styles.lineText}>{countdownLabel}</Text>
+            </View>
+            <View style={styles.lineRow}>
+              <Ionicons name="people-outline" size={16} color="#374151" />
+              <Text style={styles.lineText}>
+                สมาชิก {room.current_members}/{room.max_members}
+              </Text>
+            </View>
 
-          {room.status === "invited" ? (
-            <View
-              style={[
-                styles.noteBox,
-                {
-                  backgroundColor: "#EFF6FF",
-                  borderColor: "#93C5FD",
-                  borderWidth: 1,
-                },
-              ]}
-            >
-              <Text
+            {room.status === "invited" ? (
+              <View
                 style={[
-                  styles.noteText,
-                  { color: "#1E3A8A", fontWeight: "700" },
+                  styles.noteBox,
+                  {
+                    backgroundColor: "#EFF6FF",
+                    borderColor: "#93C5FD",
+                    borderWidth: 1,
+                  },
                 ]}
               >
-                เชิญในเกมแล้ว — โปรดรีวิวหลังจบการตีบอส
-              </Text>
-            </View>
-          ) : room.note ? (
-            <View style={styles.noteBox}>
-              <Text style={styles.noteText}>{room.note}</Text>
-            </View>
-          ) : null}
-        </View>
-      </View>
-
-      {/* Friend code เจ้าของ */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
-        <View style={styles.friendRow}>
-          <Ionicons name="person-circle-outline" size={18} color="#374151" />
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.friendText}>
-              {room.owner?.username || "-"} • Friend Code:
-            </Text>
-            {isMember ? (
-              <Text style={styles.friendText}>
-                {room.owner?.friend_code || "-"}
-              </Text>
+                <Text
+                  style={[
+                    styles.noteText,
+                    { color: "#1E3A8A", fontWeight: "700" },
+                  ]}
+                >
+                  เชิญในเกมแล้ว — โปรดรีวิวหลังจบการตีบอส
+                </Text>
+              </View>
+            ) : room.note ? (
+              <View style={styles.noteBox}>
+                <Text style={styles.noteText}>{room.note}</Text>
+              </View>
             ) : null}
           </View>
         </View>
 
-        {/* สมาชิก (ไม่ใช่เจ้าของ) -> คัดลอกรหัสหัวห้อง */}
-        {isMember && !isOwner ? (
-          <TouchableOpacity onPress={copyFriendCode} style={styles.outlineBtn}>
-            <Ionicons name="copy-outline" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>คัดลอกรหัสหัวห้อง</Text>
-          </TouchableOpacity>
-        ) : null}
+        {/* Friend code เจ้าของ */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
+          <View style={styles.friendRow}>
+            <Ionicons name="person-circle-outline" size={18} color="#374151" />
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.friendText}>
+                {room.owner?.username || "-"} • Friend Code:
+              </Text>
+              {isMember ? (
+                <Text style={styles.friendText}>
+                  {room.owner?.friend_code || "-"}
+                </Text>
+              ) : null}
+            </View>
+          </View>
 
-        {/* เจ้าของ -> คัดลอกชื่อผู้เล่น */}
-        {isOwner && allAdded ? (
-          <TouchableOpacity onPress={copyUsernames} style={styles.outlineBtn}>
-            <Ionicons name="copy-outline" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>คัดลอกชื่อผู้เล่น</Text>
-          </TouchableOpacity>
-        ) : null}
-      </View>
+          {/* สมาชิก (ไม่ใช่เจ้าของ) -> คัดลอกรหัสหัวห้อง */}
+          {isMember && !isOwner ? (
+            <TouchableOpacity
+              onPress={copyFriendCode}
+              style={styles.outlineBtn}
+            >
+              <Ionicons name="copy-outline" size={16} color="#111827" />
+              <Text style={styles.outlineBtnText}>คัดลอกรหัสหัวห้อง</Text>
+            </TouchableOpacity>
+          ) : null}
 
-      {members.length ? (
-        members.map((m) => {
-          const isOwnerRow = m.role === "owner";
-          const iAmThisMember = m.user_id === data.you?.user_id;
+          {/* เจ้าของ -> คัดลอกชื่อผู้เล่น */}
+          {isOwner && allAdded ? (
+            <TouchableOpacity onPress={copyUsernames} style={styles.outlineBtn}>
+              <Ionicons name="copy-outline" size={16} color="#111827" />
+              <Text style={styles.outlineBtnText}>คัดลอกชื่อผู้เล่น</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
 
-          // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
-          const showBtn = !isOwnerRow;
+        {/* ผู้เข้าร่วม */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>สมาชิก</Text>
+          {members.length ? (
+            members.map((m) => {
+              const isOwnerRow = m.role === "owner";
+              const iAmThisMember = m.user_id === data.you?.user_id;
 
-          // สถานะห้อง/เวลา
-          const isInvited = room.status === "invited";
+              // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
+              const showBtn = !isOwnerRow;
 
-          // สถานะ "เพิ่มเพื่อนแล้ว" (ใช้ค่าที่ sync กับ server ถ้าไม่มีใช้ local)
-          const added = Boolean(friendAdded[m.user_id] ?? m.friend_ready === 1);
+              // สถานะห้อง/เวลา
+              const isInvited = room.status === "invited";
 
-          // ✅ กดได้เฉพาะแถวของตัวเอง และไม่อยู่สถานะที่ไม่ให้กด
-          const disabledBtn = !iAmThisMember || isInvited || expired;
+              // สถานะ "เพิ่มเพื่อนแล้ว" (ใช้ค่าที่ sync กับ server ถ้าไม่มีใช้ local)
+              const added = Boolean(
+                friendAdded[m.user_id] ?? m.friend_ready === 1
+              );
 
-          return (
-            <View key={m.user_id} style={styles.memberItem}>
-              {m.avatar ? (
-                <Image source={{ uri: m.avatar }} style={styles.avatar} />
-              ) : (
-                <View style={styles.avatarEmpty}>
-                  <Text style={{ color: "#fff", fontWeight: "800" }}>
-                    {m.username ? m.username.charAt(0).toUpperCase() : "?"}
-                  </Text>
-                </View>
-              )}
+              // ✅ กดได้เฉพาะแถวของตัวเอง และไม่อยู่สถานะที่ไม่ให้กด
+              const disabledBtn = !iAmThisMember || isInvited || expired;
 
-              <View style={{ flex: 1 }}>
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: "#111827",
-                    }}
-                    numberOfLines={1}
-                  >
-                    {m.username || `User#${m.user_id}`}
-                  </Text>
+              return (
+                <View key={m.user_id} style={styles.memberItem}>
+                  {m.avatar ? (
+                    <Image source={{ uri: m.avatar }} style={styles.avatar} />
+                  ) : (
+                    <View style={styles.avatarEmpty}>
+                      <Text style={{ color: "#fff", fontWeight: "800" }}>
+                        {m.username ? m.username.charAt(0).toUpperCase() : "?"}
+                      </Text>
+                    </View>
+                  )}
 
-                  {isOwnerRow && <Ionicons name="star" color={"#eb9525ff"} />}
+                  <View style={{ flex: 1 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "700",
+                          color: "#111827",
+                        }}
+                        numberOfLines={1}
+                      >
+                        {m.username || `User#${m.user_id}`}
+                      </Text>
 
-                  <View
-                    style={{
-                      backgroundColor: "#2563EB",
-                      padding: 2,
-                      paddingHorizontal: 4,
-                      borderRadius: 4,
-                    }}
-                  >
-                    <Text style={{ color: "#fff", fontSize: 10 }}>
-                      Level {m.member_level}
+                      {isOwnerRow && (
+                        <Ionicons name="star" color={"#eb9525ff"} />
+                      )}
+
+                      <View
+                        style={{
+                          backgroundColor: "#2563EB",
+                          padding: 2,
+                          paddingHorizontal: 4,
+                          borderRadius: 4,
+                        }}
+                      >
+                        <Text style={{ color: "#fff", fontSize: 10 }}>
+                          Level {m.member_level}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Text style={{ fontSize: 12, color: "#6B7280" }}>
+                      {isOwnerRow ? "เจ้าของห้อง" : "สมาชิก"} •{" "}
+                      {new Date(m.joined_at).toLocaleTimeString("th-TH", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </Text>
                   </View>
+
+                  {/* ✅ ปุ่ม "เพิ่มเพื่อนแล้ว" โชว์ทุกคนยกเว้นหัวห้อง และกดได้เฉพาะแถวของตัวเอง */}
+                  {showBtn && (
+                    <TouchableOpacity
+                      disabled={disabledBtn}
+                      onPress={() => iAmThisMember && toggleFriend(m.user_id)}
+                      style={[
+                        styles.smallBtn,
+                        added ? styles.smallBtnDone : styles.smallBtnIdle,
+                        disabledBtn && styles.smallBtnDisabled,
+                      ]}
+                    >
+                      <Ionicons
+                        name={added ? "checkmark-circle" : "person-add-outline"}
+                        size={16}
+                        color={
+                          added ? "#fff" : disabledBtn ? "#9CA3AF" : "#111827"
+                        }
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text
+                        style={[
+                          styles.smallBtnText,
+                          added && { color: "#fff" },
+                          !added && disabledBtn && { color: "#9CA3AF" },
+                        ]}
+                      >
+                        เพิ่มเพื่อนแล้ว
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-
-                <Text style={{ fontSize: 12, color: "#6B7280" }}>
-                  {isOwnerRow ? "เจ้าของห้อง" : "สมาชิก"} •{" "}
-                  {new Date(m.joined_at).toLocaleTimeString("th-TH", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </View>
-
-              {/* ✅ ปุ่ม "เพิ่มเพื่อนแล้ว" โชว์ทุกคนยกเว้นหัวห้อง และกดได้เฉพาะแถวของตัวเอง */}
-              {showBtn && (
-                <TouchableOpacity
-                  disabled={disabledBtn}
-                  onPress={() => iAmThisMember && toggleFriend(m.user_id)}
-                  style={[
-                    styles.smallBtn,
-                    added ? styles.smallBtnDone : styles.smallBtnIdle,
-                    disabledBtn && styles.smallBtnDisabled,
-                  ]}
-                >
-                  <Ionicons
-                    name={added ? "checkmark-circle" : "person-add-outline"}
-                    size={16}
-                    color={added ? "#fff" : disabledBtn ? "#9CA3AF" : "#111827"}
-                    style={{ marginRight: 6 }}
-                  />
-                  <Text
-                    style={[
-                      styles.smallBtnText,
-                      added && { color: "#fff" },
-                      !added && disabledBtn && { color: "#9CA3AF" },
-                    ]}
-                  >
-                    เพิ่มเพื่อนแล้ว
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          );
-        })
-      ) : (
-        <Text style={{ color: "#9CA3AF" }}>ยังไม่มีสมาชิก</Text>
-      )}
-
-      {/* How to วิธีการใช้งาน */}
-      <View style={styles.sectionHowto}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-            marginBottom: 8,
-          }}
-        >
-          <Ionicons name="help-circle-outline" size={20} color="#111827" />
-          <Text style={styles.sectionTitleHowto}>วิธีการใช้งาน</Text>
+              );
+            })
+          ) : (
+            <Text style={{ color: "#9CA3AF" }}>ยังไม่มีสมาชิก</Text>
+          )}
         </View>
-        <Text style={styles.howtoDetail}>1. รอสมาชิกเข้าห้อง</Text>
-        <Text style={styles.howtoDetail}>2. ให้สมาชิกเพิ่มเพื่อนหัวห้อง</Text>
-        <Text style={styles.howtoDetail}>3. เพิ่มครบ → คัดลอกชื่อสมาชิก</Text>
-        <Text style={styles.howtoDetail}>4. เชิญในเกมด้วยรายชื่อที่คัดลอก</Text>
-        <Text style={styles.howtoDetail}>5. เชิญเสร็จ → กด “เชิญแล้ว”</Text>
-        <Text style={styles.howtoDetail}>
-          6. ตีเสร็จ → รีวิว สำเร็จ/ไม่สำเร็จ
-        </Text>
-      </View>
 
-      {/* ปุ่มการทำงาน */}
-      <View style={{ marginTop: 8 }}>
+        {/* How to วิธีการใช้งาน */}
+        <View style={styles.sectionHowto}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 8,
+            }}
+          >
+            <Ionicons name="help-circle-outline" size={20} color="#111827" />
+            <Text style={styles.sectionTitleHowto}>วิธีการใช้งาน</Text>
+          </View>
+          <Text style={styles.howtoDetail}>1. รอสมาชิกเข้าห้อง</Text>
+          <Text style={styles.howtoDetail}>2. ให้สมาชิกเพิ่มเพื่อนหัวห้อง</Text>
+          <Text style={styles.howtoDetail}>3. เพิ่มครบ → คัดลอกชื่อสมาชิก</Text>
+          <Text style={styles.howtoDetail}>
+            4. เชิญในเกมด้วยรายชื่อที่คัดลอก
+          </Text>
+          <Text style={styles.howtoDetail}>5. เชิญเสร็จ → กด “เชิญแล้ว”</Text>
+          <Text style={styles.howtoDetail}>
+            6. ตีเสร็จ → รีวิว สำเร็จ/ไม่สำเร็จ
+          </Text>
+        </View>
+      </ScrollView>
+
+      {/* แถบปุ่มคงที่ด้านล่าง */}
+      <View
+        onLayout={(e) => setFooterH(e.nativeEvent.layout.height)}
+        style={[
+          styles.footerBar,
+          { paddingBottom: Math.max(insets.bottom, 12) },
+        ]}
+      >
         {isMember ? (
           <TouchableOpacity
             disabled={loading || expired}
@@ -648,7 +722,6 @@ export default function RoomDetail() {
           </TouchableOpacity>
         ) : null}
 
-        {/* Owner เชิญในเกม (ต้อง allAdded และยังไม่ invited) */}
         {isOwner && allAdded && room.status !== "invited" ? (
           <TouchableOpacity
             onPress={onInvite}
@@ -659,8 +732,7 @@ export default function RoomDetail() {
           </TouchableOpacity>
         ) : null}
 
-        {/* หลังเชิญแล้ว → ทุกคนเห็นปุ่ม “ตีบอสเสร็จ กด” เพื่อรีวิว */}
-        {room.status === "invited" ? (
+        {room.status === "invited" && isMember ? (
           <TouchableOpacity
             onPress={onBattleFinished}
             style={[styles.primaryBtn, { backgroundColor: "#10B981" }]}
@@ -670,7 +742,16 @@ export default function RoomDetail() {
           </TouchableOpacity>
         ) : null}
 
-        {/* เข้าร่วมห้อง/ออกจากห้อง (ซ่อนเมื่อ invited) */}
+        {room.current_members < 2 && isOwner && (
+          <TouchableOpacity
+            onPress={onCanceledRoom}
+            style={[styles.primaryBtn, { backgroundColor: "#d0444bff" }]}
+          >
+            <Ionicons name="close-outline" size={18} color="#fff" />
+            <Text style={styles.primaryBtnText}>ยกเลิกห้อง</Text>
+          </TouchableOpacity>
+        )}
+
         {!isOwner && room.status !== "invited" ? (
           <TouchableOpacity
             onPress={onJoinLeave}
@@ -694,6 +775,64 @@ export default function RoomDetail() {
           </TouchableOpacity>
         ) : null}
       </View>
+
+      {/* Modal: ยืนยันยกเลิกห้อง */}
+      <Modal
+        visible={canceledRoom}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setCanceledRoom(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>ต้องการยกเลิกห้อง?</Text>
+            <TouchableOpacity
+              onPress={onCanceled}
+              style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
+            >
+              <Ionicons name="close-circle-outline" size={18} color="#fff" />
+              <Text style={styles.modalBtnText}>ยกเลิก</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setCanceledRoom(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: ออกจากห้อง */}
+      <Modal
+        visible={exitRoom}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setExitRoom(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>ต้องการออกจากห้อง?</Text>
+            <TouchableOpacity
+              onPress={onExitroom}
+              style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
+            >
+              <Ionicons name="close-circle-outline" size={18} color="#fff" />
+              <Text style={styles.modalBtnText}>ออกจากห้อง</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setExitRoom(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Modal: เลือกผลลัพธ์ */}
       <Modal
@@ -873,7 +1012,7 @@ export default function RoomDetail() {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -1074,7 +1213,13 @@ const styles = StyleSheet.create({
   modalBtnDisabled: {
     opacity: 0.5,
   },
-  howtoDetail: { flex: 1, color: "#374151", fontSize: 14, lineHeight: 20 },
+  howtoDetail: {
+    flex: 1,
+    color: "#374151",
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "600",
+  },
   sectionHowto: {
     backgroundColor: "#fff",
     borderRadius: 16,
@@ -1083,5 +1228,22 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 14,
     paddingLeft: 14,
+  },
+  footerBar: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    gap: 8, // ระยะห่างระหว่างปุ่ม
+    // เผื่ออยากให้มีเงาเล็ก ๆ
+    // shadowColor: "#000",
+    // shadowOpacity: 0.06,
+    // shadowRadius: 6,
+    // elevation: 6,   // Android
   },
 });

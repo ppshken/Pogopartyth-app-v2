@@ -15,13 +15,15 @@ $db = pdo();
 try {
   $in = getJsonInput();
 
-  // อนุญาตเฉพาะ 2 ฟิลด์นี้เท่านั้น
+  // อนุญาตเฉพาะฟิลด์: username, friend_code, level (1–50)
   $username    = isset($in['username']) ? trim((string)$in['username']) : null;
   $friend_code = array_key_exists('friend_code', $in) ? trim((string)$in['friend_code']) : null;
+  $level_raw   = array_key_exists('level', $in) ? $in['level'] : null;
 
   $set = [];
   $params = [':id' => $userId];
 
+  // username
   if ($username !== null) {
     if ($username === '') {
       jsonResponse(false, null, 'username ห้ามว่าง', 422);
@@ -30,9 +32,31 @@ try {
     $params[':username'] = $username;
   }
 
+  // friend_code (ถ้าจะบังคับรูปแบบ 12 หลัก คอมเมนต์ด้านล่าง)
   if ($friend_code !== null) {
+    // ตัวอย่างตรวจ 12 หลัก (เปิดใช้ถ้าต้องการเข้มงวด):
+    // $digits = preg_replace('/\D+/', '', $friend_code);
+    // if (strlen($digits) !== 12) {
+    //   jsonResponse(false, null, 'friend_code ต้องมี 12 หลัก', 422);
+    // }
+    // $friend_code = $digits;
+
     $set[] = 'friend_code = :friend_code';
     $params[':friend_code'] = $friend_code;
+  }
+
+  // level (ต้องเป็น int 1–50)
+  if ($level_raw !== null) {
+    $level = filter_var(
+      $level_raw,
+      FILTER_VALIDATE_INT,
+      ['options' => ['min_range' => 1, 'max_range' => 50]]
+    );
+    if ($level === false) {
+      jsonResponse(false, null, 'level ต้องเป็นจำนวนเต็มระหว่าง 1–50', 422);
+    }
+    $set[] = 'level = :level';
+    $params[':level'] = (int)$level;
   }
 
   if (empty($set)) {
@@ -43,9 +67,9 @@ try {
   $stmt = $db->prepare($sql);
   $stmt->execute($params);
 
-  // ส่งข้อมูลล่าสุดกลับ
+  // ส่งข้อมูลล่าสุดกลับ (เพิ่ม level)
   $stmt = $db->prepare("
-    SELECT id, email, username, avatar, friend_code, created_at
+    SELECT id, email, username, avatar, friend_code, level, created_at
     FROM users WHERE id = :id LIMIT 1
   ");
   $stmt->execute([':id' => $userId]);
@@ -58,7 +82,6 @@ try {
   jsonResponse(true, ['user' => $user], 'อัปเดตโปรไฟล์สำเร็จ');
 
 } catch (PDOException $e) {
-  // กันเคส UNIQUE ซ้ำ (เช่น username ซ้ำ)
   if ($e->getCode() === '23000') {
     jsonResponse(false, null, 'ข้อมูลซ้ำ (เช่น username มีผู้ใช้แล้ว)', 409);
   }

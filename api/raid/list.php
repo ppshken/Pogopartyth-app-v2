@@ -103,7 +103,7 @@ FROM raid_rooms r
 LEFT JOIN users u ON u.id = r.owner_id
 LEFT JOIN raid_boss rb ON rb.id = r.raid_boss_id
 $where
-ORDER BY r.start_time DESC, r.id ASC
+ORDER BY current_members DESC, r.id ASC
 ";
 
 // โหมด all=1

@@ -7,6 +7,7 @@ export type User = {
   username: string;
   avatar: string | null;
   friend_code: string | null;
+  level: number;
   created_at: string | null;
 };
 

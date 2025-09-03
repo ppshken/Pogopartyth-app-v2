@@ -45,7 +45,6 @@ export default function Login() {
       await setAuth(user, token);
       
       console.log('token', await AsyncStorage.getItem('token'))
-      showSnack({ text: "เข้าสู่ระบบสำเร็จ", variant: "success" });
       router.replace("/room_raid"); // ปรับ path ให้ตรงโปรเจ็กต์คุณ
     } catch (e: any) {
       showSnack({ text: e.message, variant: "error" });

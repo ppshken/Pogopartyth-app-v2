@@ -29,6 +29,7 @@ $countSql = "
   JOIN user_raid_rooms ur ON ur.room_id = r.id
   WHERE ur.user_id = :uid
     AND r.status <> 'closed'
+    AND r.status <> 'canceled'
     AND NOT EXISTS (
       SELECT 1 FROM raid_reviews rv
       WHERE rv.room_id = r.id AND rv.user_id = :uid
@@ -59,6 +60,7 @@ $sql = "
   JOIN users u ON u.id = r.owner_id
   WHERE ur.user_id = :uid
     AND r.status <> 'closed'
+    AND r.status <> 'canceled'
     AND NOT EXISTS (
       SELECT 1 FROM raid_reviews rv
       WHERE rv.room_id = r.id AND rv.user_id = :uid

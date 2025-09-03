@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState, useLayoutEffect } from "react";
+// app/(tabs)/room_raid.tsx
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useLayoutEffect,
+} from "react";
 import {
   View,
   Text,
@@ -7,6 +14,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +22,6 @@ import { listRooms } from "../../lib/raid";
 import { RoomCardMinimal } from "../../components/RoomCard";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import HowToJoinRoomModal from "../../components/HowToJoinRoomModal";
-
 
 type Room = {
   id: number;
@@ -34,11 +41,12 @@ export default function RoomsIndex() {
   const [items, setItems] = useState<Room[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [q, setQ] = useState("");
+  const [selectedBossId, setSelectedBossId] = useState<number | null>(null); // ✅ ตัวกรองบอส
   const router = useRouter();
   const navigation = useNavigation();
-  const [howto, setHowto] = useState(false);  // ✅ state โมดัล
+  const [howto, setHowto] = useState(false);
 
-    useLayoutEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
@@ -63,24 +71,51 @@ export default function RoomsIndex() {
   }, []);
 
   useRefetchOnFocus(load, [load]);
-
   useEffect(() => {
     load();
   }, [load]);
 
+  // ✅ ตัวเลือกบอสแบบ unique จากรายการที่โหลดมา
+  const bossOptions = useMemo(() => {
+    const map = new Map<number, { id: number; name: string; image: string }>();
+    for (const r of items) {
+      if (!map.has(r.raid_boss_id)) {
+        map.set(r.raid_boss_id, {
+          id: r.raid_boss_id,
+          name: r.boss,
+          image: r.pokemon_image,
+        });
+      }
+    }
+    return Array.from(map.values());
+  }, [items]);
+
+  // ✅ กรองตามบอส (ถ้ามี) แล้วค่อยกรองด้วยคำค้นหา
   const filtered = useMemo(() => {
+    let arr = items;
+    if (selectedBossId) {
+      arr = arr.filter((r) => r.raid_boss_id === selectedBossId);
+    }
     const s = q.trim().toLowerCase();
-    if (!s) return items;
-    return items.filter((r) => {
+    if (!s) return arr;
+    return arr.filter((r) => {
       const boss = (r.boss || "").toLowerCase();
       const owner = (r.owner_username || "").toLowerCase();
       return boss.includes(s) || owner.includes(s);
     });
-  }, [items, q]);
+  }, [items, q, selectedBossId]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+  };
+
+  const toggleBoss = (id: number | null) => {
+    setSelectedBossId((curr) => (curr === id ? null : id));
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
-      
       {/* แถบค้นหา */}
       <View style={styles.searchWrap}>
         <Ionicons name="search-outline" size={18} color="#6B7280" />
@@ -98,14 +133,78 @@ export default function RoomsIndex() {
         ) : null}
       </View>
 
+      {/* แถบ Filter บอส */}
+      <View style={styles.bossBar}>
+        <FlatList
+          data={[{ id: 0, name: "ทั้งหมด", image: "" }, ...bossOptions]}
+          keyExtractor={(b) => String(b.id)}
+          horizontal
+          bounces={false}                 // iOS: ไม่เด้ง
+          alwaysBounceVertical={false}    // iOS: ไม่บังคับเด้ง
+          overScrollMode="never"          // Android: ปิด overscroll glow
+          showsHorizontalScrollIndicator={false}
+          // ให้ content สูงเท่าบาร์ และจัดให้อยู่กลางแนวแกนตั้ง
+          contentContainerStyle={styles.bossBarContent}
+          renderItem={({ item }) => {
+            const isAll = item.id === 0;
+            const focused = isAll
+              ? selectedBossId === null
+              : selectedBossId === item.id;
+            return (
+              <TouchableOpacity
+                onPress={() => toggleBoss(isAll ? null : item.id)}
+                style={[
+                  styles.bossChip,
+                  focused ? styles.bossChipActive : styles.bossChipIdle,
+                ]}
+                activeOpacity={0.9}
+              >
+                {!isAll ? (
+                  <Image source={{ uri: item.image }} style={styles.bossImg} />
+                ) : (
+                  <View style={[styles.bossImg, styles.bossImgAll]}>
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        fontWeight: "800",
+                        color: "#111827",
+                      }}
+                    >
+                      ALL
+                    </Text>
+                  </View>
+                )}
+
+                <Text
+                  style={[
+                    styles.bossText,
+                    focused ? { color: "#111827" } : { color: "#374151" },
+                  ]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  allowFontScaling={false}
+                >
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
+          removeClippedSubviews={false} // กันการคำนวณความสูงแปลก ๆ บางเคส
+        />
+      </View>
+      {/* รายการห้อง */}
       <FlatList
         data={filtered}
         keyExtractor={(it) => String(it.id)}
         contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={load} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         ListEmptyComponent={
-          <Text style={{ color: "#9CA3AF", textAlign: "center", marginTop: 24 }}>
-            {q ? "ไม่พบห้องที่ตรงกับคำค้นหา" : "ยังไม่มีห้อง"}
+          <Text
+            style={{ color: "#9CA3AF", textAlign: "center", marginTop: 24 }}
+          >
+            {q || selectedBossId ? "ไม่พบห้องที่ตรงกับตัวกรอง" : "ยังไม่มีห้อง"}
           </Text>
         }
         renderItem={({ item }) => (
@@ -115,12 +214,13 @@ export default function RoomsIndex() {
           />
         )}
       />
-
       <HowToJoinRoomModal visible={howto} onClose={() => setHowto(false)} />
-
     </View>
   );
 }
+
+const CHIP_H = 40; // สูงของชิป
+const BAR_H = 56; // สูงของแถบตัวเลือกทั้งหมด
 
 const styles = StyleSheet.create({
   searchWrap: {
@@ -137,4 +237,47 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   searchInput: { flex: 1, color: "#111827" },
+
+  // ✅ บาร์ตัวเลือก “สูงคงที่”
+  bossBar: {
+    height: BAR_H,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+    backgroundColor: "#F9FAFB",
+  },
+  bossBarContent: {
+    height: BAR_H, // ล็อกความสูงเท่าบาร์
+    paddingHorizontal: 16                             ,
+    gap: 8,
+    alignItems: "center", // จัดชิปให้อยู่กลางแนวตั้งเสมอ
+  },
+
+  // ✅ ชิปคงที่ ไม่เด้ง
+  bossChip: {
+    height: CHIP_H, // ล็อกความสูงชิป
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FFFFFF",
+  },
+  bossChipIdle: { borderColor: "#E5E7EB" },
+  bossChipActive: { borderColor: "#111827", backgroundColor: "#E5E7EB" },
+
+  bossImg: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    backgroundColor: "#F3F4F6",
+  },
+  bossImgAll: { alignItems: "center", justifyContent: "center" },
+
+  bossText: {
+    fontSize: 12,
+    fontWeight: "800",
+    lineHeight: 16, // ฟิกบรรทัด กันสูงเปลี่ยน
+    maxWidth: 110, // กันชื่อยาวห่อบรรทัด
+  },
 });

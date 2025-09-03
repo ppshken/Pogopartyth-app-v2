@@ -82,6 +82,11 @@ export default function Profile() {
     }
   };
 
+  function formatFriendCode(v: string) {
+    const digits = v.replace(/\D/g, "").slice(0, 12);
+    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
+  }
+
   // UI
   return (
     <ScrollView
@@ -152,7 +157,7 @@ export default function Profile() {
           <Ionicons name="qr-code-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
           <View style={{ flex: 1 }} />
-          <Text style={styles.rowValue}>{user?.friend_code || "-"}</Text>
+          <Text style={styles.rowValue}>{formatFriendCode(user?.friend_code || "-")}</Text>
         </View>
 
         <View style={styles.row}>
