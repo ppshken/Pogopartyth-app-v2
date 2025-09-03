@@ -2,6 +2,8 @@
 // api/auth/register.php
 declare(strict_types=1);
 
+use BcMath\Number;
+
 require_once __DIR__ . '/../helpers.php';
 cors();
 
@@ -15,6 +17,7 @@ $username = trim($input['username'] ?? '');
 $password = (string)($input['password'] ?? '');
 $avatar   = trim($input['avatar']   ?? '');
 $friend   = trim($input['friend_code'] ?? '');
+$level   =  ($input['level'] ?? '');
 
 // 1) Validate เบื้องต้น
 if ($email === '' || $username === '' || $password === '') {
@@ -44,8 +47,8 @@ if ($check->fetch()) {
 try {
   $hash = password_hash($password, PASSWORD_DEFAULT);
   $stmt = $db->prepare("
-    INSERT INTO users (email, username, password_hash, avatar, friend_code, created_at)
-    VALUES (:email, :username, :hash, :avatar, :friend, :created_at)
+    INSERT INTO users (email, username, password_hash, avatar, friend_code, level, created_at)
+    VALUES (:email, :username, :hash, :avatar, :friend, :level, :created_at)
   ");
   $stmt->execute([
     ':email'     => $email,
@@ -53,6 +56,7 @@ try {
     ':hash'      => $hash,
     ':avatar'    => $avatar ?: null,
     ':friend'    => $friend ?: null,
+    ':level'     => $level,
     ':created_at'=> now(),
   ]);
 
@@ -66,6 +70,7 @@ try {
       'username'  => $username,
       'avatar'    => $avatar ?: null,
       'friend_code' => $friend ?: null,
+      'level'     => $level,
     ],
     'token' => $token,
   ], 'สมัครสมาชิกสำเร็จ', 201);

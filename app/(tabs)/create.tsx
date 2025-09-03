@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
   Modal,
   FlatList,
   StyleSheet,
@@ -17,6 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { createRoom } from "../../lib/raid";
 import { getActiveRaidBosses } from "../../lib/raidBoss"; // << ใช้ API ที่สร้างไว้
 import { TierStars } from "../../components/TierStars";
+import { showSnack } from "../..//components/Snackbar";
+
 type RaidBoss = {
   raid_boss_id: number;
   pokemon_id: number;
@@ -107,7 +108,7 @@ export default function CreateRoom() {
       setBosses(items);
       if (!boss && items.length) setBoss(items[0]); // auto เลือกตัวแรกหากยังไม่มี
     } catch (e: any) {
-      Alert.alert("ผิดพลาด", e.message || "โหลดรายชื่อบอสไม่สำเร็จ");
+      showSnack({ text: `ผิดพลาด${e?.message ? ` : ${e.message}` : "โหลดรายชื่อบอสไม่สำเร็จ"}` , variant: "error" });
     } finally {
       setLoadingBoss(false);
     }
@@ -147,10 +148,7 @@ export default function CreateRoom() {
 
   const onSubmit = async () => {
     if (!canSubmit) {
-      Alert.alert(
-        "ข้อมูลไม่ครบ",
-        isPast ? "เวลาต้องอยู่ในอนาคต" : "กรุณาเลือกข้อมูลให้ครบ"
-      );
+      showSnack({ text: `ข้อมูลไม่ครบ${isPast ? "เวลาต้องอยู่ในอนาคต" : "กรุณาเลือกข้อมูลให้ครบ"}` , variant: "error"});
       return;
     }
     try {
@@ -164,10 +162,10 @@ export default function CreateRoom() {
         note: note.trim() || undefined,
       };
       const room = await createRoom(payload);
-      Alert.alert("สำเร็จ", `สร้างห้อง #${room.id}`);
+      showSnack({ text: "สร้างห้องสำเร็จ", variant: "success" });
       router.push(`/rooms/${room.id}`);
     } catch (e: any) {
-      Alert.alert("สร้างห้องไม่สำเร็จ", e.message || "เกิดข้อผิดพลาด");
+      showSnack({ text: `สร้างห้องไม่สำเร็จ${e?.message ? ` : ${e.message}` : ""}` , variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -325,7 +323,7 @@ export default function CreateRoom() {
               >
                 เลือกบอส
               </Text>
-              <TouchableOpacity onPress={() => setBossOpen(false)}>
+              <TouchableOpacity onPress={() => setBossOpen(false)} style={styles.iconBtn}>
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
@@ -424,7 +422,7 @@ export default function CreateRoom() {
               }}
             >
               <Text style={{ fontWeight: "800", fontSize: 16 }}>เลือกเวลา</Text>
-              <TouchableOpacity onPress={() => setTimeOpen(false)}>
+              <TouchableOpacity onPress={() => setTimeOpen(false)} style={styles.iconBtn}>
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
@@ -486,7 +484,7 @@ export default function CreateRoom() {
               <Text style={{ fontWeight: "800", fontSize: 16 }}>
                 จำนวนสมาชิก
               </Text>
-              <TouchableOpacity onPress={() => setPeopleOpen(false)}>
+              <TouchableOpacity onPress={() => setPeopleOpen(false)} style={styles.iconBtn}>
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
@@ -718,4 +716,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalPrimaryBtnText: { color: "#fff", fontWeight: "800" },
+  iconBtn: {
+    marginLeft: "auto",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F3F4F6",
+  },
 });

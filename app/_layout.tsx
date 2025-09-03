@@ -5,6 +5,9 @@ import { api } from "../lib/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SnackHost } from "../components/Snackbar";
+import { View } from "react-native";
+import { Platform } from "react-native";
 
 export default function Layout() {
   useEffect(() => {
@@ -22,7 +25,7 @@ export default function Layout() {
           screenOptions={{
             headerShown: false,
             headerBackTitle: "กลับ",
-            headerTitleStyle: { fontSize: 20, fontWeight: "800" },
+            headerTitleStyle: { fontSize: 18, fontWeight: "800" },
           }}
         >
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
@@ -47,6 +50,7 @@ export default function Layout() {
             options={{ title: "แก้ไขโปรไฟล์", headerShown: true }}
           />
         </Stack>
+        <SnackHost />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

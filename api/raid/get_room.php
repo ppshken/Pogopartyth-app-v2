@@ -38,7 +38,8 @@ $stmt = $db->prepare("
     r.id, r.raid_boss_id, r.pokemon_image, r.boss, r.start_time, r.max_members, r.status, r.owner_id, r.note, r.created_at,
     u.username AS owner_username,
     u.friend_code AS owner_friend_code,
-    u.avatar   AS owner_avatar
+    u.avatar   AS owner_avatar,
+    u.level AS owner_level
   FROM raid_rooms r
   JOIN users u ON u.id = r.owner_id
   WHERE r.id = :id
@@ -65,7 +66,8 @@ $qMembers = $db->prepare("
     ur.joined_at,
     uu.username,
     uu.avatar,
-    uu.friend_code AS friend_code
+    uu.friend_code AS friend_code,
+    uu.level AS member_level
   FROM user_raid_rooms ur
   JOIN users uu ON uu.id = ur.user_id
   WHERE ur.room_id = :rid

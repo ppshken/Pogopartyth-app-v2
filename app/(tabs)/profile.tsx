@@ -8,7 +8,6 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -16,6 +15,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../../store/authStore";
 import { profile } from "../../lib/auth"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
+import { showSnack } from "../..//components/Snackbar";
 
 type FullUser = {
   id: number;
@@ -23,6 +23,7 @@ type FullUser = {
   username: string;
   avatar?: string | null;
   friend_code?: string | null;
+  level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
 };
@@ -39,7 +40,6 @@ export default function Profile() {
   const logout = useAuth((s) => s.clear);
 
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState<FullUser | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
 
@@ -65,11 +65,11 @@ export default function Profile() {
 
   const onCopyFriendCode = async () => {
     if (!user?.friend_code) {
-      Alert.alert("ไม่พบรหัส", "ยังไม่ได้ตั้ง Friend Code");
+      showSnack({ text: "ยังไม่ได้ตั้ง Friend Code", variant: "error" });
       return;
     }
     await Clipboard.setStringAsync(user.friend_code);
-    Alert.alert("คัดลอกแล้ว", "คัดลอก Friend Code เรียบร้อย");
+    showSnack({ text: "คัดลอก Friend Code เรียบร้อย", variant: "info" });
   };
 
   const onLogout = async () => {
@@ -88,7 +88,7 @@ export default function Profile() {
       style={{ flex: 1, backgroundColor: "#F9FAFB" }}
       contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={load} />
+        <RefreshControl refreshing={false} onRefresh={load} />
       }
     >
       {/* Card: User */}
@@ -150,9 +150,16 @@ export default function Profile() {
         {/* Friend Code */}
         <View style={styles.row}>
           <Ionicons name="qr-code-outline" size={18} color="#374151" />
-          <Text style={styles.rowText}>Friend Code</Text>
+          <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
           <View style={{ flex: 1 }} />
           <Text style={styles.rowValue}>{user?.friend_code || "-"}</Text>
+        </View>
+
+        <View style={styles.row}>
+          <Ionicons name="bookmark-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>เลเวล</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.rowValue}>{user?.level || "-"}</Text>
         </View>
 
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
@@ -161,7 +168,7 @@ export default function Profile() {
             onPress={onCopyFriendCode}
           >
             <Ionicons name="copy-outline" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>คัดลอก Friend Code</Text>
+            <Text style={styles.outlineBtnText}>คัดลอก รหัสเพิ่มเพื่อน</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

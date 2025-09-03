@@ -184,3 +184,176 @@ Stack trace:
 #0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\my_rooms.php(73): PDOStatement->execute()
 #1 {main}
   thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\my_rooms.php on line 73
+[01-Sep-2025 22:33:10 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:33:13 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:33:28 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:33:30 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:35:11 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:35:12 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:35:13 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(46)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:37:10 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(50)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:37:12 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(50)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:40:25 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(40)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:43:41 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(40)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 22:44:19 Asia/Bangkok] PHP Fatal error:  Uncaught TypeError: trim(): Argument #1 ($string) must be of type string, int given in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php:18
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php(18): trim(40)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\auth\register.php on line 18
+[01-Sep-2025 23:59:34 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHERE r...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:34 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHERE r...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:34 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHERE r...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:37 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHER...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:37 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHER...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:40 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHER...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:40 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS 
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+  WHER...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:43 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS owner
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+ ...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:43 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS owner
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner_id
+ ...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:46 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS owner_level
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[01-Sep-2025 23:59:46 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS owner_level
+  FROM raid_rooms r
+  JOIN users u ON u.id = r.owner...' at line 6 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:48
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(48): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 48
+[02-Sep-2025 00:00:26 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'u.level AS owner_level
+  FROM user_raid_rooms ur
+  JOIN users uu ON uu.id =...' at line 8 in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:76
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(76): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 76
+[02-Sep-2025 00:00:28 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.level' in 'field list' in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:76
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(76): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 76
+[02-Sep-2025 00:00:29 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.level' in 'field list' in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:76
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(76): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 76
+[02-Sep-2025 00:00:31 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.level' in 'field list' in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:76
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(76): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 76
+[02-Sep-2025 00:00:32 Asia/Bangkok] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.level' in 'field list' in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php:76
+Stack trace:
+#0 C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php(76): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\raid\get_room.php on line 76

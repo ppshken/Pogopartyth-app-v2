@@ -35,7 +35,7 @@ try {
     $db->rollBack();
     jsonResponse(false, null, 'ไม่พบห้อง', 404);
   }
-  if ($room['status'] !== 'active' && $room['status'] !== 'invite') {
+  if ($room['status'] !== 'active' && $room['status'] !== 'invited') {
     $db->rollBack();
     jsonResponse(false, null, 'ห้องไม่อยู่ในสถานะ active', 409);
   }

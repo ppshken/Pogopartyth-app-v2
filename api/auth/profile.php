@@ -27,6 +27,7 @@ $stmt = $db->prepare("
     username,
     avatar,
     friend_code,
+    level,
     device_token,
     created_at
   FROM users
@@ -51,6 +52,10 @@ try {
   $stats['rooms_owned'] = (int)$q1->fetchColumn();
 
   $q2 = $db->prepare("SELECT COUNT(*) FROM user_raid_rooms WHERE user_id = :uid");
+  $q2->execute([':uid' => $userId]);
+  $stats['rooms_joined'] = (int)$q2->fetchColumn();
+
+   $q2 = $db->prepare("SELECT SUM FROM raid_rooms WHERE user_id = :uid");
   $q2->execute([':uid' => $userId]);
   $stats['rooms_joined'] = (int)$q2->fetchColumn();
 } catch (Throwable $e) {

@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import { login } from "../../lib/auth";
 import { useAuth } from "../../store/authStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showSnack } from "../..//components/Snackbar";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -44,9 +45,10 @@ export default function Login() {
       await setAuth(user, token);
       
       console.log('token', await AsyncStorage.getItem('token'))
+      showSnack({ text: "เข้าสู่ระบบสำเร็จ", variant: "success" });
       router.replace("/room_raid"); // ปรับ path ให้ตรงโปรเจ็กต์คุณ
     } catch (e: any) {
-      Alert.alert("Login failed", e.message || "Unknown error");
+      showSnack({ text: e.message, variant: "error" });
     } finally {
       setLoading(false);
     }

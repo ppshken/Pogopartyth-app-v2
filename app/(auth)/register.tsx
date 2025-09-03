@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { register as registerApi } from "../../lib/auth";
 import { useAuth } from "../../store/authStore";
+import { showSnack } from "../..//components/Snackbar";
 
 function formatFriendCode(v: string) {
   const digits = v.replace(/\D/g, "").slice(0, 12);
@@ -30,7 +31,18 @@ export default function Register() {
 
   // ผู้เล่น
   const [trainerName, setTrainerName] = useState(""); // จะส่งเป็น username
-  const [friendCode, setFriendCode] = useState("");   // จะส่งเป็น friend_code (ตัดช่องว่างก่อนส่ง)
+  const [friendCode, setFriendCode] = useState(""); // จะส่งเป็น friend_code (ตัดช่องว่างก่อนส่ง)
+  const [level, setLevel] = useState("");
+
+  // helper: รับเฉพาะตัวเลข สูงสุด 2 หลัก และคงอยู่ในช่วง 1–50
+  const handleLevelChange = (t: string) => {
+    const digits = t.replace(/\D/g, "").slice(0, 2); // สูงสุด 2 ตัว
+    if (!digits) return setLevel(""); // ว่างได้ตอนพิมพ์
+    const n = parseInt(digits, 10);
+    if (isNaN(n) || n < 1) return setLevel("");
+    if (n > 50) return setLevel("50");
+    setLevel(String(n)); // ตัด 01 -> 1
+  };
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -39,9 +51,16 @@ export default function Register() {
   const emailOk = useMemo(() => /\S+@\S+\.\S+/.test(email.trim()), [email]);
   const pwOk = useMemo(() => password.trim().length >= 4, [password]);
   const nameOk = useMemo(() => trainerName.trim().length >= 2, [trainerName]);
-  const codeOk = useMemo(() => friendCode.replace(/\s/g, "").length === 12, [friendCode]);
+  const codeOk = useMemo(
+    () => friendCode.replace(/\s/g, "").length === 12,
+    [friendCode]
+  );
+  const levelOk = useMemo(() => {
+    const n = Number(level);
+    return Number.isInteger(n) && n >= 1 && n <= 50;
+  }, [level]);
 
-  const canSubmit = emailOk && pwOk && nameOk && codeOk && !loading;
+  const canSubmit = emailOk && pwOk && nameOk && codeOk && levelOk && !loading;
 
   const onRegister = async () => {
     if (!canSubmit) return;
@@ -52,12 +71,14 @@ export default function Register() {
         username: trainerName.trim(),
         password: password.trim(),
         friend_code: friendCode.replace(/\s/g, ""),
+        level: Number(level),
       };
       const { user, token } = await registerApi(payload);
       await setAuth(user, token);
-      router.replace("/room_raid"); // ปรับ path ให้ตรงกับแอปคุณ
+      showSnack({ text: "สมัครสมาชิกสำเร็จ", variant: "success" });
+      router.replace("/room_raid");
     } catch (e: any) {
-      Alert.alert("Register failed", e.message || "Unknown error");
+      showSnack({ text: e.message, variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -65,8 +86,14 @@ export default function Register() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F3F4F6" }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.centerContainer}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.centerContainer}
+        >
           <View style={styles.wrap}>
             {/* Header มินิมอล */}
             <View style={styles.headerCard}>
@@ -81,8 +108,14 @@ export default function Register() {
                   </View>
                 </View>
                 <View style={styles.lineRow}>
-                  <Ionicons name="information-circle-outline" size={16} color="#374151" />
-                  <Text style={styles.lineText}>สร้างบัญชีและเริ่มเข้าร่วมเรด</Text>
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={16}
+                    color="#374151"
+                  />
+                  <Text style={styles.lineText}>
+                    สร้างบัญชีและเริ่มเข้าร่วมเรด
+                  </Text>
                 </View>
               </View>
             </View>
@@ -93,7 +126,12 @@ export default function Register() {
 
               <Text style={styles.label}>อีเมล</Text>
               <View style={styles.inputRow}>
-                <Ionicons name="mail-outline" size={18} color="#6B7280" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="mail-outline"
+                  size={18}
+                  color="#6B7280"
+                  style={{ marginRight: 8 }}
+                />
                 <TextInput
                   placeholder="your@email.com"
                   placeholderTextColor="#9CA3AF"
@@ -108,7 +146,12 @@ export default function Register() {
 
               <Text style={[styles.label, { marginTop: 12 }]}>รหัสผ่าน</Text>
               <View style={styles.inputRow}>
-                <Ionicons name="lock-closed-outline" size={18} color="#6B7280" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={18}
+                  color="#6B7280"
+                  style={{ marginRight: 8 }}
+                />
                 <TextInput
                   placeholder="อย่างน้อย 6 ตัวอักษร"
                   placeholderTextColor="#9CA3AF"
@@ -118,8 +161,15 @@ export default function Register() {
                   style={styles.input}
                   returnKeyType="done"
                 />
-                <TouchableOpacity onPress={() => setShowPw((v) => !v)} hitSlop={12}>
-                  <Ionicons name={showPw ? "eye-off-outline" : "eye-outline"} size={18} color="#6B7280" />
+                <TouchableOpacity
+                  onPress={() => setShowPw((v) => !v)}
+                  hitSlop={12}
+                >
+                  <Ionicons
+                    name={showPw ? "eye-off-outline" : "eye-outline"}
+                    size={18}
+                    color="#6B7280"
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -130,7 +180,12 @@ export default function Register() {
 
               <Text style={styles.label}>ชื่อตัวละคร</Text>
               <View style={styles.inputRow}>
-                <Ionicons name="shield-outline" size={18} color="#6B7280" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="shield-outline"
+                  size={18}
+                  color="#6B7280"
+                  style={{ marginRight: 8 }}
+                />
                 <TextInput
                   placeholder="ชื่อในเกม"
                   placeholderTextColor="#9CA3AF"
@@ -141,9 +196,16 @@ export default function Register() {
                 />
               </View>
 
-              <Text style={[styles.label, { marginTop: 12 }]}>รหัสเพิ่มเพื่อน</Text>
+              <Text style={[styles.label, { marginTop: 12 }]}>
+                รหัสเพิ่มเพื่อน
+              </Text>
               <View style={styles.inputRow}>
-                <Ionicons name="key-outline" size={18} color="#6B7280" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="key-outline"
+                  size={18}
+                  color="#6B7280"
+                  style={{ marginRight: 8 }}
+                />
                 <TextInput
                   placeholder="XXXX XXXX XXXX"
                   placeholderTextColor="#9CA3AF"
@@ -151,6 +213,25 @@ export default function Register() {
                   onChangeText={(t) => setFriendCode(formatFriendCode(t))}
                   keyboardType="number-pad"
                   maxLength={14} // 12 ตัวเลข + 2 ช่องว่าง
+                  style={styles.input}
+                />
+              </View>
+
+              <Text style={[styles.label, { marginTop: 12 }]}>เลเวล</Text>
+              <View style={styles.inputRow}>
+                <Ionicons
+                  name="bookmark-outline"
+                  size={18}
+                  color="#6B7280"
+                  style={{ marginRight: 8 }}
+                />
+                <TextInput
+                  placeholder="1-50"
+                  placeholderTextColor="#9CA3AF"
+                  value={level}
+                  onChangeText={handleLevelChange}
+                  keyboardType="number-pad"
+                  maxLength={2}
                   style={styles.input}
                 />
               </View>
@@ -168,7 +249,12 @@ export default function Register() {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <>
-                    <Ionicons name="person-add-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
+                    <Ionicons
+                      name="person-add-outline"
+                      size={18}
+                      color="#fff"
+                      style={{ marginRight: 8 }}
+                    />
                     <Text style={styles.primaryBtnText}>สมัครสมาชิก</Text>
                   </>
                 )}
@@ -239,7 +325,12 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     padding: 16,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "800", color: "#111827", marginBottom: 10 },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#111827",
+    marginBottom: 10,
+  },
   label: { color: "#111827", fontWeight: "700", marginBottom: 6 },
 
   inputRow: {
@@ -264,7 +355,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  primaryBtnText: { color: "#fff", fontWeight: "800", fontSize: 16, letterSpacing: 0.2 },
+  primaryBtnText: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 16,
+    letterSpacing: 0.2,
+  },
 
   bottomRow: {
     flexDirection: "row",

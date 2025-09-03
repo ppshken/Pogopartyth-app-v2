@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { getProfile, updateProfile, updateAvatar } from "../../lib/user";
+import { showSnack } from "../..//components/Snackbar";
 
 type FullUser = {
   id: number;
@@ -83,10 +84,10 @@ export default function ProfileEdit() {
     setUploading(true);
     try {
       await updateAvatar({ uri: avatar });
-      Alert.alert("สำเร็จ", "อัปเดตรูปโปรไฟล์แล้ว");
+      showSnack({ text: "อัปเดตรูปโปรไฟล์แล้ว", variant: "success" });
       router.back();
     } catch (e: any) {
-      Alert.alert("อัปโหลดไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
+      showSnack({ text: "อัปโหลดไม่สำเร็จ", variant: "error" });
     } finally {
       setUploading(false);
     }
@@ -104,10 +105,10 @@ export default function ProfileEdit() {
         username: username.trim(),
         friend_code: friendCode.trim() || undefined,
       });
-      Alert.alert("บันทึกแล้ว", "แก้ไขโปรไฟล์เรียบร้อย");
+      showSnack({ text: "แก้ไขโปรไฟล์เรียบร้อย", variant: "success" });
       router.back();
     } catch (e: any) {
-      Alert.alert("บันทึกไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
+      showSnack({ text: "บันทึกไม่สำเร็จ", variant: "error" });
     } finally {
       setSaving(false);
     }
