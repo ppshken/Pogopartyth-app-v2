@@ -4,7 +4,7 @@ import { API_BASE } from "./config";
 
 export const api = axios.create({
   baseURL: API_BASE,
-  timeout: 15000,
+  timeout: 30000,
 });
 
 api.interceptors.request.use(async (config) => {
@@ -19,7 +19,7 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (r) => r,
   async (err) => {
-    // อย่า redirect ที่นี่ — ให้โยนออกไปให้ caller ตัดสินใจ
     return Promise.reject(err);
   }
 );
+

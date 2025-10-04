@@ -2,6 +2,30 @@
 // api/helpers.php
 declare(strict_types=1);
 
+// === storage & log paths (กัน mkdir(): File exists) ===
+$storageRoot = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'storage';
+$logDir      = $storageRoot . DIRECTORY_SEPARATOR . 'logs';
+
+if (!is_dir($storageRoot)) {
+  if (!@mkdir($storageRoot, 0777, true) && !is_dir($storageRoot)) {
+    throw new RuntimeException("Failed to create storage dir: {$storageRoot}");
+  }
+}
+if (!is_dir($logDir)) {
+  if (!@mkdir($logDir, 0777, true) && !is_dir($logDir)) {
+    throw new RuntimeException("Failed to create log dir: {$logDir}");
+  }
+}
+
+// ค่าคงที่ให้ไฟล์อื่นเรียกใช้
+if (!defined('APP_STORAGE'))   define('APP_STORAGE', $storageRoot);
+if (!defined('APP_LOG_DIR'))   define('APP_LOG_DIR', $logDir);
+if (!defined('APP_ERROR_LOG')) define('APP_ERROR_LOG', $logDir . DIRECTORY_SEPARATOR . 'php-error.log');
+
+// ตั้งค่า error_log กลาง (ไฟล์อื่น ๆ จะ override ได้ภายหลัง)
+ini_set('log_errors', '1');
+ini_set('error_log', APP_ERROR_LOG);
+
 // --- เพิ่ม: ตั้ง timezone ให้เวลาถูกต้องตามไทย ---
 date_default_timezone_set('Asia/Bangkok');
 

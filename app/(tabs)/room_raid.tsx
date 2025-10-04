@@ -192,6 +192,7 @@ export default function RoomsIndex() {
           removeClippedSubviews={false} // กันการคำนวณความสูงแปลก ๆ บางเคส
         />
       </View>
+      
       {/* รายการห้อง */}
       <FlatList
         data={filtered}
@@ -241,8 +242,6 @@ const styles = StyleSheet.create({
   // ✅ บาร์ตัวเลือก “สูงคงที่”
   bossBar: {
     height: BAR_H,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
     backgroundColor: "#F9FAFB",
   },
   bossBarContent: {

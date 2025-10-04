@@ -1,19 +1,27 @@
 {
   "expo": {
     "name": "PogopartyTH",
-    "slug": "pogopartyth-app-v1",
+    "slug": "pogopartyth-app",
     "version": "1.0.0",
     "icon": "./assets/pogopartyth.png",
     "userInterfaceStyle": "light",
-    "scheme": "pogopartyth", 
+    "scheme": "pogopartyth",
+    "splash": {
+      "image": "./assets/pogopartyth.png",
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
+    },
     "androidStatusBar": {
-       "barStyle": "dark-content",
-       "translucent": false,
-        "backgroundColor": "#ffffff" 
-      },
+      "barStyle": "dark-content",
+      "translucent": false,
+      "backgroundColor": "#ffffff"
+    },
     "plugins": [
       
       "expo-notifications",
+      ["@react-native-google-signin/google-signin", {
+        "iosUrlScheme": "com.googleusercontent.apps.926863512286-c2s6shb73ot66n55md241oqt0btslqko"
+      }],
       [
         "expo-build-properties",
         {
@@ -24,7 +32,8 @@
           }
         }
       ],
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "ios": {
       "bundleIdentifier": "com.ppshken.pogopartyth",
@@ -32,6 +41,7 @@
     },
     "android": {
       "package": "com.ppshken.pogopartyth",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 1,
       "intentFilters": [
         {
@@ -46,8 +56,7 @@
             }
           ]
         }
-      ],
-      "edgeToEdgeEnabled": false
+      ]
     },
     "extra": {
       "eas": {

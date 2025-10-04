@@ -19,6 +19,7 @@ export default function Index() {
       }
     })();
   }, []);
+  
 
   if (!ready) {
     return (

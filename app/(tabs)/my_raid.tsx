@@ -5,15 +5,15 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
+  ActivityIndicator
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../lib/api";
 import { useAuth } from "../../store/authStore";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { updateStatus } from "../../lib/raid"; // ✅ เพิ่ม import
 import { MyRoomCard, parseStart } from "../../components/MyRoomCard";
-import { showSnack } from "../..//components/Snackbar";
+import { showSnack } from "../../components/Snackbar";
 
 type MyRoom = {
   id: number;
@@ -69,21 +69,22 @@ export default function MyRaid() {
     async (r: MyRoom) => {
       const expired = parseStart(r.start_time).getTime() <= Date.now();
 
-      if (isOwner(r) && expired && r.status === "active") {
+      // ✅ ใครกดก็ได้: ถ้าหมดเวลาและยัง active ให้ปิดห้องทันที
+      if (expired && r.status === "active") {
         try {
           await updateStatus(r.id, "closed");
-          showSnack({ text : "ปิดห้องแล้วเรียบร้อย เนื่องจาก หมดเวลา", variant: "success"});
-          await load(); // รีเฟรช list (ห้องจะหายไปถ้า API กรอง closed ออก)
+          showSnack({ text: "ปิดห้องแล้วเรียบร้อย เนื่องจากหมดเวลา", variant: "success" });
+          await load(); // รีเฟรช list
         } catch (e: any) {
-          showSnack({ text : "ปิดห้องไม่สำเร็จ", variant: "error"});
+          showSnack({ text: "ปิดห้องไม่สำเร็จ", variant: "error" });
         }
-        return;
+        return; // ไม่ต้องเข้าไปหน้า room ต่อ
       }
 
       // กรณีอื่น ๆ เข้าหน้าห้องตามปกติ
       router.push(`/rooms/${r.id}`);
     },
-    [isOwner, load, router]
+    [load, router]
   );
 
   const { created, joined } = useMemo(() => {
@@ -101,8 +102,7 @@ export default function MyRaid() {
   if (loading && !rooms.length) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Ionicons name="sync" size={20} />
-        <Text style={{ marginTop: 8 }}>กำลังโหลดห้องของฉัน...</Text>
+          <ActivityIndicator size="small" color="#020202ff" />
       </View>
     );
   }

@@ -125,7 +125,7 @@ export function MyRoomCard({
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Ionicons name="people-outline" size={16} color="#374151" />
+            <Ionicons name="people" size={16} color="#374151" />
             <Text style={styles.metaText}>
               {" "}
               {room.current_members ?? "-"} / {room.max_members}
@@ -184,13 +184,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     justifyContent: "space-between",
   },
-  metaText: { color: "#374151", fontSize: 12 },
+  metaText: { color: "#374151", fontSize: 12, fontWeight: "700" },
 
   chipDark: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: "#111827",
+    backgroundColor: "#3066dbff",
     flexDirection: "row",
     alignItems: "center",
   },

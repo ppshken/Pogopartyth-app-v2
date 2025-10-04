@@ -39,7 +39,8 @@ $stmt = $db->prepare("
     u.username AS owner_username,
     u.friend_code AS owner_friend_code,
     u.avatar   AS owner_avatar,
-    u.level AS owner_level
+    u.level AS owner_level,
+    (SELECT COUNT(*) FROM chat c WHERE c.raid_rooms_id = r.id) AS current_chat_messages
   FROM raid_rooms r
   JOIN users u ON u.id = r.owner_id
   WHERE r.id = :id
@@ -111,6 +112,7 @@ jsonResponse(true, [
     ],
     'note'            => $room['note'],
     'created_at'      => $room['created_at'],
+    'current_chat_messages' => (int)$room['current_chat_messages'],
     'current_members' => $currentMembers,
     'is_full'         => $isFull,
   ],

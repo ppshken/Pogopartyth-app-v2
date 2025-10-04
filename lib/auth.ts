@@ -16,6 +16,7 @@ export async function login(payload: {
   email?: string;
   username?: string;
   password: string;
+  device_token: string;
 }) {
   const { data } = await api.post("/api/auth/login.php", payload, {
     validateStatus: () => true,

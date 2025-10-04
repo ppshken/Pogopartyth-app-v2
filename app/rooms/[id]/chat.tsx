@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { getMessages, sendMessage, ChatMessage } from "../../../lib/chat";
 import { MessageItem } from "../../../components/MessageItem";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -21,6 +23,8 @@ export default function ChatScreen() {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const listRef = useRef<FlatList<ChatMessage>>(null);
   const firstOpenRef = useRef(true);
+
+  const [loading, setLoading] = useState(false);
 
   // ใช้ ref เก็บ sinceId กัน interval รีสตาร์ท
   const sinceIdRef = useRef<number>(0);
@@ -72,6 +76,8 @@ export default function ChatScreen() {
     const msgTxt = text.trim();
     if (!msgTxt) return;
     try {
+      // ส่งข้อความ
+      setLoading(true);
       const msg = await sendMessage(roomId, msgTxt);
       setItems((prev) => mergeById(prev, [msg]));
       sinceIdRef.current = Math.max(sinceIdRef.current || 0, msg.id);
@@ -82,6 +88,8 @@ export default function ChatScreen() {
       );
     } catch (e) {
       // แจ้ง error ตามต้องการ
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,15 +107,19 @@ export default function ChatScreen() {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={70}
+      keyboardVerticalOffset={80}
     >
-      <View style={{ flex: 1, padding: 16 }}>
+      <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
         <FlatList
           ref={listRef}
           data={items}
           keyExtractor={(m) => String(m.id)}
           renderItem={({ item }) => <MessageItem m={item} />}
-          contentContainerStyle={{ paddingBottom: 16 }}
+          contentContainerStyle={{
+            paddingBottom: 16,
+            paddingTop: 8,
+            paddingHorizontal: 12,
+          }}
           onContentSizeChange={() =>
             listRef.current?.scrollToEnd({ animated: true })
           }
@@ -121,7 +133,8 @@ export default function ChatScreen() {
             flexDirection: "row",
             alignItems: "center",
             marginTop: 8,
-            marginBottom: 24,
+            marginBottom: 42,
+            marginHorizontal: 16,
           }}
         >
           <TextInput
@@ -148,7 +161,13 @@ export default function ChatScreen() {
               borderRadius: 10,
             }}
           >
-            <Text style={{ color: "#fff", fontWeight: "700" }}>ส่ง</Text>
+            <Text style={{ color: "#fff", fontWeight: "700" }}>
+              {loading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Ionicons name="send" size={20} color="#fff" />
+              )}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

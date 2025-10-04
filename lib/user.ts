@@ -51,3 +51,14 @@ export async function updateAvatar(file: {
   if (!data?.success) throw new Error(data?.message || "Update avatar failed");
   return data.data.user;
 }
+
+// api helper: ดึงโปรไฟล์เพื่อน (คืน user และ stats)
+export async function getFriendProfile(userId?: number) {
+  const { data } = await api.get("/api/auth/friend_profile.php", {
+    params: userId ? { user_id: userId } : undefined,
+    validateStatus: () => true,
+  });
+  if (!data?.success) throw new Error(data?.message || "Profile failed");
+  return data.data;
+}
+

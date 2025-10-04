@@ -8,6 +8,7 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -15,7 +16,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../../store/authStore";
 import { profile } from "../../lib/auth"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
-import { showSnack } from "../..//components/Snackbar";
+import { showSnack } from "../../components/Snackbar";
 
 type FullUser = {
   id: number;
@@ -33,6 +34,10 @@ type Stats = {
   rooms_joined: number;
 };
 
+type RatingOwner = {
+  avg: number | null;
+  count: number;
+};
 
 export default function Profile() {
   const router = useRouter();
@@ -40,14 +45,17 @@ export default function Profile() {
   const logout = useAuth((s) => s.clear);
 
   const [loading, setLoading] = useState(false);
+
   const [user, setUser] = useState<FullUser | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [rat, setRat] = useState<RatingOwner | null>(null);
 
   const load = useCallback(async () => {
     try {
-      const { user, stats } = await profile(); // GET /api/auth/profile.php
+      const { user, stats, rating_owner } = await profile(); // GET /api/auth/profile.php
       setUser(user as FullUser);
       setStats(stats as Stats);
+      setRat((rating_owner as RatingOwner) ?? { avg: null, count: 0 });
     } catch (e: any) {
       // ถ้าเรียกไม่สำเร็จ fallback ใช้ user ใน store ไปก่อน
       setUser(authUser || null);
@@ -73,11 +81,28 @@ export default function Profile() {
   };
 
   const onLogout = async () => {
-    setLoading(true);
     try {
-      await logout();
-      router.replace("/(auth)/login");
-    } finally {
+      Alert.alert("ยืนยัน", "คุณต้องการออกจากระบบใช่หรือไม่?", [
+        {
+          text: "ยกเลิก",
+          style: "cancel",
+          onPress: () => setLoading(false),
+        },
+        {
+          text: "ออกจากระบบ",
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await logout();
+              router.replace("/(auth)/login");
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]);
+    } catch (e) {
       setLoading(false);
     }
   };
@@ -92,9 +117,7 @@ export default function Profile() {
     <ScrollView
       style={{ flex: 1, backgroundColor: "#F9FAFB" }}
       contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
-      refreshControl={
-        <RefreshControl refreshing={false} onRefresh={load} />
-      }
+      refreshControl={<RefreshControl refreshing={false} onRefresh={load} />}
     >
       {/* Card: User */}
       <View style={styles.card}>
@@ -124,7 +147,6 @@ export default function Profile() {
               flexDirection: "row",
               flexWrap: "wrap",
               gap: 8,
-              marginTop: 8,
               justifyContent: "center",
             }}
           >
@@ -157,9 +179,12 @@ export default function Profile() {
           <Ionicons name="qr-code-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
           <View style={{ flex: 1 }} />
-          <Text style={styles.rowValue}>{formatFriendCode(user?.friend_code || "-")}</Text>
+          <Text style={styles.rowValue}>
+            {formatFriendCode(user?.friend_code || "-")}
+          </Text>
         </View>
 
+        {/* Level */}
         <View style={styles.row}>
           <Ionicons name="bookmark-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>เลเวล</Text>
@@ -167,6 +192,19 @@ export default function Profile() {
           <Text style={styles.rowValue}>{user?.level || "-"}</Text>
         </View>
 
+        {/* Rating (หัวห้อง) */}
+        <View style={styles.row}>
+          <Ionicons name="star-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>คะแนนรีวิวที่ได้รับ</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.rowValue}>
+            <Ionicons name="star" size={14} color="#FBBF24" />
+            {" "}
+            {rat?.avg ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)` : "-"}
+          </Text>
+        </View>
+
+        {/* ปุ่มคัดลอก Friend Code กับ ห้องของฉัน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           <TouchableOpacity
             style={styles.outlineBtn}
@@ -180,25 +218,33 @@ export default function Profile() {
             style={styles.outlineBtn}
             onPress={() => router.push("/my_raid")}
           >
-            <Ionicons name="albums-outline" size={16} color="#111827" />
+            <Ionicons name="invert-mode" size={16} color="#111827" />
             <Text style={styles.outlineBtnText}>ห้องของฉัน</Text>
           </TouchableOpacity>
         </View>
       </View>
-      
+
       {/* รายงาน สถิติการเข้าร่วม รีวิว */}
       <View style={styles.card_stats}>
         <Text style={styles.cardTitle}>รายงาน</Text>
         <View style={styles.cardSection}>
           <View style={styles.card_stats_detail}>
-            <Ionicons name="paw-outline" size={24}/>
-            <Text style={{fontSize: 12, fontWeight: "700"}}>จำนวนห้องที่สร้างทั้งหมด</Text>
-            <Text style={{fontSize: 12, fontWeight: "700"}}>{stats?.rooms_owned}</Text>
+            <Ionicons name="paw-outline" size={24} />
+            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+              จำนวนห้องที่สร้างทั้งหมด
+            </Text>
+            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+              {stats?.rooms_owned}
+            </Text>
           </View>
           <View style={styles.card_stats_detail}>
-            <Ionicons name="invert-mode-outline" size={24}/>
-            <Text style={{fontSize: 12, fontWeight: "700"}}>จำนวนห้องที่เข้าร่วมทั้งหมด</Text>
-            <Text style={{fontSize: 12, fontWeight: "700"}}>{stats?.rooms_joined}</Text>
+            <Ionicons name="invert-mode-outline" size={24} />
+            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+              จำนวนห้องที่เข้าร่วมทั้งหมด
+            </Text>
+            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+              {stats?.rooms_joined}
+            </Text>
           </View>
         </View>
       </View>
@@ -335,7 +381,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#111827",
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
@@ -374,8 +420,8 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     paddingVertical: 20,
     borderRadius: 14,
-    flex:1,
+    flex: 1,
     alignItems: "center",
-    gap: 8
-  }
+    gap: 8,
+  },
 });

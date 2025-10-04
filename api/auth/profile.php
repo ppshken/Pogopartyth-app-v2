@@ -54,15 +54,42 @@ try {
   $q2 = $db->prepare("SELECT COUNT(*) FROM user_raid_rooms WHERE user_id = :uid");
   $q2->execute([':uid' => $userId]);
   $stats['rooms_joined'] = (int)$q2->fetchColumn();
-
-   $q2 = $db->prepare("SELECT SUM FROM raid_rooms WHERE user_id = :uid");
-  $q2->execute([':uid' => $userId]);
-  $stats['rooms_joined'] = (int)$q2->fetchColumn();
 } catch (Throwable $e) {
   // ไม่ต้อง fail ทั้ง endpoint แค่ไม่ใส่ stats ก็พอ
 }
 
+// คะแนนรีวิวเฉลี่ยของ "เจ้าของห้อง" (จากรีวิวห้องที่ตัวเองสร้าง)
+$ratingOwner = [
+  'avg'   => null,
+  'count' => 0,
+];
+
+try {
+  // สมมติใช้ตาราง reviews มีคอลัมน์: id, room_id, reviewer_id, rating, comment, created_at (และอาจมี status)
+  // ถ้าระบบของคุณมีสถานะอนุมัติ ให้เพิ่ม AND r.status = 'approved'
+  $qr = $db->prepare("
+    SELECT 
+      AVG(r.rating) AS avg_rating,
+      COUNT(*)      AS cnt
+    FROM raid_reviews r
+    INNER JOIN raid_rooms rr ON rr.id = r.room_id
+    WHERE rr.owner_id = :uid
+      AND r.rating IS NOT NULL
+  ");
+  $qr->execute([':uid' => $userId]);
+  $row = $qr->fetch();
+
+  if ($row && (int)$row['cnt'] > 0) {
+    $ratingOwner['avg']   = round((float)$row['avg_rating'], 2);
+    $ratingOwner['count'] = (int)$row['cnt'];
+  }
+} catch (Throwable $e) {
+  // เงียบไป ไม่ให้ 500 ทั้งเส้น
+}
+
+
 jsonResponse(true, [
   'user'  => $user,
   'stats' => $stats,
+  'rating_owner' => $ratingOwner,
 ], 'โหลดโปรไฟล์สำเร็จ');

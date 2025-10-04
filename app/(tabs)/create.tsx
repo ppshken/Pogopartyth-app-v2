@@ -16,7 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { createRoom } from "../../lib/raid";
 import { getActiveRaidBosses } from "../../lib/raidBoss"; // << ใช้ API ที่สร้างไว้
 import { TierStars } from "../../components/TierStars";
-import { showSnack } from "../..//components/Snackbar";
+import { showSnack } from "../../components/Snackbar";
+import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 
 type RaidBoss = {
   raid_boss_id: number;
@@ -108,12 +109,18 @@ export default function CreateRoom() {
       setBosses(items);
       if (!boss && items.length) setBoss(items[0]); // auto เลือกตัวแรกหากยังไม่มี
     } catch (e: any) {
-      showSnack({ text: `ผิดพลาด${e?.message ? ` : ${e.message}` : "โหลดรายชื่อบอสไม่สำเร็จ"}` , variant: "error" });
+      showSnack({
+        text: `ผิดพลาด${
+          e?.message ? ` : ${e.message}` : "โหลดรายชื่อบอสไม่สำเร็จ"
+        }`,
+        variant: "error",
+      });
     } finally {
       setLoadingBoss(false);
     }
   }, [q, boss]);
 
+  useRefetchOnFocus(loadBosses, [loadBosses]);
   useEffect(() => {
     loadBosses();
   }, [loadBosses]);
@@ -148,7 +155,12 @@ export default function CreateRoom() {
 
   const onSubmit = async () => {
     if (!canSubmit) {
-      showSnack({ text: `ข้อมูลไม่ครบ${isPast ? "เวลาต้องอยู่ในอนาคต" : "กรุณาเลือกข้อมูลให้ครบ"}` , variant: "error"});
+      showSnack({
+        text: `ข้อมูลไม่ครบ${
+          isPast ? "เวลาต้องอยู่ในอนาคต" : "กรุณาเลือกข้อมูลให้ครบ"
+        }`,
+        variant: "error",
+      });
       return;
     }
     try {
@@ -165,7 +177,10 @@ export default function CreateRoom() {
       showSnack({ text: "สร้างห้องสำเร็จ", variant: "success" });
       router.push(`/rooms/${room.id}`);
     } catch (e: any) {
-      showSnack({ text: `สร้างห้องไม่สำเร็จ${e?.message ? ` : ${e.message}` : ""}` , variant: "error" });
+      showSnack({
+        text: `สร้างห้องไม่สำเร็จ${e?.message ? ` : ${e.message}` : ""}`,
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -288,11 +303,15 @@ export default function CreateRoom() {
           disabled={!canSubmit}
           style={[styles.submit, !canSubmit && { backgroundColor: "#D1D5DB" }]}
         >
-          <Text
-            style={{ color: "#fff", fontWeight: "800", textAlign: "center" }}
-          >
-            {loading ? "กำลังสร้าง..." : "สร้างห้อง"}
-          </Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text
+              style={{ color: "#fff", fontWeight: "800", textAlign: "center" }}
+            >
+              สร้างห้อง
+            </Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
 
@@ -323,7 +342,10 @@ export default function CreateRoom() {
               >
                 เลือกบอส
               </Text>
-              <TouchableOpacity onPress={() => setBossOpen(false)} style={styles.iconBtn}>
+              <TouchableOpacity
+                onPress={() => setBossOpen(false)}
+                style={styles.iconBtn}
+              >
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
@@ -422,7 +444,10 @@ export default function CreateRoom() {
               }}
             >
               <Text style={{ fontWeight: "800", fontSize: 16 }}>เลือกเวลา</Text>
-              <TouchableOpacity onPress={() => setTimeOpen(false)} style={styles.iconBtn}>
+              <TouchableOpacity
+                onPress={() => setTimeOpen(false)}
+                style={styles.iconBtn}
+              >
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
@@ -484,7 +509,10 @@ export default function CreateRoom() {
               <Text style={{ fontWeight: "800", fontSize: 16 }}>
                 จำนวนสมาชิก
               </Text>
-              <TouchableOpacity onPress={() => setPeopleOpen(false)} style={styles.iconBtn}>
+              <TouchableOpacity
+                onPress={() => setPeopleOpen(false)}
+                style={styles.iconBtn}
+              >
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>

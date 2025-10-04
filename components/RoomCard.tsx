@@ -97,7 +97,7 @@ export function RoomCardMinimal({
           <View
             style={[
               styles.countChip,
-              { backgroundColor: expired ? "#E5E7EB" : "#111827" },
+              { backgroundColor: expired ? "#E5E7EB" : "#3066dbff" },
             ]}
           >
             <Ionicons
@@ -143,8 +143,6 @@ export function RoomCardMinimal({
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
-    // ถ้า RN เวอร์ชันคุณไม่รองรับ gap ให้ลบออก แล้วใช้ marginRight/Left แทน
-    // gap: 12,
     padding: 12,
     borderRadius: 14,
     backgroundColor: "#FFFFFF",
@@ -175,7 +173,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   people: { flexDirection: "row", alignItems: "center" },
-  metaText: { color: "#374151", fontSize: 12 },
+  metaText: { color: "#374151", fontSize: 12, fontWeight: "700" },
 
   statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   statusText: { color: "#fff", fontWeight: "800", fontSize: 12, letterSpacing: 0.2 },

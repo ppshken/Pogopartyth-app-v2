@@ -1,0 +1,28 @@
+[20-Sep-2025 11:10:43 Asia/Bangkok] PHP Fatal error:  Uncaught ErrorException: mkdir(): File exists in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php:35
+Stack trace:
+#0 [internal function]: {closure}(2, 'mkdir(): File e...', 'C:\\xampp\\htdocs...', 35)
+#1 C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php(35): mkdir('C:\\xampp\\htdocs...', 511, true)
+#2 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\send_email_otp.php(40): require_once('C:\\xampp\\htdocs...')
+#3 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php on line 35
+[20-Sep-2025 11:10:48 Asia/Bangkok] PHP Fatal error:  Uncaught ErrorException: mkdir(): File exists in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php:35
+Stack trace:
+#0 [internal function]: {closure}(2, 'mkdir(): File e...', 'C:\\xampp\\htdocs...', 35)
+#1 C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php(35): mkdir('C:\\xampp\\htdocs...', 511, true)
+#2 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\send_email_otp.php(40): require_once('C:\\xampp\\htdocs...')
+#3 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php on line 35
+[20-Sep-2025 11:11:25 Asia/Bangkok] PHP Fatal error:  Uncaught ErrorException: mkdir(): File exists in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php:35
+Stack trace:
+#0 [internal function]: {closure}(2, 'mkdir(): File e...', 'C:\\xampp\\htdocs...', 35)
+#1 C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php(35): mkdir('C:\\xampp\\htdocs...', 511, true)
+#2 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\send_email_otp.php(40): require_once('C:\\xampp\\htdocs...')
+#3 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php on line 35
+[20-Sep-2025 11:11:27 Asia/Bangkok] PHP Fatal error:  Uncaught ErrorException: mkdir(): File exists in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php:35
+Stack trace:
+#0 [internal function]: {closure}(2, 'mkdir(): File e...', 'C:\\xampp\\htdocs...', 35)
+#1 C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php(35): mkdir('C:\\xampp\\htdocs...', 511, true)
+#2 C:\xampp\htdocs\pogopartyth-app-v1\api\auth\send_email_otp.php(40): require_once('C:\\xampp\\htdocs...')
+#3 {main}
+  thrown in C:\xampp\htdocs\pogopartyth-app-v1\api\helpers.php on line 35

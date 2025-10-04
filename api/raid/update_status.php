@@ -39,11 +39,6 @@ try {
     jsonResponse(false, null, 'ไม่พบห้อง', 404);
   }
 
-  if ((int)$room['owner_id'] !== $userId) {
-    $db->rollBack();
-    jsonResponse(false, null, 'Forbidden: ต้องเป็นเจ้าของห้อง', 403);
-  }
-
   if ($room['status'] === $newStatus) {
     $cnt = $db->prepare("SELECT COUNT(*) FROM user_raid_rooms WHERE room_id = :r");
     $cnt->execute([':r' => $roomId]);

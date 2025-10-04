@@ -16,6 +16,7 @@ import {
   RefreshControl,
   Modal,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
@@ -60,6 +61,8 @@ type RoomPayload = {
     status: "active" | "closed" | "canceled" | "invited" | string;
     current_members: number;
     max_members: number;
+    pokemon_tier: number;
+    current_chat_messages: number; // ✅ จำนวนข้อความแชทล่าสุด (ถ้าแบ็กเอนด์ส่งมา)
     is_full?: boolean;
     note?: string | null;
     owner: RoomOwner;
@@ -234,8 +237,8 @@ export default function RoomDetail() {
   // ก่อนมี data
   if (!data) {
     return (
-      <View style={{ flex: 1, padding: 16 }}>
-        <Text>กำลังโหลด...</Text>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="small" color="#000000ff" />
       </View>
     );
   }
@@ -276,12 +279,15 @@ export default function RoomDetail() {
       ? "เปิดรับ"
       : room.status === "canceled"
       ? "ยกเลิก"
+      : room.status === "closed"
+      ? "ปิดห้อง"
       : room.status;
 
-  // --- handlers ---
+  // --- ฟังก์ชันจัดการต่าง ๆ ---
   const onJoinLeave = async () => {
     try {
-      setLoading(true);
+      if (isMember) setLoading(false);
+      else if (!isMember) setLoading(true);
       if (isMember && !isOwner) setExitRoom(true);
       else if (!isMember) await joinRoom(room.id);
       await load();
@@ -292,7 +298,7 @@ export default function RoomDetail() {
     }
   };
 
-  // --- handlers exitroom ---
+  // ออกจากห้อง (สมาชิกธรรมดา)
   const onExitroom = async () => {
     try {
       setLoading(true);
@@ -307,6 +313,7 @@ export default function RoomDetail() {
     }
   };
 
+  // คัดลอกชื่อผู้เล่น
   const copyUsernames = async () => {
     try {
       const names = members
@@ -319,6 +326,7 @@ export default function RoomDetail() {
     }
   };
 
+  // คัดลอกรหัสเพิ่มเพื่อนหัวห้อง
   const copyFriendCode = async () => {
     const code = room.owner?.friend_code?.trim();
     if (!code)
@@ -333,6 +341,7 @@ export default function RoomDetail() {
     });
   };
 
+  // รีเฟรช
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -342,6 +351,7 @@ export default function RoomDetail() {
     }
   };
 
+  // สถานะเพิ่มเพื่อน
   const toggleFriend = async (uid: number) => {
     const prev = friendAdded[uid] || false;
     const next = !prev;
@@ -470,7 +480,7 @@ export default function RoomDetail() {
           <Image source={{ uri: room.pokemon_image }} style={styles.cover} />
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.title}>{room.boss}</Text>
+                <Text style={styles.title}>{room.boss} #{room.id}</Text>
               <View style={[styles.badge, { backgroundColor: statusBg }]}>
                 <Text style={styles.badgeText}>{statusText}</Text>
               </View>
@@ -554,7 +564,12 @@ export default function RoomDetail() {
 
         {/* ผู้เข้าร่วม */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>สมาชิก</Text>
+          <View style={styles.lineRow}>
+            <Text style={styles.sectionTitle}>
+              สมาชิก {room.current_members}/{room.max_members}
+            </Text>
+          </View>
+
           {members.length ? (
             members.map((m) => {
               const isOwnerRow = m.role === "owner";
@@ -575,7 +590,16 @@ export default function RoomDetail() {
               const disabledBtn = !iAmThisMember || isInvited || expired;
 
               return (
-                <View key={m.user_id} style={styles.memberItem}>
+                <TouchableOpacity
+                  key={m.user_id}
+                  style={[styles.memberItem, iAmThisMember && styles.meItem]}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/rooms/[id]/friend",
+                      params: { id: Number(m.user_id) }, // ต้องแมพกับ [id]
+                    })
+                  }
+                >
                   {m.avatar ? (
                     <Image source={{ uri: m.avatar }} style={styles.avatar} />
                   ) : (
@@ -611,13 +635,19 @@ export default function RoomDetail() {
 
                       <View
                         style={{
-                          backgroundColor: "#2563EB",
+                          backgroundColor: "#3066dbff",
                           padding: 2,
                           paddingHorizontal: 4,
                           borderRadius: 4,
                         }}
                       >
-                        <Text style={{ color: "#fff", fontSize: 10 }}>
+                        <Text
+                          style={{
+                            color: "#ffffffff",
+                            fontSize: 12,
+                            fontWeight: "600",
+                          }}
+                        >
                           Level {m.member_level}
                         </Text>
                       </View>
@@ -662,7 +692,7 @@ export default function RoomDetail() {
                       </Text>
                     </TouchableOpacity>
                   )}
-                </View>
+                </TouchableOpacity>
               );
             })
           ) : (
@@ -705,21 +735,57 @@ export default function RoomDetail() {
         ]}
       >
         {isMember ? (
-          <TouchableOpacity
-            disabled={loading || expired}
-            onPress={() => router.push(`/rooms/${room.id}/chat`)}
-            style={[
-              styles.primaryBtn,
-              { backgroundColor: "#111827", opacity: expired ? 0.7 : 1 },
-            ]}
-          >
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={18}
-              color="#fff"
-            />
-            <Text style={styles.primaryBtnText}>เข้าแชท</Text>
-          </TouchableOpacity>
+          <View>
+            <TouchableOpacity
+              disabled={
+                loading ||
+                expired ||
+                room.status === "canceled" ||
+                room.status === "closed"
+              }
+              onPress={() => router.push(`/rooms/${room.id}/chat`)}
+              style={[
+                styles.primaryBtn,
+                {
+                  backgroundColor: "#111827",
+                  opacity:
+                    expired ||
+                    room.status === "canceled" ||
+                    room.status === "closed"
+                      ? 0.7
+                      : 1,
+                },
+              ]}
+            >
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={18}
+                color="#fff"
+              />
+              <Text style={styles.primaryBtnText}>เข้าแชท</Text>
+            </TouchableOpacity>
+            {room.current_chat_messages > 0 && (
+              <View
+                style={{
+                  position: "absolute",
+                  right: 5,
+                  top: 0,
+                  backgroundColor: "#4178e8ff",
+                  width: 20,
+                  height: 20,
+                  borderRadius: 12,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{ color: "#ffffff", fontSize: 12, fontWeight: "700" }}
+                >
+                  {room.current_chat_messages}
+                </Text>
+              </View>
+            )}
+          </View>
         ) : null}
 
         {isOwner && allAdded && room.status !== "invited" ? (
@@ -760,18 +826,29 @@ export default function RoomDetail() {
               styles.primaryBtn,
               {
                 backgroundColor: isMember ? "#EF4444" : "#10B981",
-                opacity: expired ? 0.6 : 1,
+                opacity:
+                  expired ||
+                  room.status === "canceled" ||
+                  room.status === "closed"
+                    ? 0.7
+                    : 1,
               },
             ]}
           >
-            <Ionicons
-              name={isMember ? "log-out-outline" : "log-in-outline"}
-              size={18}
-              color="#fff"
-            />
-            <Text style={styles.primaryBtnText}>
-              {isMember ? "ออกจากห้อง" : "เข้าร่วมห้อง"}
-            </Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <>
+                <Ionicons
+                  name={isMember ? "log-out-outline" : "log-in-outline"}
+                  size={18}
+                  color="#fff"
+                />
+                <Text style={styles.primaryBtnText}>
+                  {isMember ? "ออกจากห้อง" : "เข้าร่วมห้อง"}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         ) : null}
       </View>
@@ -788,7 +865,7 @@ export default function RoomDetail() {
             <Text style={styles.modalTitle}>ต้องการยกเลิกห้อง?</Text>
             <TouchableOpacity
               onPress={onCanceled}
-              style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
+              style={[styles.modalBtn, { backgroundColor: "#d0444bff" }]}
             >
               <Ionicons name="close-circle-outline" size={18} color="#fff" />
               <Text style={styles.modalBtnText}>ยกเลิก</Text>
@@ -1084,7 +1161,7 @@ const styles = StyleSheet.create({
   outlineBtn: {
     marginTop: 10,
     paddingVertical: 10,
-    borderRadius: 999,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: "#111827",
     backgroundColor: "#fff",
@@ -1111,7 +1188,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     marginRight: 8,
-    backgroundColor: "#9CA3AF",
+    backgroundColor: "#222121ff",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -1245,5 +1322,10 @@ const styles = StyleSheet.create({
     // shadowOpacity: 0.06,
     // shadowRadius: 6,
     // elevation: 6,   // Android
+  },
+  meItem: {
+    backgroundColor: "#E6F0FF", // ฟ้าอ่อน
+    borderColor: "#60A5FA",
+    borderWidth: 1,
   },
 });

@@ -43,6 +43,14 @@ if ($check->fetch()) {
   jsonResponse(false, null, 'อีเมลหรือชื่อผู้ใช้ถูกใช้งานแล้ว', 409);
 }
 
+function mb_first_upper(string $s, string $enc = 'UTF-8'): string {
+    if ($s === '') return $s;
+    return mb_strtoupper(mb_substr($s, 0, 1, $enc), $enc);
+}
+
+$avatar_result = mb_first_upper($username);
+$avatar_result_image = "https://ui-avatars.com/api/?name=" . urlencode($avatar_result) . "&background=random&size=256&bold=true";
+
 // 3) สร้างบัญชี
 try {
   $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -54,7 +62,7 @@ try {
     ':email'     => $email,
     ':username'  => $username,
     ':hash'      => $hash,
-    ':avatar'    => $avatar ?: null,
+    ':avatar'    => $avatar_result_image ?: null,
     ':friend'    => $friend ?: null,
     ':level'     => $level,
     ':created_at'=> now(),

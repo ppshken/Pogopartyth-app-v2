@@ -18,12 +18,12 @@ export default function Layout() {
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
-        <StatusBar style="dark" translucent />
+        <StatusBar style="dark" translucent={false} backgroundColor="#FFFFFF" />
         <Stack
           screenOptions={{
             headerShown: false,
             headerBackTitle: "กลับ",
-            headerTitleStyle: { fontSize: 20, fontWeight: "800" },
+            headerTitleStyle: { fontSize: 16, fontWeight: "800" },
           }}
         >
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
@@ -42,6 +42,10 @@ export default function Layout() {
           <Stack.Screen
             name="rooms/[id]/chat"
             options={{ title: "แชท", headerShown: true }}
+          />
+          <Stack.Screen
+            name="rooms/[id]/friend"
+            options={{ title: "โปรไฟล์", headerShown: true }}
           />
           <Stack.Screen
             name="settings/profile-edit"

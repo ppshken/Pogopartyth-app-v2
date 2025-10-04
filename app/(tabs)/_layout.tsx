@@ -16,8 +16,9 @@ export default function TabsLayout() {
           const map: Record<string, string> = {
             room_raid: focused ? "paw" : "paw-outline",
             create: focused ? "chatbubbles" : "chatbubbles-outline",
-            my_raid: focused ? "albums" : "albums-outline",
+            my_raid: focused ? "invert-mode" : "invert-mode-outline",
             profile: focused ? "person" : "person-outline",
+            friends: focused ? "people" : "people-outline",
           };
           return (
             <Ionicons name={map[route.name] as any} size={size} color={color} />
@@ -28,7 +29,9 @@ export default function TabsLayout() {
       <Tabs.Screen name="room_raid" options={{ title: "ห้องบอส" }} />
       <Tabs.Screen name="create" options={{ title: "สร้างห้อง" }} />
       <Tabs.Screen name="my_raid" options={{ title: "ห้องของฉัน" }} />
+      <Tabs.Screen name="friends" options={{ title: "หาเพื่อน" }} />
       <Tabs.Screen name="profile" options={{ title: "โปรไฟล์" }} />
+      
     </Tabs>
   );
 }

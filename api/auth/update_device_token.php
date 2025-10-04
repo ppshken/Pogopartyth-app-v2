@@ -15,3 +15,5 @@ $db = pdo();
 $stm = $db->prepare("UPDATE users SET device_token = :t WHERE id = :id");
 $stm->execute([':t' => $deviceToken, ':id' => $userId]);
 jsonResponse(true, null, 'อัปเดต device_token สำเร็จ');
+
+

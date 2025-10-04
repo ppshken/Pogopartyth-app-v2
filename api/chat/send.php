@@ -22,13 +22,61 @@ if (mb_strlen($message) > 1000) {
   jsonResponse(false, null, 'message ยาวเกิน 1000 ตัวอักษร', 422);
 }
 
+/** ------------------------------
+ *  🔔 NOTI: Helper ส่ง Expo Push
+ *  ------------------------------ */
+function sendExpoPush(array $tokens, string $title, string $body, array $data = []): array {
+  // กรอง & ไม่ซ้ำ & เฉพาะ Expo token
+  $tokens = array_values(array_unique(array_filter($tokens, function ($t) {
+    return is_string($t) && $t !== '' && str_starts_with($t, 'ExponentPushToken[');
+  })));
+
+  if (!$tokens) return ['sent' => 0, 'responses' => []];
+
+  // เตรียมข้อความ (Expo รองรับส่งเป็น array ทีเดียว)
+  $messages = [];
+  foreach ($tokens as $t) {
+    $messages[] = [
+      'to'        => $t,
+      'sound'     => 'default',
+      'title'     => $title,
+      'body'      => $body,
+      'data'      => $data,
+      'priority'  => 'high',
+      'ttl'       => 60, // วินาที (พลาดแล้วไม่ต้อง retry นาน)
+    ];
+  }
+
+  $responses = [];
+  foreach (array_chunk($messages, 100) as $chunk) {
+    $ch = curl_init('https://exp.host/--/api/v2/push/send');
+    curl_setopt_array($ch, [
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_POST           => true,
+      CURLOPT_HTTPHEADER     => [
+        'Content-Type: application/json',
+        'Accept: application/json',
+      ],
+      CURLOPT_POSTFIELDS     => json_encode($chunk, JSON_UNESCAPED_UNICODE),
+      CURLOPT_TIMEOUT        => 12,
+    ]);
+    $resp = curl_exec($ch);
+    $err  = curl_error($ch);
+    curl_close($ch);
+
+    $responses[] = $err ? ['error' => $err] : (json_decode($resp, true) ?? ['raw' => $resp]);
+  }
+
+  return ['sent' => count($messages), 'responses' => $responses];
+}
+
 $db = pdo();
 
 try {
   $db->beginTransaction();
 
-  // ห้องต้องมีและ active
-  $qRoom = $db->prepare("SELECT id, status FROM raid_rooms WHERE id = :id FOR UPDATE");
+  // ห้องต้องมีและ active (ดึง boss มาด้วยเพื่อใส่ในแจ้งเตือน)
+  $qRoom = $db->prepare("SELECT id, status, boss FROM raid_rooms WHERE id = :id FOR UPDATE");
   $qRoom->execute([':id' => $roomId]);
   $room = $qRoom->fetch();
   if (!$room) {
@@ -95,7 +143,49 @@ try {
 
   $db->commit();
 
-  jsonResponse(true, ['message' => $row], 'ส่งข้อความสำเร็จ', 201);
+  /** -------------------------------------
+   *  🔔 NOTI: แจ้งเตือนสมาชิกในห้อง (ยกเว้นผู้ส่ง)
+   *  ------------------------------------- */
+  $qTok = $db->prepare("
+    SELECT DISTINCT u.device_token
+    FROM user_raid_rooms urr
+    JOIN users u ON u.id = urr.user_id
+    WHERE urr.room_id = :r
+      AND u.id <> :u
+      AND u.device_token IS NOT NULL
+      AND u.device_token <> ''
+  ");
+  $qTok->execute([':r' => $roomId, ':u' => $userId]);
+  $tokens = array_column($qTok->fetchAll(), 'device_token');
+
+  // title/body ของแจ้งเตือน
+  $boss  = $room['boss'] ?? null;
+  $title = $boss ? "[$boss] #[$roomId] ข้อความใหม่" : "ข้อความใหม่ในห้อง #{$row['room_id']}";
+  // ตัดข้อความให้สั้นสวย ๆ
+  if (function_exists('mb_strimwidth')) {
+    $body = mb_strimwidth($row['username'] . ': ' . $row['message'], 0, 90, '…', 'UTF-8');
+  } else {
+    $body = (strlen($row['username'] . ': ' . $row['message']) > 90)
+      ? substr($row['username'] . ': ' . $row['message'], 0, 87) . '…'
+      : $row['username'] . ': ' . $row['message'];
+  }
+
+  $data = [
+    'type'         => 'chat_message',
+    'room_id'      => (int)$row['room_id'],
+    'message_id'   => (int)$row['id'],
+    'from_user_id' => (int)$row['user_id'],
+    'boss'         => $boss,
+  ];
+
+  $notiResult = sendExpoPush($tokens, $title, $body, $data);
+  // ไม่ล็อกผลล้มเหลวให้กระทบการส่งแชท (fire-and-forget)
+  // ถ้าอยาก debug: file_put_contents(__DIR__.'/../logs/push.log', json_encode([$tokens, $notiResult]).PHP_EOL, FILE_APPEND);
+
+  jsonResponse(true, [
+    'message'  => $row,
+    'notified' => $notiResult['sent'], // จำนวนที่พยายามส่ง
+  ], 'ส่งข้อความสำเร็จ', 201);
 
 } catch (Throwable $e) {
   if ($db->inTransaction()) $db->rollBack();
