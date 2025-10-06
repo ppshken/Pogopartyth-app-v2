@@ -20,8 +20,6 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
-import * as Linking from "expo-linking";
-import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   getRoom,
@@ -30,11 +28,13 @@ import {
   getFriendReadyStatus,
   setFriendReady,
   updateStatus, // invited / closed
-  reviewRoom, // rating 1-5 + comment (ใช้ comment ใส่เหตุผลตอนไม่สำเร็จ)
+  reviewRoom,
+  kickMember // rating 1-5 + comment (ใช้ comment ใส่เหตุผลตอนไม่สำเร็จ)
 } from "../../lib/raid";
 import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatFriendCode } from "../../function/formatFriendCode";
 
 type Member = {
   user_id: number;
@@ -85,7 +85,8 @@ type RoomPayload = {
   };
 };
 
-const PokemonGoIcon = 'https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk'; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
+const PokemonGoIcon =
+  "https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk"; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
 
 const Reasonfail = [
   { id: 1, reasonfail: "คนไม่ครบ" },
@@ -156,6 +157,7 @@ export default function RoomDetail() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  //เปิด modal เข้าร่วมห้อง
   const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
 
   // สถานะ “เพิ่มเพื่อนแล้ว”
@@ -167,12 +169,8 @@ export default function RoomDetail() {
   const [failureModal, setFailureModal] = useState(false); // กรอกเหตุผลไม่สำเร็จ
   const [canceledRoom, setCanceledRoom] = useState(false); // ยกเลิกสร้างห้อง
   const [exitRoom, setExitRoom] = useState(false); // ออกจากห้อง
+  const [kickmember, setKickmember] = useState<number | false>(false); // เตะ
   const [rating, setRating] = useState<number>(5);
-
-  function formatFriendCode(v: string) {
-    const digits = v.replace(/\D/g, "").slice(0, 12);
-    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
-  }
 
   // ป้องกันสั่งปิดห้องซ้ำ
   const closingRef = useRef(false);
@@ -408,6 +406,20 @@ export default function RoomDetail() {
     }
   };
 
+  // เตะสมาชิกออกจากห้อง
+  const onKickMember = async (userId: number) => {
+    try {
+      setLoading(true);
+      await kickMember(room.id, userId);
+      showSnack({ text: "เตะสมาชิกออกจากห้องแล้วเรียบร้อย", variant: "success" });
+      await load();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // เชิญในเกม → เปลี่ยนสถานะเป็น invited
   const onInvite = async () => {
     try {
@@ -506,7 +518,9 @@ export default function RoomDetail() {
           <Image source={{ uri: room.pokemon_image }} style={styles.cover} />
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={styles.title}>{room.boss} #{room.id}</Text>
+              <Text style={styles.title}>
+                {room.boss} #{room.id}
+              </Text>
               <View style={[styles.badge, { backgroundColor: statusBg }]}>
                 <Text style={styles.badgeText}>{statusText}</Text>
               </View>
@@ -555,14 +569,13 @@ export default function RoomDetail() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
           <View style={styles.friendRow}>
-            <Ionicons name="person-circle-outline" size={18} color="#374151" />
-            <View style={{ flexDirection: "row" }}>
+            <View style={{ flexDirection: "column", gap: 5 }}>
               <Text style={styles.friendText}>
-                {room.owner?.username || "-"} • Friend Code:
+                {room.owner?.username || "-"}
               </Text>
               {isMember ? (
-                <Text style={styles.friendText}>
-                  {room.owner?.friend_code || "-"}
+                <Text style={styles.friendCodeText}>
+                  {formatFriendCode(room.owner?.friend_code || "-")}
                 </Text>
               ) : null}
             </View>
@@ -574,7 +587,7 @@ export default function RoomDetail() {
               onPress={copyFriendCode}
               style={styles.outlineBtn}
             >
-              <Ionicons name="copy-outline" size={16} color="#111827" />
+              <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>คัดลอกรหัสหัวห้อง</Text>
             </TouchableOpacity>
           ) : null}
@@ -582,7 +595,7 @@ export default function RoomDetail() {
           {/* เจ้าของ -> คัดลอกชื่อผู้เล่น */}
           {isOwner && allAdded ? (
             <TouchableOpacity onPress={copyUsernames} style={styles.outlineBtn}>
-              <Ionicons name="copy-outline" size={16} color="#111827" />
+              <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>คัดลอกชื่อผู้เล่น</Text>
             </TouchableOpacity>
           ) : null}
@@ -599,10 +612,13 @@ export default function RoomDetail() {
           {members.length ? (
             members.map((m) => {
               // หัวห้อง?
-              const isOwnerRow = m.role === "owner";        
+              const isOwnerRow = m.role === "owner";
 
               // แถวของตัวเอง?
-              const iAmThisMember = m.user_id === data.you?.user_id;              
+              const iAmThisMember = m.user_id === data.you?.user_id;
+
+              // ตัวเองเป็นหัวห้องหรือไม่
+              const owner = data.you?.is_owner && !isOwnerRow;              
 
               // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
               const showBtn = !isOwnerRow;
@@ -619,11 +635,10 @@ export default function RoomDetail() {
               const disabledBtn = !iAmThisMember || isInvited || expired;
 
               return (
-                
                 <TouchableOpacity
                   key={m.user_id}
                   style={[styles.memberItem, iAmThisMember && styles.meItem]}
-                  disabled ={iAmThisMember} // กันกรณี user_id ว่าง (ไม่ควรเกิด)
+                  disabled={iAmThisMember} // กันกรณี user_id ว่าง (ไม่ควรเกิด)
                   onPress={() =>
                     router.push({
                       pathname: "/rooms/[id]/friend",
@@ -721,6 +736,21 @@ export default function RoomDetail() {
                       >
                         เพิ่มเพื่อนแล้ว
                       </Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {/* ปุ่มเตะสมาชิก */}
+                  {owner && (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "#f1d1d1ff",
+                        padding: 8,
+                        borderRadius: 8,
+                        marginLeft: 3,
+                      }}
+                      onPress={() => setKickmember(m.user_id)}
+                    >
+                      <Ionicons name="close" color="#dd2222ff" />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>
@@ -941,6 +971,39 @@ export default function RoomDetail() {
         </View>
       </Modal>
 
+      {/* Modal: เตะ */}
+      <Modal
+        visible={kickmember !== false}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setKickmember(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>ต้องการเตะผู้เข้าร่วมนี้ ?</Text>
+            <TouchableOpacity
+              onPress={() => {
+                if (kickmember !== false) {
+                  onKickMember(kickmember);
+                }
+                setKickmember(false);
+              }}
+              style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
+            >
+              <Text style={styles.modalBtnText}>เตะ</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setKickmember(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Modal: เลือกผลลัพธ์ */}
       <Modal
         visible={resultModal}
@@ -1149,14 +1212,24 @@ export default function RoomDetail() {
               style={[styles.modalBtn, { backgroundColor: "#2563EB" }]}
             >
               <Ionicons name="copy-outline" size={18} color="#fff" />
-              <Text style={styles.modalBtnText}>คัดลอกรหัสเพิ่มเพื่อนหัวห้อง</Text>
+              <Text style={styles.modalBtnText}>
+                คัดลอกรหัสเพิ่มเพื่อนหัวห้อง
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={openPokemonGo}
               style={[styles.modalBtn, { backgroundColor: "#d34228ff" }]}
             >
-              <Image source={{ uri: PokemonGoIcon }} style={{ width: 18, height: 18, marginRight: 6, borderRadius: 4 }} />
+              <Image
+                source={{ uri: PokemonGoIcon }}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginRight: 6,
+                  borderRadius: 4,
+                }}
+              />
               <Text style={styles.modalBtnText}>เปิด Pokemon Go</Text>
             </TouchableOpacity>
 
@@ -1167,13 +1240,18 @@ export default function RoomDetail() {
                 if (!myId) return;
                 const already = Boolean(friendAdded[myId]);
                 if (already) {
-                  showSnack({ text: "คุณได้กดเพิ่มเพื่อนแล้ว", variant: "info" });
+                  showSnack({
+                    text: "คุณได้กดเพิ่มเพื่อนแล้ว",
+                    variant: "info",
+                  });
                   // ปิด modal ด้วยเผื่อผู้ใช้ต้องการออก
                   setJoinModal(false);
                   return;
                 }
                 // เรียก API เพื่อเพิ่มสถานะ (toggleFriend ทำ optimistic + revert ถ้าล้มเหลว)
                 await toggleFriend(myId);
+                // โหลดข้อมูลใหม่ทันที
+                await load();
                 // ปิด modal หลังทำงานสำเร็จ
                 setJoinModal(false);
               }}
@@ -1185,7 +1263,11 @@ export default function RoomDetail() {
               ]}
               disabled={Boolean(friendAdded[data.you?.user_id || -1])}
             >
-              <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={18}
+                color="#fff"
+              />
               <Text style={styles.modalBtnText}>เพิ่มเพื่อนแล้ว</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -1223,14 +1305,14 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: 20,
-    fontWeight: "800",
+    fontWeight: "600",
     color: "#111827",
     marginRight: 8,
   },
   badge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: 8,
     alignSelf: "flex-start",
   },
   badgeText: { color: "#fff", fontWeight: "800", fontSize: 12 },
@@ -1267,20 +1349,24 @@ const styles = StyleSheet.create({
   },
   friendRow: { flexDirection: "row", alignItems: "center" },
   friendText: { color: "#374151", marginLeft: 6 },
+  friendCodeText: {
+    color: "#374151",
+    marginLeft: 6,
+    fontSize: 24,
+    fontWeight: "500",
+  },
 
   outlineBtn: {
     marginTop: 10,
     paddingVertical: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#111827",
-    backgroundColor: "#fff",
+    backgroundColor: "#2563EB",
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
   },
-  outlineBtnText: { color: "#111827", fontWeight: "800" },
+  outlineBtnText: { color: "#ffffffff", fontWeight: "800" },
 
   memberItem: {
     backgroundColor: "#fff",

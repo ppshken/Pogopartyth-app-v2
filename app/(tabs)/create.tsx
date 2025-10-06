@@ -292,9 +292,13 @@ export default function CreateRoom() {
             value={note}
             onChangeText={setNote}
             multiline
+            maxLength={100}
             style={styles.textarea}
             placeholderTextColor="#9CA3AF"
           />
+          <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
+            สามารถใส่หมายเหตุได้ไม่เกิน 100 ตัวอักษร
+          </Text>
         </View>
 
         {/* Submit */}

@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#111827",
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 8,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",

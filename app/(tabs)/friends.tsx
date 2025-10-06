@@ -122,7 +122,7 @@ export default function FriendsScreen() {
             </Text>
             <View
               style={{
-                backgroundColor: "#eedcdcff",
+                backgroundColor: "#dce5eeff",
                 padding: 2,
                 paddingHorizontal: 4,
                 borderRadius: 4,
@@ -130,7 +130,7 @@ export default function FriendsScreen() {
             >
               <Text
                 style={{
-                  color: "#ea0a0aff",
+                  color: "#0a3eeaff",
                   fontSize: 12,
                   fontWeight: "600",
                 }}

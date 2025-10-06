@@ -120,6 +120,35 @@ try {
   $uRoom = $db->prepare("UPDATE raid_rooms SET review_count = :c, avg_rating = :a WHERE id = :id");
   $uRoom->execute([':c' => $count, ':a' => $avg, ':id' => $roomId]);
 
+  // [NEW] ตรวจว่าครบทุกคนที่เข้าร่วมห้องแล้วหรือยัง ถ้าครบให้ปิดห้อง (closed)
+  // นับจำนวน "ผู้เข้าร่วมทั้งหมด"
+  $qMembers = $db->prepare("SELECT DISTINCT user_id FROM user_raid_rooms WHERE room_id = :r FOR UPDATE");
+  $qMembers->execute([':r' => $roomId]);
+  $memberIds = $qMembers->fetchAll(PDO::FETCH_COLUMN, 0);
+
+  // รวมเจ้าของห้องเข้าไปถ้ายังไม่มีในรายการสมาชิก
+  $ownerId = (int)$room['owner_id'];
+  $allParticipantIds = $memberIds ?: [];
+  if (!in_array($ownerId, array_map('intval', $allParticipantIds), true)) {
+    $allParticipantIds[] = $ownerId;
+  }
+  $totalParticipants = count(array_unique(array_map('intval', $allParticipantIds)));
+
+  // นับจำนวน "ผู้ที่รีวิวแล้ว" (distinct user_id)
+  $qReviewed = $db->prepare("SELECT COUNT(DISTINCT user_id) FROM raid_reviews WHERE room_id = :r");
+  $qReviewed->execute([':r' => $roomId]);
+  $totalReviewed = (int)$qReviewed->fetchColumn();
+
+  $autoClosed = false;
+  // ปิดห้องเฉพาะเมื่อยังไม่ถูกปิด/ยกเลิกมาก่อน และรีวิวครบทุกคนแล้ว
+  if ($totalParticipants > 0 && $totalReviewed >= $totalParticipants && !in_array($room['status'], ['closed','canceled'], true)) {
+    $uStatus = $db->prepare("UPDATE raid_rooms SET status = 'closed' WHERE id = :id");
+    $uStatus->execute([':id' => $roomId]);
+    $autoClosed = true;
+    // อัปเดตค่าในตัวแปร $room เพื่อให้ response สะท้อนสถานะล่าสุด
+    $room['status'] = 'closed';
+  }
+
   $db->commit();
 
   jsonResponse(true, [
@@ -134,8 +163,16 @@ try {
     'room_stats' => [
       'review_count' => $count,
       'avg_rating'   => $avg,
-    ]
+    ],
+    // [NEW] ส่งสถานะห้องและธงบอกว่า auto-closed หรือไม่
+    'room_status' => [
+      'current'     => $room['status'],
+      'auto_closed' => $autoClosed,
+      'participants_total' => $totalParticipants,
+      'reviewed_total'     => $totalReviewed,
+    ],
   ], 'บันทึกรีวิวสำเร็จ');
+
 } catch (Throwable $e) {
   if ($db->inTransaction()) $db->rollBack();
   jsonResponse(false, null, 'บันทึกรีวิวล้มเหลว', 500);

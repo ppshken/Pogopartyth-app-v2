@@ -66,6 +66,16 @@ export async function updateStatus(
   return data.data;
 }
 
+export async function kickMember(
+  room_id: number,
+  user_id: number, // ✅ เพิ่ม invited
+) {
+  const { data } = await api.post("/api/raid/kick_member.php", { room_id, user_id }, { validateStatus:()=>true });
+  if (!data?.success) throw new Error(data?.message || "Kick Member failed");
+  return data.data;
+}
+
+
 export async function reviewRoom(room_id: number, rating: number, comment?: string) {
   const { data } = await api.post("/api/raid/review.php", { room_id, rating, comment }, { validateStatus:()=>true });
   if (!data?.success) throw new Error(data?.message || "Review failed");

@@ -215,7 +215,7 @@ export default function Register() {
               onPress={onRegister}
               disabled={!canSubmit}
               activeOpacity={0.9}
-              style={[styles.primaryBtn, canSubmit ? styles.btnPrimary : styles.btnDisabled]}
+              style={[styles.primaryBtn, styles.btnPrimary]}
             >
               <View style={styles.primaryBtnInner}>
                 {loading ? (
