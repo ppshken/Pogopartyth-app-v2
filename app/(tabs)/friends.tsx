@@ -152,8 +152,7 @@ export default function FriendsScreen() {
           ) : (
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >
-              <Ionicons name="star" size={14} color="#FBBF24" />
+            >              
               <Text style={{ color: "#6B7280", marginTop: 2 }}>
                 -
               </Text>

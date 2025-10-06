@@ -37,7 +37,10 @@
     ],
     "ios": {
       "bundleIdentifier": "com.ppshken.pogopartyth",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["pokemongo"]
+      }
     },
     "android": {
       "package": "com.ppshken.pogopartyth",

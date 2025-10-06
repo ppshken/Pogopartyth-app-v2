@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import { useAuth } from "../../store/authStore";
 import { profile } from "../../lib/auth"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
@@ -40,6 +40,8 @@ type RatingOwner = {
 };
 
 export default function Profile() {
+  const navigation = useNavigation();
+
   const router = useRouter();
   const authUser = useAuth((s) => s.user) as any; // user จาก store (อาจยังไม่มี field เสริม)
   const logout = useAuth((s) => s.clear);
@@ -61,6 +63,22 @@ export default function Profile() {
       setUser(authUser || null);
     }
   }, [authUser]);
+
+  // ตั้งปุ่ม help icon ที่มุมขวาบน
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => router.push("/settings/setting-app")}
+          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+          accessibilityRole="button"
+          accessibilityLabel="วิธีการใช้งาน"
+        >
+          <Ionicons name="settings-outline" size={22} color="#111827" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     // เริ่มจากข้อมูลใน store ก่อน ให้ UI ไม่ว่างเปล่า
@@ -110,6 +128,14 @@ export default function Profile() {
   function formatFriendCode(v: string) {
     const digits = v.replace(/\D/g, "").slice(0, 12);
     return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
+  }
+  
+  if (!user) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="small" color="#020202ff" />
+      </View>
+    );
   }
 
   // UI

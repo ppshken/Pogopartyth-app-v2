@@ -51,6 +51,10 @@ export default function Layout() {
             name="settings/profile-edit"
             options={{ title: "แก้ไขโปรไฟล์", headerShown: true }}
           />
+          <Stack.Screen
+            name="settings/setting-app"
+            options={{ title: "ตั้งค่าแอป", headerShown: true }}
+          />
         </Stack>
         <SnackHost />
       </SafeAreaProvider>

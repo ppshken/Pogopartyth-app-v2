@@ -5,7 +5,8 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal
 } from "react-native";
 import { useRouter } from "expo-router";
 import { api } from "../../lib/api";
@@ -35,6 +36,7 @@ export default function MyRaid() {
   const [rooms, setRooms] = useState<MyRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [closeloading, setCloseLoading] = useState(false);
   const router = useRouter();
   const me = useAuth((s) => s.user);
 
@@ -71,12 +73,15 @@ export default function MyRaid() {
 
       // ✅ ใครกดก็ได้: ถ้าหมดเวลาและยัง active ให้ปิดห้องทันที
       if (expired && r.status === "active") {
+        setCloseLoading(true);
         try {
           await updateStatus(r.id, "closed");
           showSnack({ text: "ปิดห้องแล้วเรียบร้อย เนื่องจากหมดเวลา", variant: "success" });
           await load(); // รีเฟรช list
         } catch (e: any) {
           showSnack({ text: "ปิดห้องไม่สำเร็จ", variant: "error" });
+        } finally {
+          setCloseLoading(false);
         }
         return; // ไม่ต้องเข้าไปหน้า room ต่อ
       }
@@ -108,50 +113,58 @@ export default function MyRaid() {
   }
 
   return (
-    <FlatList
-      style={{ flex: 1, backgroundColor: "#F9FAFB" }}
-      contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
-      data={[{ type: "created" }, { type: "joined" }]}
-      keyExtractor={(it) => it.type}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            load();
-          }}
-        />
-      }
-      renderItem={({ item }) => {
-        const isCreatedSection = item.type === "created";
-        const data = isCreatedSection ? created : joined;
-        return (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>
-                {isCreatedSection ? "ห้องที่สร้าง" : "ห้องที่เข้าร่วม"}
-              </Text>
-            </View>
+    <>
+      <FlatList
+        style={{ flex: 1, backgroundColor: "#F9FAFB" }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        data={[{ type: "created" }, { type: "joined" }]}
+        keyExtractor={(it) => it.type}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              load();
+            }}
+          />
+        }
+        renderItem={({ item }) => {
+          const isCreatedSection = item.type === "created";
+          const data = isCreatedSection ? created : joined;
+          return (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>
+                  {isCreatedSection ? "ห้องที่สร้าง" : "ห้องที่เข้าร่วม"}
+                </Text>
+              </View>
 
-            {data.length === 0 ? (
-              <Text style={{ color: "#9CA3AF", paddingVertical: 8 }}>
-                {isCreatedSection
-                  ? "ยังไม่มีห้องที่คุณสร้าง"
-                  : "ยังไม่มีห้องที่คุณเข้าร่วม"}
-              </Text>
-            ) : (
-              data.map((r) => (
-                <MyRoomCard
-                  key={r.id}
-                  room={r}
-                  onPress={() => onPressRoom(r)}
-                />
-              ))
-            )}
-          </View>
-        );
-      }}
-    />
+              {data.length === 0 ? (
+                <Text style={{ color: "#9CA3AF", paddingVertical: 8 }}>
+                  {isCreatedSection
+                    ? "ยังไม่มีห้องที่คุณสร้าง"
+                    : "ยังไม่มีห้องที่คุณเข้าร่วม"}
+                </Text>
+              ) : (
+                data.map((r) => (
+                  <MyRoomCard
+                    key={r.id}
+                    room={r}
+                    onPress={() => onPressRoom(r)}
+                  />
+                ))
+              )}
+            </View>
+          );
+        }}
+      />
+      
+      <Modal visible={closeloading} transparent animationType="fade">
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: 'rgba(0,0,0,0.4)' }}>
+          <ActivityIndicator size="small" color="#020202ff" />
+        </View>
+      </Modal>
+    </>
   );
 }
 

@@ -20,6 +20,8 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
+import * as Linking from "expo-linking";
+import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   getRoom,
@@ -30,6 +32,7 @@ import {
   updateStatus, // invited / closed
   reviewRoom, // rating 1-5 + comment (ใช้ comment ใส่เหตุผลตอนไม่สำเร็จ)
 } from "../../lib/raid";
+import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -81,6 +84,8 @@ type RoomPayload = {
     review_pending_count?: number;
   };
 };
+
+const PokemonGoIcon = 'https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk'; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
 
 const Reasonfail = [
   { id: 1, reasonfail: "คนไม่ครบ" },
@@ -151,6 +156,8 @@ export default function RoomDetail() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
+
   // สถานะ “เพิ่มเพื่อนแล้ว”
   const [friendAdded, setFriendAdded] = useState<Record<number, boolean>>({});
 
@@ -161,6 +168,11 @@ export default function RoomDetail() {
   const [canceledRoom, setCanceledRoom] = useState(false); // ยกเลิกสร้างห้อง
   const [exitRoom, setExitRoom] = useState(false); // ออกจากห้อง
   const [rating, setRating] = useState<number>(5);
+
+  function formatFriendCode(v: string) {
+    const digits = v.replace(/\D/g, "").slice(0, 12);
+    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
+  }
 
   // ป้องกันสั่งปิดห้องซ้ำ
   const closingRef = useRef(false);
@@ -286,11 +298,17 @@ export default function RoomDetail() {
   // --- ฟังก์ชันจัดการต่าง ๆ ---
   const onJoinLeave = async () => {
     try {
-      if (isMember) setLoading(false);
-      else if (!isMember) setLoading(true);
-      if (isMember && !isOwner) setExitRoom(true);
-      else if (!isMember) await joinRoom(room.id);
+      // If already a member (and not owner) open the exit confirmation modal.
+      if (isMember && !isOwner) {
+        setExitRoom(true);
+        return;
+      }
+
+      // Otherwise attempt to join the room and show the join modal on success.
+      setLoading(true);
+      await joinRoom(room.id);
       await load();
+      setJoinModal(true);
     } catch (e: any) {
       showSnack({ text: e.message, variant: "error" });
     } finally {
@@ -304,12 +322,14 @@ export default function RoomDetail() {
       setLoading(true);
       if (isMember && !isOwner) await leaveRoom(room.id);
       else if (!isMember) await joinRoom(room.id);
-      setExitRoom(false);
       await load();
+      showSnack({ text: "ออกจากห้องแล้ว", variant: "success" });
+      setExitRoom(false);
     } catch (e: any) {
       showSnack({ text: e.message, variant: "error" });
     } finally {
       setLoading(false);
+      setJoinModal(false);
     }
   };
 
@@ -362,6 +382,12 @@ export default function RoomDetail() {
         next,
         isOwner && uid !== you.user_id ? uid : undefined
       );
+      showSnack({ text: "เพิ่มเพื่อนแล้ว", variant: "success" });
+      if (!next) {
+        // ถ้าเปลี่ยนเป็นยังไม่เพิ่มเพื่อน ให้รีเฟรชสถานะจากเซิร์ฟเวอร์อีกที
+        showSnack({ text: "ยกเลิกการเพิ่มเพื่อนแล้ว", variant: "info" });
+        await load();
+      }
     } catch (e: any) {
       setFriendAdded((m) => ({ ...m, [uid]: prev })); // revert
       showSnack({ text: e.message, variant: "error" });
@@ -572,13 +598,16 @@ export default function RoomDetail() {
 
           {members.length ? (
             members.map((m) => {
-              const isOwnerRow = m.role === "owner";
-              const iAmThisMember = m.user_id === data.you?.user_id;
+              // หัวห้อง?
+              const isOwnerRow = m.role === "owner";        
+
+              // แถวของตัวเอง?
+              const iAmThisMember = m.user_id === data.you?.user_id;              
 
               // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
               const showBtn = !isOwnerRow;
 
-              // สถานะห้อง/เวลา
+              // สถานะห้อง = เชิญแล้ว
               const isInvited = room.status === "invited";
 
               // สถานะ "เพิ่มเพื่อนแล้ว" (ใช้ค่าที่ sync กับ server ถ้าไม่มีใช้ local)
@@ -590,9 +619,11 @@ export default function RoomDetail() {
               const disabledBtn = !iAmThisMember || isInvited || expired;
 
               return (
+                
                 <TouchableOpacity
                   key={m.user_id}
                   style={[styles.memberItem, iAmThisMember && styles.meItem]}
+                  disabled ={iAmThisMember} // กันกรณี user_id ว่าง (ไม่ควรเกิด)
                   onPress={() =>
                     router.push({
                       pathname: "/rooms/[id]/friend",
@@ -896,7 +927,6 @@ export default function RoomDetail() {
               onPress={onExitroom}
               style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
             >
-              <Ionicons name="close-circle-outline" size={18} color="#fff" />
               <Text style={styles.modalBtnText}>ออกจากห้อง</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -1089,6 +1119,86 @@ export default function RoomDetail() {
           </View>
         </View>
       </Modal>
+
+      {/* Modal: เข้าร่วม คัดลอกรหัสเพิ่มเพื่อน */}
+      <Modal
+        visible={joinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setJoinModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>เข้าร่วมห้องบอส</Text>
+            <Text style={{ color: "#374151", textAlign: "center" }}>
+              กรุณาเพิ่มเพื่อนหัวห้องด้วย Friend Code
+            </Text>
+            <Text
+              style={{
+                color: "#374151",
+                textAlign: "center",
+                fontWeight: "700",
+                marginVertical: 8,
+                fontSize: 24,
+              }}
+            >
+              {formatFriendCode(room.owner?.friend_code || "-")}
+            </Text>
+            <TouchableOpacity
+              onPress={copyFriendCode}
+              style={[styles.modalBtn, { backgroundColor: "#2563EB" }]}
+            >
+              <Ionicons name="copy-outline" size={18} color="#fff" />
+              <Text style={styles.modalBtnText}>คัดลอกรหัสเพิ่มเพื่อนหัวห้อง</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={openPokemonGo}
+              style={[styles.modalBtn, { backgroundColor: "#d34228ff" }]}
+            >
+              <Image source={{ uri: PokemonGoIcon }} style={{ width: 18, height: 18, marginRight: 6, borderRadius: 4 }} />
+              <Text style={styles.modalBtnText}>เปิด Pokemon Go</Text>
+            </TouchableOpacity>
+
+            {/* ปุ่มเพิ่มเพื่อนแล้ว สำหรับผู้ใช้ตัวเอง (ย้ายมาหลังปุ่มเปิดเกม) */}
+            <TouchableOpacity
+              onPress={async () => {
+                const myId = data.you?.user_id;
+                if (!myId) return;
+                const already = Boolean(friendAdded[myId]);
+                if (already) {
+                  showSnack({ text: "คุณได้กดเพิ่มเพื่อนแล้ว", variant: "info" });
+                  // ปิด modal ด้วยเผื่อผู้ใช้ต้องการออก
+                  setJoinModal(false);
+                  return;
+                }
+                // เรียก API เพื่อเพิ่มสถานะ (toggleFriend ทำ optimistic + revert ถ้าล้มเหลว)
+                await toggleFriend(myId);
+                // ปิด modal หลังทำงานสำเร็จ
+                setJoinModal(false);
+              }}
+              style={[
+                styles.modalBtn,
+                friendAdded[data.you?.user_id || -1]
+                  ? styles.modalBtnDisabled
+                  : { backgroundColor: "#10B981" },
+              ]}
+              disabled={Boolean(friendAdded[data.you?.user_id || -1])}
+            >
+              <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
+              <Text style={styles.modalBtnText}>เพิ่มเพื่อนแล้ว</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onExitroom}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -1198,7 +1308,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: 8,
     borderWidth: 1,
   },
   smallBtnIdle: { backgroundColor: "#fff", borderColor: "#111827" },
