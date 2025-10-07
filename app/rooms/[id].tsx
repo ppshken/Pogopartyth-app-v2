@@ -618,10 +618,13 @@ export default function RoomDetail() {
               const iAmThisMember = m.user_id === data.you?.user_id;
 
               // ตัวเองเป็นหัวห้องหรือไม่
-              const owner = data.you?.is_owner && !isOwnerRow;              
+              const owner = data.you?.is_owner && !isOwnerRow;    
+              
+              // เข้าร่วมไหม
+              const joined = data.you?.is_member;
 
               // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
-              const showBtn = !isOwnerRow;
+              const showBtn = !isOwnerRow && joined;
 
               // สถานะห้อง = เชิญแล้ว
               const isInvited = room.status === "invited";
