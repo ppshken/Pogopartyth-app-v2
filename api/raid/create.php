@@ -59,6 +59,32 @@ try {
     jsonResponse(false, null, 'คุณสร้างห้องถี่เกินไป ลองใหม่อีกครั้งภายใน 2 นาที', 429);
   }
 
+  // ป้องกันสร้างห้องบอสซ้ำของตัวเอง (ยังไม่ปิด)
+  $antiRaidboss = $db->prepare("
+    SELECT r.id
+    FROM raid_rooms r
+    WHERE r.owner_id = :owner
+      AND (
+        (:raid_boss_id IS NOT NULL AND r.raid_boss_id = :raid_boss_id)
+        OR
+        (:raid_boss_id IS NULL AND r.boss IS NOT NULL AND LOWER(r.boss) = LOWER(:boss))
+      )
+      AND LOWER(r.status) NOT IN ('closed','canceled')
+    ORDER BY r.id DESC
+    LIMIT 1
+  ");
+
+  $antiRaidboss->execute([
+    ':owner'        => $userId,
+    ':raid_boss_id' => $raid_boss_id,            // อาจเป็น null ได้
+    ':boss'         => $boss !== '' ? $boss : null,
+  ]);
+
+  if ($antiRaidboss->fetch()) {
+    $db->rollBack();
+    jsonResponse(false, null, 'คุณมีห้องของบอสนี้อยู่แล้ว (ยังไม่ปิด) กรุณาปิดห้องเดิมหรือยกเลิกก่อน', 409);
+  }
+  
   // สร้างห้อง
   $stmt = $db->prepare("
     INSERT INTO raid_rooms (raid_boss_id, pokemon_image, boss, start_time, max_members, status, owner_id, note, created_at)

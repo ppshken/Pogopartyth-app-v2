@@ -155,7 +155,7 @@ export default function ChatScreen() {
             onPress={onSend}
             style={{
               marginLeft: 8,
-              backgroundColor: "#2f6fed",
+              backgroundColor: "#10B981",
               paddingHorizontal: 16,
               paddingVertical: 12,
               borderRadius: 10,

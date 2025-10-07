@@ -743,14 +743,14 @@ export default function RoomDetail() {
                   {owner && (
                     <TouchableOpacity
                       style={{
-                        backgroundColor: "#f1d1d1ff",
+                        backgroundColor: "#e03f3fff",
                         padding: 8,
                         borderRadius: 8,
                         marginLeft: 3,
                       }}
                       onPress={() => setKickmember(m.user_id)}
                     >
-                      <Ionicons name="close" color="#dd2222ff" />
+                      <Ionicons name="close" color="#ffffffff" />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>

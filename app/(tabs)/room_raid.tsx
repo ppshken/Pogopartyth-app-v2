@@ -35,6 +35,7 @@ type Room = {
   note?: string | null;
   owner_username: string;
   pokemon_tier: number;
+  is_joined: number;
 };
 
 export default function RoomsIndex() {

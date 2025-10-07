@@ -195,7 +195,7 @@ export default function FriendsScreen() {
             onChangeText={onChangeQ}
             autoCapitalize="none"
             autoCorrect={false}
-            style={{ fontSize: 16 }}
+            style={{ fontSize: 16, flex:1 }}
             returnKeyType="search"
             onSubmitEditing={() => fetchFirst(q)}
           />

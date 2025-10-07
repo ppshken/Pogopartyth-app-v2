@@ -7,8 +7,12 @@ function pdo(): PDO {
     static $pdo = null; // cache connection
     if ($pdo) return $pdo;
 
-    $host = '127.0.0.1';
-    $db   = 'pogopartyth_v1';
+    //$host = '127.0.0.1'; // ที่ห้อง
+    $host = 'localhost'; // ที่ทำงาน
+
+    //$db   = 'pogopartyth_v1'; // ที่ห้อง
+    $db   = 'pogopartyth_v2'; // ที่ทำงาน
+
     $user = 'root';
     $pass = '';
 

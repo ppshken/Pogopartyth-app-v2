@@ -44,7 +44,7 @@ export function MessageItem({ m }: { m: any }) {
       <View
         style={{
           maxWidth: "70%",
-          backgroundColor: isMe ? "#2f6fed" : "#eee",
+          backgroundColor: isMe ? "#2f6fed" : "#ffffffff",
           padding: 10,
           borderRadius: 12,
           borderBottomRightRadius: isMe ? 0 : 12,

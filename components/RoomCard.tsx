@@ -16,6 +16,7 @@ type Room = {
   owner_username: string;
   is_full?: boolean;
   pokemon_tier: number;
+  is_joined: number;
 };
 
 function parseStart(s: string): Date {
@@ -78,65 +79,69 @@ export function RoomCardMinimal({
     ? "เปิดรับ"
     : room.status;
 
+  const is_joinedbg = room.is_joined === 1 ? "#c6d9ebff" : "#ffffffff";
+
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-    >
+<Pressable
+  onPress={onPress}
+  style={({ pressed }) => [
+    styles.card,
+    { backgroundColor: is_joinedbg, borderColor: "#E5E7EB" }, // ✅ เพิ่มตรงนี้
+    pressed && styles.pressed,
+  ]}
+>
+  {/* แสดงรูปบอส */}
+  <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
 
-      {/* แสดงรูปบอส */}
-      <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
-
-      <View style={{ flex: 1 }}>
-
-        {/* แสดงชื่อบอสกับ เวลา */}
-        <View style={styles.topRow}>
-          <Text numberOfLines={1} style={styles.title}>
-            {room.boss}
-          </Text>
-          <View
-            style={[
-              styles.countChip,
-              { backgroundColor: expired ? "#E5E7EB" : "#3066dbff" },
-            ]}
-          >
-            <Ionicons
-              name="time-outline"
-              size={14}
-              color={expired ? "#6B7280" : "#fff"}
-              style={{ marginRight: 4 }}
-            />
-            <Text style={[styles.countText, expired && { color: "#6B7280" }]}>
-              {label}
-            </Text>
-          </View>
-        </View>
-
-        {/* แสดงจำนวนดาว */}
-        <TierStars pokemon_tier={room.pokemon_tier} color="#ffcc00" />
-
-        {/* แสดงหัวห้อง */}
-        <Text numberOfLines={1} style={styles.owner}>
-          หัวห้อง: {room.owner_username}
+  <View style={{ flex: 1 }}>
+    {/* แสดงชื่อบอสกับ เวลา */}
+    <View style={styles.topRow}>
+      <Text numberOfLines={1} style={styles.title}>
+        {room.boss}
+      </Text>
+      <View
+        style={[
+          styles.countChip,
+          { backgroundColor: expired ? "#E5E7EB" : "#3066dbff" },
+        ]}
+      >
+        <Ionicons
+          name="time-outline"
+          size={14}
+          color={expired ? "#6B7280" : "#fff"}
+          style={{ marginRight: 4 }}
+        />
+        <Text style={[styles.countText, expired && { color: "#6B7280" }]}>
+          {label}
         </Text>
-
-        {/* แสดงจำนวนคน กับ สถานะ */}
-        <View style={styles.metaRow}>
-          <View style={styles.people}>
-            <Ionicons name="person" size={12} color="#374151" />
-            <Text style={styles.metaText}>
-              {" "}
-              {room.current_members}/{room.max_members}
-            </Text>
-          </View>
-
-          <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
-            <Text style={styles.statusText}>{statusText}</Text>
-          </View>
-        </View>
-
       </View>
-    </Pressable>
+    </View>
+
+    {/* แสดงจำนวนดาว */}
+    <TierStars pokemon_tier={room.pokemon_tier} color="#ffcc00" />
+
+    {/* แสดงหัวห้อง */}
+    <Text numberOfLines={1} style={styles.owner}>
+      หัวห้อง: {room.owner_username}
+    </Text>
+
+    {/* แสดงจำนวนคน กับ สถานะ */}
+    <View style={styles.metaRow}>
+      <View style={styles.people}>
+        <Ionicons name="person" size={12} color="#374151" />
+        <Text style={styles.metaText}>
+          {" "}
+          {room.current_members}/{room.max_members}
+        </Text>
+      </View>
+
+      <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
+        <Text style={styles.statusText}>{statusText}</Text>
+      </View>
+    </View>
+  </View>
+</Pressable>
+
   );
 }
 
@@ -145,7 +150,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 12,
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 12,
