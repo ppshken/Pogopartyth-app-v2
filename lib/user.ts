@@ -15,6 +15,7 @@ export async function getProfile() {
     friend_code?: string | null;
     level: number;
     created_at?: string | null;
+    noti_status: string;
   }
 }
 

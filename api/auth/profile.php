@@ -29,6 +29,7 @@ $stmt = $db->prepare("
     friend_code,
     level,
     device_token,
+    noti_status,
     created_at
   FROM users
   WHERE id = :id

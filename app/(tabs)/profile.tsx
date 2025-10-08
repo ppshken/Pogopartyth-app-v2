@@ -27,6 +27,7 @@ type FullUser = {
   level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
+  noti_status: string;
 };
 
 type Stats = {
@@ -319,6 +320,9 @@ export default function Profile() {
             }}
           >
             สร้างโดย PogoParty TH
+          </Text>
+          <Text>
+            {user.noti_status}
           </Text>
         </View>
       </View>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,97 +7,50 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from "expo-linking";
-import * as Notifications from "expo-notifications";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showSnack } from "../../components/Snackbar";
+import { getProfile } from "../../lib/user";
 
-const STORAGE_KEY = "@pogopartyth:settings:notifications";
+type noti = {
+  noti_status: string;
+};
 
 export default function SettingApp() {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
-  const [enabled, setEnabled] = useState<boolean>(true);
+  const [enabled, setEnabled] = useState<boolean>(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const v = await AsyncStorage.getItem(STORAGE_KEY);
-        if (v !== null) setEnabled(v === "1");
-      } catch (e) {
-        // ignore
+  // โหลด ข้อมูล
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const u = (await getProfile()) as noti;
+      if (u.noti_status === "on") {
+        setEnabled(true);
+      } else {
+        setEnabled(false);
       }
-    })();
+    } catch (e: any) {
+      Alert.alert("โหลดไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const persist = async (value: boolean) => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, value ? "1" : "0");
-    } catch (e) {
-      // ignore
-    }
-  };
+  // โหลดข้อมูลเมื่อเปิดหน้า
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  const enableNotifications = async () => {
-    try {
-      setLoading(true);
-      const { status: existing } = await Notifications.getPermissionsAsync();
-      let finalStatus = existing;
-      if (existing !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-
-      if (finalStatus !== "granted") {
-        showSnack({ text: "อนุญาตการแจ้งเตือนถูกปฏิเสธ", variant: "warning" });
-        setEnabled(false);
-        await persist(false);
-        return false;
-      }
-
-      showSnack({ text: "เปิดการแจ้งเตือนแล้ว", variant: "success" });
-      await persist(true);
-      return true;
-    } catch (e: any) {
-      showSnack({ text: e?.message || "เกิดข้อผิดพลาด", variant: "error" });
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const disableNotifications = async () => {
-    try {
-      setLoading(true);
-      // We won't revoke OS permission programmatically; just stop app-level notifications
-      // Optionally cancel scheduled notifications
-      try {
-        await Notifications.cancelAllScheduledNotificationsAsync();
-      } catch {
-        // ignore
-      }
-      showSnack({ text: "ปิดการแจ้งเตือนแล้ว", variant: "success" });
-      await persist(false);
-      return true;
-    } catch (e: any) {
-      showSnack({ text: e?.message || "เกิดข้อผิดพลาด", variant: "error" });
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onToggle = async (next: boolean) => {
-    setEnabled(next);
-    if (next) await enableNotifications();
-    else await disableNotifications();
-  };
+  const onToggle = () => setEnabled(previousState => !previousState);
 
   const onReport = async () => {
     const to = "support@pogopartyth.app"; // change if you have a support email
     const subject = encodeURIComponent("รายงานจากแอป Pogopartyth");
-    const body = encodeURIComponent("กรุณาระบุปัญหาที่พบ\n\n(เวอร์ชันแอป, ข้อความแสดงข้อผิดพลาด, ขั้นตอนการทำซ้ำ)");
+    const body = encodeURIComponent(
+      "กรุณาระบุปัญหาที่พบ\n\n(เวอร์ชันแอป, ข้อความแสดงข้อผิดพลาด, ขั้นตอนการทำซ้ำ)"
+    );
     const url = `mailto:${to}?subject=${subject}&body=${body}`;
     try {
       const supported = await Linking.canOpenURL(url);
@@ -112,7 +65,9 @@ export default function SettingApp() {
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+    <View
+      style={[styles.container, { paddingBottom: Math.max(insets.bottom, 12) }]}
+    >
       <Text style={styles.title}>ตั้งค่าแอป</Text>
 
       <View style={styles.row}>
@@ -120,18 +75,16 @@ export default function SettingApp() {
           <Text style={styles.label}>การแจ้งเตือน</Text>
           <Text style={styles.desc}>เปิด/ปิด การแจ้งเตือนจากแอป</Text>
         </View>
-        <Switch
-          value={enabled}
-          onValueChange={onToggle}
-          disabled={loading}
-        />
+        <Switch value={enabled} onValueChange={onToggle} disabled={loading} />
       </View>
 
       <TouchableOpacity style={styles.reportBtn} onPress={onReport}>
         <Text style={styles.reportBtnText}>รายงานปัญหา / ส่งความคิดเห็น</Text>
       </TouchableOpacity>
 
-      <Text style={styles.note}>หมายเหตุ: การเปิดการแจ้งเตือนจะขออนุญาตจากระบบปฏิบัติการ</Text>
+      <Text style={styles.note}>
+        หมายเหตุ: การเปิดการแจ้งเตือนจะขออนุญาตจากระบบปฏิบัติการ
+      </Text>
     </View>
   );
 }
