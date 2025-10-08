@@ -44,6 +44,7 @@ function sendExpoPush(array $tokens, string $title, string $body, array $data = 
       'data'      => $data,
       'priority'  => 'high',
       'ttl'       => 60, // วินาที (พลาดแล้วไม่ต้อง retry นาน)
+      'url'      => "pogopartyth://rooms/".$roomId."chat",
     ];
   }
 

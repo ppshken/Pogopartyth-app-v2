@@ -52,6 +52,10 @@ export default function Layout() {
             options={{ title: "แก้ไขโปรไฟล์", headerShown: true }}
           />
           <Stack.Screen
+            name="settings/profile-setup"
+            options={{ title: "ตั้งค่าโปรไฟล์", headerShown: true }}
+          />
+          <Stack.Screen
             name="settings/setting-app"
             options={{ title: "ตั้งค่าแอป", headerShown: true }}
           />

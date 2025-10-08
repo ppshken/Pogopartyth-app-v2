@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { useRouter, useNavigation } from "expo-router";
 import { useAuth } from "../../store/authStore";
-import { profile } from "../../lib/auth"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
+import { profile } from "../../lib/auth";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { showSnack } from "../../components/Snackbar";
 
@@ -226,7 +226,7 @@ export default function Profile() {
           <Text style={styles.rowValue}>
             <Ionicons name="star" size={14} color="#FBBF24" />
             {" "}
-            {rat?.avg ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)` : "-"}
+            {rat?.avg ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)` : "ยังไม่มีรีวิว"}
           </Text>
         </View>
 

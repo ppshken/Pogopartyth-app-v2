@@ -1,4 +1,5 @@
 import { api } from "./api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /** ปรับตามโครงจริงของ API คุณ */
 export type User = {
@@ -48,4 +49,23 @@ export async function profile() {
   });
   if (!data.success) throw new Error(data.message || "Profile failed");
   return data.data;
+}
+
+export type LoginResult = {
+  token: string;    // JWT ของระบบคุณ
+  user: User;
+  is_new: boolean;  // true = ผู้ใช้ใหม่ ต้องไปตั้งโปรไฟล์
+};
+
+export async function loginWithGoogleIdToken(idToken: string): Promise<LoginResult> {
+  const { data } = await api.post("/api/auth/google_login.php", { id_token: idToken });
+  if (!data?.success) throw new Error(data?.message || "Login failed");
+  const { token, user, is_new } = data.data;
+  await AsyncStorage.setItem("token", token);
+  await AsyncStorage.setItem("me", JSON.stringify(user));
+  return { token, user, is_new };
+}
+
+export async function logout() {
+  await AsyncStorage.multiRemove(["token", "me"]);
 }

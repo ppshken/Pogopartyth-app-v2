@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "kenzanaqq",
     "name": "PogopartyTH",
     "slug": "pogopartyth-app",
     "version": "1.0.0",
@@ -17,11 +18,7 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      
       "expo-notifications",
-      ["@react-native-google-signin/google-signin", {
-        "iosUrlScheme": "com.googleusercontent.apps.926863512286-c2s6shb73ot66n55md241oqt0btslqko"
-      }],
       [
         "expo-build-properties",
         {
@@ -33,13 +30,19 @@
         }
       ],
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "ios": {
       "bundleIdentifier": "com.ppshken.pogopartyth",
-      "buildNumber": "1",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["pokemongo"]
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.926863512286-c2s6shb73ot66n55md241oqt0btslqko"
+            ]
+          }
+        ]
       }
     },
     "android": {

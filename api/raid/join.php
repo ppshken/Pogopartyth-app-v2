@@ -149,6 +149,7 @@ try {
           'room_id'  => $roomId,
           'user_id'  => (int)$userId,
           'owner_id' => $ownerId,
+          'url'      => "pogopartyth://rooms/".$roomId,
           // ใส่เพิ่มได้ เช่น route ในแอพของคุณ
         ];
 
