@@ -21,6 +21,7 @@ export async function getProfile() {
 
 /** อัปเดตเฉพาะ username & friend_code */
 export async function updateProfile(payload: {
+  password?: string;
   username?: string;
   friend_code?: string;
   level?: number;

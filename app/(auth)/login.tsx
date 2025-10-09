@@ -38,7 +38,6 @@ Notifications.setNotificationHandler({
 const ACCENT = "#111827";
 const BORDER = "#E5E7EB";
 const CARD_BG = "#FFFFFF";
-const INPUT_BG = "#F9FAFB";
 const TEXT_MAIN = "#111827";
 const TEXT_SUB = "#6B7280";
 const TEXT_DIM = "#374151";
@@ -53,7 +52,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
 
-  const [focus, setFocus] = useState<"email" | "password" | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const router = useRouter();
@@ -131,14 +129,10 @@ export default function Login() {
       await GoogleSignin.signIn();
 
       // 2) ดึง token แบบมี type ชัดเจน
-      const {
-        idToken,
-        accessToken,
-      }: { idToken: string | null; accessToken: string | null } =
+      const { idToken }: { idToken: string | null } =
         await GoogleSignin.getTokens();
 
       if (!idToken) throw new Error("ไม่พบ id_token จาก Google");
-      console.log(idToken);
 
       // 3) ดึงโปรไฟล์ผู้ใช้ (อาจเป็น null ได้)
       const currentUser: User | null = await GoogleSignin.getCurrentUser();
@@ -172,7 +166,7 @@ export default function Login() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F3F4F6" }}>
+    <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -214,22 +208,7 @@ export default function Login() {
             {/* Form */}
             <View style={styles.card}>
               <Text style={styles.label}>อีเมล</Text>
-              <View
-                style={[
-                  styles.inputRow,
-                  focus === "email" && {
-                    borderColor: ACCENT,
-                    backgroundColor: "#fff",
-                  },
-                  emailError && { borderColor: ERROR },
-                ]}
-              >
-                <Ionicons
-                  name="mail-outline"
-                  size={18}
-                  color={TEXT_SUB}
-                  style={{ marginRight: 8 }}
-                />
+              <View style={styles.inputRow}>
                 <TextInput
                   placeholder="your@email.com"
                   placeholderTextColor="#9CA3AF"
@@ -237,37 +216,17 @@ export default function Login() {
                   onChangeText={setEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
-                  style={styles.input}
                   returnKeyType="next"
-                  onFocus={() => setFocus("email")}
-                  onBlur={() => setFocus(null)}
                 />
-                {email.length > 0 && !emailError && (
-                  <Ionicons name="checkmark-circle" size={18} color="#10B981" />
-                )}
               </View>
               {!!emailError && (
                 <Text style={styles.errorText}>{emailError}</Text>
               )}
 
               <Text style={[styles.label, { marginTop: 12 }]}>รหัสผ่าน</Text>
-              <View
-                style={[
-                  styles.inputRow,
-                  focus === "password" && {
-                    borderColor: ACCENT,
-                    backgroundColor: "#fff",
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={18}
-                  color={TEXT_SUB}
-                  style={{ marginRight: 8 }}
-                />
+              <View style={styles.inputRow}>
                 <TextInput
-                  placeholder="อย่างน้อย 4 ตัวอักษร"
+                  placeholder="อย่างน้อย 8 ตัวอักษร"
                   placeholderTextColor="#9CA3AF"
                   value={password}
                   onChangeText={setPassword}
@@ -275,8 +234,6 @@ export default function Login() {
                   style={styles.input}
                   returnKeyType="done"
                   onSubmitEditing={onLogin}
-                  onFocus={() => setFocus("password")}
-                  onBlur={() => setFocus(null)}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPw((v) => !v)}
@@ -301,12 +258,6 @@ export default function Login() {
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <>
-                      <Ionicons
-                        name="log-in-outline"
-                        size={18}
-                        color="#fff"
-                        style={{ marginRight: 8 }}
-                      />
                       <Text style={styles.primaryBtnText}>เข้าสู่ระบบ</Text>
                     </>
                   )}
@@ -437,8 +388,8 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 0,
-    fontSize: 22,
-    fontWeight: "800",
+    fontSize: 20,
+    fontWeight: "700",
     color: TEXT_MAIN,
     marginRight: 8,
     letterSpacing: 0.3,
@@ -446,7 +397,7 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: 6,
     backgroundColor: ACCENT,
     alignSelf: "flex-start",
   },
@@ -471,7 +422,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: BORDER,
-    backgroundColor: INPUT_BG,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,

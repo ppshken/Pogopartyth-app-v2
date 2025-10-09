@@ -151,7 +151,15 @@ export default function CreateRoom() {
   const isPast = startAt.getTime() <= Date.now();
   const canSubmit = !loading && !!boss && !isPast && max >= 2 && max <= 20;
 
-  const refreshTimeSlots = () => setSlots(generateTimeSlots());
+  const refreshTimeSlots = async () => {
+    setSlots(generateTimeSlots());
+    setStartAt(() => {
+      const s =
+        generateTimeSlots()[0]?.date ?? new Date(Date.now() + 30 * 60 * 1000);
+      s.setSeconds(0, 0);
+      return s;
+    });
+  };
 
   const onSubmit = async () => {
     if (!canSubmit) {
@@ -263,7 +271,7 @@ export default function CreateRoom() {
             </Text>
           )}
           <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
-            เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออกรอบละ 5 นาที
+            เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออก รอบละ 5 นาที
           </Text>
         </View>
 

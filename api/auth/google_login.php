@@ -32,6 +32,8 @@ try {
     jsonResponse(false, null, 'missing id_token', 422);
   }
 
+  $device_token = trim((string)($input['device_token'] ?? ''));
+
   // === ดึง payload จาก Google tokeninfo ด้วย 2 วิธี (file_get_contents -> cURL) ===
   $payload = null;
   $verifyUrl = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($idToken);
@@ -123,13 +125,14 @@ try {
 
   if (!$user) {
     $ins = $db->prepare("
-      INSERT INTO users (email, username, avatar, google_sub, status, created_at)
-      VALUES (:email, :username, :avatar, :sub, 'active', NOW())
+      INSERT INTO users (email, username, avatar, device_token, google_sub, status, created_at)
+      VALUES (:email, :username, :avatar, :device_token, :sub, 'active', NOW())
     ");
     $ins->execute([
       ':email'    => $email,
       ':username' => $name,
       ':avatar'   => $avatar,
+      ':device_token' => $device_token,
       ':sub'      => $sub,
     ]);
     $userId = (int)$db->lastInsertId();

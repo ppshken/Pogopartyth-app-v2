@@ -82,66 +82,74 @@ export function RoomCardMinimal({
   const is_joinedbg = room.is_joined === 1 ? "#c6d9ebff" : "#ffffffff";
 
   return (
-<Pressable
-  onPress={onPress}
-  style={({ pressed }) => [
-    styles.card,
-    { backgroundColor: is_joinedbg, borderColor: "#E5E7EB" }, // ✅ เพิ่มตรงนี้
-    pressed && styles.pressed,
-  ]}
->
-  {/* แสดงรูปบอส */}
-  <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: is_joinedbg, borderColor: "#E5E7EB" }, // ✅ เพิ่มตรงนี้
+        pressed && styles.pressed,
+      ]}
+    >
+      {/* แสดงรูปบอส */}
+      <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
 
-  <View style={{ flex: 1 }}>
-    {/* แสดงชื่อบอสกับ เวลา */}
-    <View style={styles.topRow}>
-      <Text numberOfLines={1} style={styles.title}>
-        {room.boss}
-      </Text>
-      <View
-        style={[
-          styles.countChip,
-          { backgroundColor: expired ? "#E5E7EB" : "#3066dbff" },
-        ]}
-      >
-        <Ionicons
-          name="time-outline"
-          size={14}
-          color={expired ? "#6B7280" : "#fff"}
-          style={{ marginRight: 4 }}
-        />
-        <Text style={[styles.countText, expired && { color: "#6B7280" }]}>
-          {label}
+      <View style={{ flex: 1 }}>
+        {/* แสดงชื่อบอสกับ เวลา */}
+        <View style={styles.topRow}>
+          <Text numberOfLines={1} style={styles.title}>
+            {room.boss}
+          </Text>
+          <View
+            style={[
+              styles.countChip,
+              { backgroundColor: expired ? "#E5E7EB" : "#3066dbff" },
+            ]}
+          >
+            <Ionicons
+              name="time-outline"
+              size={14}
+              color={expired ? "#6B7280" : "#fff"}
+              style={{ marginRight: 4 }}
+            />
+            <Text style={[styles.countText, expired && { color: "#6B7280" }]}>
+              {label}
+            </Text>
+          </View>
+        </View>
+
+        {/* แสดงจำนวนดาว */}
+        <TierStars pokemon_tier={room.pokemon_tier} color="#ffcc00" />
+
+        {/* แสดงหัวห้อง */}
+        <Text numberOfLines={1} style={styles.owner}>
+          หัวห้อง: {room.owner_username}
         </Text>
+
+        {/* แสดงจำนวนคน กับ สถานะ */}
+        <View style={styles.metaRow}>
+          <View style={styles.people}>
+            <Ionicons name="person" size={12} color="#374151" />
+            <Text style={styles.metaText}>
+              {" "}
+              {room.current_members}/{room.max_members}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "row", gap: 4 }}>
+            {room.is_joined === 1 && (
+              <View
+                style={[styles.statusBadge, { backgroundColor: "#6b3ab9ff" }]}
+              >
+                <Text style={styles.statusText}>เข้าร่วมแล้ว</Text>
+              </View>
+            )}
+            <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
+              <Text style={styles.statusText}>{statusText}</Text>
+            </View>
+          </View>
+        </View>
       </View>
-    </View>
-
-    {/* แสดงจำนวนดาว */}
-    <TierStars pokemon_tier={room.pokemon_tier} color="#ffcc00" />
-
-    {/* แสดงหัวห้อง */}
-    <Text numberOfLines={1} style={styles.owner}>
-      หัวห้อง: {room.owner_username}
-    </Text>
-
-    {/* แสดงจำนวนคน กับ สถานะ */}
-    <View style={styles.metaRow}>
-      <View style={styles.people}>
-        <Ionicons name="person" size={12} color="#374151" />
-        <Text style={styles.metaText}>
-          {" "}
-          {room.current_members}/{room.max_members}
-        </Text>
-      </View>
-
-      <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
-        <Text style={styles.statusText}>{statusText}</Text>
-      </View>
-    </View>
-  </View>
-</Pressable>
-
+    </Pressable>
   );
 }
 
@@ -153,12 +161,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 12,
-    alignItems: "center"
+    alignItems: "center",
   },
   pressed: { opacity: 0.9 },
-  thumb: { width: 72, height: 72, borderRadius: 10, backgroundColor: "#F3F4F6", marginRight: 12 },
+  thumb: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    backgroundColor: "#F3F4F6",
+    marginRight: 12,
+  },
   topRow: { flexDirection: "row", alignItems: "center" },
-  title: { flex: 1, fontSize: 16, fontWeight: "800", color: "#111827", marginRight: 8 },
+  title: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#111827",
+    marginRight: 8,
+  },
 
   countChip: {
     paddingHorizontal: 10,
@@ -180,7 +200,12 @@ const styles = StyleSheet.create({
   metaText: { color: "#374151", fontSize: 12, fontWeight: "700" },
 
   statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  statusText: { color: "#fff", fontWeight: "800", fontSize: 12, letterSpacing: 0.2 },
+  statusText: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 12,
+    letterSpacing: 0.2,
+  },
 
   note: { marginTop: 6, color: "#4B5563", fontSize: 14 },
 });

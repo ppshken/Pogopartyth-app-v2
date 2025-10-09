@@ -1,12 +1,21 @@
 // app/(tabs)/settings/profile-edit.tsx
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,
-  ActivityIndicator, Image, Alert, KeyboardAvoidingView, Platform
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { getProfile, updateProfile, updateAvatar } from "../../lib/user";
+import { getProfile, updateProfile } from "../../lib/user";
 import { showSnack } from "../../components/Snackbar";
 
 type FullUser = {
@@ -22,13 +31,17 @@ type FullUser = {
 export default function ProfileEdit() {
   const router = useRouter();
 
+  // Y/N
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showPw, setShowPw] = useState(false);
 
   // ฟอร์ม
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [friendCode, setFriendCode] = useState(""); // แสดงแบบ XXXX XXXX XXXX
-  const [level, setLevel] = useState("");           // เก็บ string เพื่อคุม input
+  const [level, setLevel] = useState(""); // เก็บ string เพื่อคุม input
   const [avatar, setAvatar] = useState<string | null>(null); // preview
 
   // ===== Helpers =====
@@ -44,7 +57,7 @@ export default function ProfileEdit() {
     if (!digits) return setLevel("");
     const n = parseInt(digits, 10);
     if (isNaN(n) || n < 1) return setLevel("");
-    if (n > 50) return setLevel("50");
+    if (n > 80) return setLevel("80");
     setLevel(String(n));
   };
 
@@ -53,8 +66,7 @@ export default function ProfileEdit() {
     setLoading(true);
     try {
       const u = (await getProfile()) as FullUser;
-      setFriendCode(formatFriendCode(u.friend_code || ""));
-      setLevel(u.level ? String(u.level) : "");
+      setEmail(u.email);
       setAvatar(u.avatar || null);
     } catch (e: any) {
       Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
@@ -67,33 +79,34 @@ export default function ProfileEdit() {
     load();
   }, [load]);
 
-  // ===== Validation (บังคับกรอกครบ) =====
+  // ===== Validation (บังคับกรอกครบ) =====แ
+  const passwordOk = useMemo(() => password.trim().length >= 8, [password]);
   const usernameOk = useMemo(() => username.trim().length >= 2, [username]);
-  const friendCodeDigits = useMemo(() => friendCode.replace(/\s/g, ""), [friendCode]);
-  const friendCodeOk = useMemo(() => friendCodeDigits.length === 12, [friendCodeDigits]);
+  const friendCodeDigits = useMemo(
+    () => friendCode.replace(/\s/g, ""),
+    [friendCode]
+  );
+  const friendCodeOk = useMemo(
+    () => friendCodeDigits.length === 12,
+    [friendCodeDigits]
+  );
   const levelOk = useMemo(() => {
     const n = Number(level);
-    return Number.isInteger(n) && n >= 1 && n <= 50;
+    return Number.isInteger(n) && n >= 1 && n <= 80;
   }, [level]);
 
-  const canSubmit = usernameOk && friendCodeOk && levelOk && !saving;
+  const canSubmit =
+    passwordOk && usernameOk && friendCodeOk && levelOk && !saving;
 
   // ===== Save =====
   const onSave = async () => {
-    // กันเผื่อลูกเล่นเรียกฟังก์ชันโดยปุ่มยัง disabled
-    if (!canSubmit) {
-      if (!usernameOk) showSnack({ text: "กรุณากรอกชื่อตัวละคร (อย่างน้อย 2 อักษร)", variant: "error" });
-      else if (!friendCodeOk) showSnack({ text: "รหัสเพิ่มเพื่อนต้องมี 12 หลัก", variant: "error" });
-      else if (!levelOk) showSnack({ text: "เลเวลต้องเป็น 1–50", variant: "error" });
-      return;
-    }
-
     const levelNum = Number(level);
     const fcDigits = friendCodeDigits; // ไม่มีช่องว่าง
 
     setSaving(true);
     try {
       await updateProfile({
+        password: password.trim(),
         username: username.trim(),
         friend_code: fcDigits,
         level: levelNum,
@@ -130,15 +143,50 @@ export default function ProfileEdit() {
               <Image source={{ uri: avatar }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarEmpty}>
-                <Ionicons name="person-circle-outline" size={56} color="#9CA3AF" />
+                <Ionicons
+                  name="person-circle-outline"
+                  size={56}
+                  color="#9CA3AF"
+                />
               </View>
             )}
+            <Text>{email}</Text>
           </View>
         </View>
 
         {/* การ์ดข้อมูลผู้ใช้ */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>ข้อมูลผู้ใช้</Text>
+
+          <Text style={styles.label}>รหัสผ่าน</Text>
+          <View>
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="อย่างน้อย 8 ตัวอักษร"
+              returnKeyType="done"
+              secureTextEntry={!showPw}
+              placeholderTextColor="#9CA3AF"
+              style={[
+                styles.input,
+                !passwordOk && password ? styles.inputError : null,
+              ]}
+            />
+            <TouchableOpacity
+              onPress={() => setShowPw((v) => !v)}
+              hitSlop={12}
+              style={{ position: "absolute", right: 10, top: 10 }}
+            >
+              <Ionicons
+                name={showPw ? "eye-off-outline" : "eye-outline"}
+                size={18}
+                color="#7e8490ff"
+              />
+            </TouchableOpacity>
+            {!passwordOk && password.length > 0 && (
+              <Text style={styles.errorText}>อย่างน้อย 8 ตัวอักษร</Text>
+            )}
+          </View>
 
           <Text style={styles.label}>ชื่อตัวละคร</Text>
           <TextInput
@@ -176,17 +224,14 @@ export default function ProfileEdit() {
           <TextInput
             value={level}
             onChangeText={handleLevelChange}
-            placeholder="1-50"
+            placeholder="1-80"
             placeholderTextColor="#9CA3AF"
-            style={[
-              styles.input,
-              !levelOk && level ? styles.inputError : null,
-            ]}
+            style={[styles.input, !levelOk && level ? styles.inputError : null]}
             keyboardType="number-pad"
             maxLength={2}
           />
           {!levelOk && level.length > 0 && (
-            <Text style={styles.errorText}>กรอก 1–50</Text>
+            <Text style={styles.errorText}>กรอก 1–80</Text>
           )}
         </View>
 
@@ -229,6 +274,7 @@ const styles = StyleSheet.create({
     height: 96,
     borderRadius: 48,
     backgroundColor: "#F3F4F6",
+    marginBottom: 8,
   },
   avatarEmpty: {
     width: 96,

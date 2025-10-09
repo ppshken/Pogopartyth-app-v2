@@ -39,7 +39,7 @@ export default function ProfileEdit() {
     if (!digits) return setLevel("");
     const n = parseInt(digits, 10);
     if (isNaN(n) || n < 1) return setLevel("");
-    if (n > 50) return setLevel("50");
+    if (n > 80) return setLevel("80");
     setLevel(String(n));
   };
 
@@ -113,7 +113,7 @@ export default function ProfileEdit() {
     let levelNum: number | undefined = undefined;
     if (level.trim() !== "") {
       const n = parseInt(level, 10);
-      if (isNaN(n) || n < 1 || n > 50) {
+      if (isNaN(n) || n < 1 || n > 80) {
         showSnack({ text: "เลเวลต้องเป็น 1–50", variant: "error" });
         return;
       }
@@ -221,7 +221,7 @@ export default function ProfileEdit() {
           <TextInput
             value={level}
             onChangeText={handleLevelChange}
-            placeholder="1-50"
+            placeholder="1-80"
             placeholderTextColor="#9CA3AF"
             style={styles.input}
             keyboardType="number-pad"

@@ -32,10 +32,6 @@ export default function Layout() {
             options={{ title: "สมัครสมาชิก", headerShown: true }}
           />
           <Stack.Screen
-            name="index"
-            options={{ title: "ห้องบอส", headerShown: true }}
-          />
-          <Stack.Screen
             name="rooms/[id]"
             options={{ title: "ห้องบอส", headerShown: true }}
           />

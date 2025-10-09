@@ -27,9 +27,9 @@ import {
   leaveRoom,
   getFriendReadyStatus,
   setFriendReady,
-  updateStatus, // invited / closed
+  updateStatus,
   reviewRoom,
-  kickMember // rating 1-5 + comment (ใช้ comment ใส่เหตุผลตอนไม่สำเร็จ)
+  kickMember,
 } from "../../lib/raid";
 import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
@@ -65,7 +65,7 @@ type RoomPayload = {
     current_members: number;
     max_members: number;
     pokemon_tier: number;
-    current_chat_messages: number; // ✅ จำนวนข้อความแชทล่าสุด (ถ้าแบ็กเอนด์ส่งมา)
+    current_chat_messages: number;
     is_full?: boolean;
     note?: string | null;
     owner: RoomOwner;
@@ -406,6 +406,20 @@ export default function RoomDetail() {
     }
   };
 
+  // ปิดห้องเนื่องจากหมดเวลา → เปลี่ยนสถานะเป็น close
+  const onClosed = async () => {
+    try {
+      setLoading(true);
+      await updateStatus(room.id, "closed");
+      showSnack({ text: "ปิดห้องเรียบร้อย", variant: "success" });
+      router.back();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // เตะสมาชิกออกจากห้อง
   const onKickMember = async (userId: number) => {
     try {
@@ -728,17 +742,7 @@ export default function RoomDetail() {
                         color={
                           added ? "#fff" : disabledBtn ? "#9CA3AF" : "#111827"
                         }
-                        style={{ marginRight: 6 }}
                       />
-                      <Text
-                        style={[
-                          styles.smallBtnText,
-                          added && { color: "#fff" },
-                          !added && disabledBtn && { color: "#9CA3AF" },
-                        ]}
-                      >
-                        เพิ่มเพื่อนแล้ว
-                      </Text>
                     </TouchableOpacity>
                   )}
 
@@ -1001,6 +1005,27 @@ export default function RoomDetail() {
             >
               <Text style={[styles.modalBtnText, { color: "#111827" }]}>
                 ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: หมดเวลา */}
+      <Modal
+        visible={expired}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>เวลาห้องนี้หมดลงแล้ว!</Text>
+            <TouchableOpacity
+              onPress={onClosed}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                กลับ
               </Text>
             </TouchableOpacity>
           </View>

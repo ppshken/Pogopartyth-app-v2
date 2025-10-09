@@ -16,6 +16,7 @@ try {
   $in = getJsonInput();
 
   // อนุญาตเฉพาะฟิลด์: username, friend_code, level (1–50)
+  $password    = isset($in['password']) ? trim((string)$in['password']) : null;
   $username    = isset($in['username']) ? trim((string)$in['username']) : null;
   $friend_code = array_key_exists('friend_code', $in) ? trim((string)$in['friend_code']) : null;
   $level_raw   = array_key_exists('level', $in) ? $in['level'] : null;
@@ -34,23 +35,22 @@ try {
 
   // friend_code (ถ้าจะบังคับรูปแบบ 12 หลัก คอมเมนต์ด้านล่าง)
   if ($friend_code !== null) {
-    // ตัวอย่างตรวจ 12 หลัก (เปิดใช้ถ้าต้องการเข้มงวด):
-    // $digits = preg_replace('/\D+/', '', $friend_code);
-    // if (strlen($digits) !== 12) {
-    //   jsonResponse(false, null, 'friend_code ต้องมี 12 หลัก', 422);
-    // }
-    // $friend_code = $digits;
-
     $set[] = 'friend_code = :friend_code';
     $params[':friend_code'] = $friend_code;
   }
 
-  // level (ต้องเป็น int 1–50)
+  if ($password !== null) {
+  $hash = password_hash($password, PASSWORD_DEFAULT);
+    $set[] = 'password_hash = :password';
+    $params[':password'] = $hash;
+  }
+
+  // level (ต้องเป็น int 1–80)
   if ($level_raw !== null) {
     $level = filter_var(
       $level_raw,
       FILTER_VALIDATE_INT,
-      ['options' => ['min_range' => 1, 'max_range' => 50]]
+      ['options' => ['min_range' => 1, 'max_range' => 80]]
     );
     if ($level === false) {
       jsonResponse(false, null, 'level ต้องเป็นจำนวนเต็มระหว่าง 1–50', 422);
