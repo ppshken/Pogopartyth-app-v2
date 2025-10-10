@@ -101,7 +101,6 @@ try {
   $email    = strtolower(trim((string)($payload['email'] ?? '')));
   $verified = filter_var($payload['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
   $sub      = trim((string)($payload['sub'] ?? ''));
-  $name     = trim((string)($payload['name'] ?? '')) ?: null;
   $avatar   = trim((string)($payload['picture'] ?? '')) ?: null;
 
   if (!$email || !$verified) {
@@ -125,12 +124,11 @@ try {
 
   if (!$user) {
     $ins = $db->prepare("
-      INSERT INTO users (email, username, avatar, device_token, google_sub, status, created_at)
-      VALUES (:email, :username, :avatar, :device_token, :sub, 'active', NOW())
+      INSERT INTO users (email, avatar, device_token, google_sub, status, created_at)
+      VALUES (:email, :avatar, :device_token, :sub, 'active', NOW())
     ");
     $ins->execute([
       ':email'    => $email,
-      ':username' => $name,
       ':avatar'   => $avatar,
       ':device_token' => $device_token,
       ':sub'      => $sub,
@@ -158,7 +156,6 @@ try {
     'user'  => [
       'id'       => (int)$user['id'],
       'email'    => $email,
-      'username' => $user['username'] ?? null,
       'avatar'   => $user['avatar'] ?? null,
     ],
     'is_new' => $isNew,

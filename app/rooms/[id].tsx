@@ -155,6 +155,7 @@ export default function RoomDetail() {
 
   const [data, setData] = useState<RoomPayload | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingAdd, setLoadingAdd] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   //เปิด modal เข้าร่วมห้อง
@@ -425,7 +426,10 @@ export default function RoomDetail() {
     try {
       setLoading(true);
       await kickMember(room.id, userId);
-      showSnack({ text: "เตะสมาชิกออกจากห้องแล้วเรียบร้อย", variant: "success" });
+      showSnack({
+        text: "เตะสมาชิกออกจากห้องแล้วเรียบร้อย",
+        variant: "success",
+      });
       await load();
     } catch (e: any) {
       showSnack({ text: e.message, variant: "error" });
@@ -632,8 +636,8 @@ export default function RoomDetail() {
               const iAmThisMember = m.user_id === data.you?.user_id;
 
               // ตัวเองเป็นหัวห้องหรือไม่
-              const owner = data.you?.is_owner && !isOwnerRow;    
-              
+              const owner = data.you?.is_owner && !isOwnerRow;
+
               // เข้าร่วมไหม
               const joined = data.you?.is_member;
 
@@ -1012,11 +1016,7 @@ export default function RoomDetail() {
       </Modal>
 
       {/* Modal: หมดเวลา */}
-      <Modal
-        visible={expired}
-        transparent
-        animationType="fade"
-      >
+      <Modal visible={expired} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>เวลาห้องนี้หมดลงแล้ว!</Text>
@@ -1265,38 +1265,31 @@ export default function RoomDetail() {
             <TouchableOpacity
               onPress={async () => {
                 const myId = data.you?.user_id;
-                if (!myId) return;
-                const already = Boolean(friendAdded[myId]);
-                if (already) {
-                  showSnack({
-                    text: "คุณได้กดเพิ่มเพื่อนแล้ว",
-                    variant: "info",
-                  });
-                  // ปิด modal ด้วยเผื่อผู้ใช้ต้องการออก
-                  setJoinModal(false);
-                  return;
-                }
-                // เรียก API เพื่อเพิ่มสถานะ (toggleFriend ทำ optimistic + revert ถ้าล้มเหลว)
+                setLoadingAdd(true);
                 await toggleFriend(myId);
                 // โหลดข้อมูลใหม่ทันที
                 await load();
                 // ปิด modal หลังทำงานสำเร็จ
+                setLoadingAdd(false);
                 setJoinModal(false);
               }}
               style={[
-                styles.modalBtn,
-                friendAdded[data.you?.user_id || -1]
-                  ? styles.modalBtnDisabled
-                  : { backgroundColor: "#10B981" },
+                styles.modalBtn, { backgroundColor: "#10B981" },
               ]}
               disabled={Boolean(friendAdded[data.you?.user_id || -1])}
             >
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={18}
-                color="#fff"
-              />
-              <Text style={styles.modalBtnText}>เพิ่มเพื่อนแล้ว</Text>
+              {loadingAdd ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <>
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={18}
+                    color="#fff"
+                  />
+                  <Text style={styles.modalBtnText}>เพิ่มเพื่อนแล้ว</Text>
+                </>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onExitroom}

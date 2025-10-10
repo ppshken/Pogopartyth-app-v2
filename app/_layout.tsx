@@ -6,8 +6,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SnackHost } from "../components/Snackbar";
+import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 
 export default function Layout() {
+  // ตั้งค่า header Authorization จาก token ที่เคยเก็บไว้
   useEffect(() => {
     (async () => {
       const token = await AsyncStorage.getItem("token");
@@ -15,8 +18,44 @@ export default function Layout() {
     })();
   }, []);
 
+  // ✅ ฟังก์ชันช่วย: รับ url แล้วนำทางให้รองรับทั้งลิงก์เต็ม (pogopartyth://...) และพาธภายใน (/rooms/123)
+  const navigateByUrl = (url?: string) => {
+    if (!url) return;
+    try {
+      // ถ้าเป็นดีปลิงก์เต็ม ให้ตัด schema ออกให้เหลือ path เพื่อความชัวร์
+      // ตัวอย่าง: pogopartyth://rooms/123 -> /rooms/123
+      const u = new URL(url);
+      const path = `/${u.host}${u.pathname}`; // host จะกลายเป็น 'rooms', pathname เป็น '/123'
+      router.push(path);
+    } catch {
+      // กรณีส่งมาเป็น path ตรงๆ อยู่แล้ว เช่น "/rooms/123"
+      router.push(url);
+    }
+  };
+
+  // ✅ รองรับกรณีผู้ใช้ "แตะ" การแจ้งเตือน (ตอนแอป foreground/background)
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((res) => {
+      const data = res.notification.request.content.data as { url?: string };
+      navigateByUrl(data?.url);
+    });
+    return () => sub.remove();
+  }, []);
+
+  // ✅ รองรับกรณี "เปิดแอปจากปิดสนิท" ด้วยการแตะแจ้งเตือน (initial response)
+  useEffect(() => {
+    (async () => {
+      const last = await Notifications.getLastNotificationResponseAsync();
+      const data = last?.notification.request.content.data as { url?: string } | undefined;
+      if (data?.url) {
+        // หน่วงสั้นๆ ให้ navigation พร้อม (บางครั้งแอปยังบูตไม่ครบ)
+        setTimeout(() => navigateByUrl(data.url), 0);
+      }
+    })();
+  }, []);
+
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style="dark" translucent={false} backgroundColor="#FFFFFF" />
         <Stack

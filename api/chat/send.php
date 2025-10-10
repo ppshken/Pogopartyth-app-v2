@@ -44,7 +44,6 @@ function sendExpoPush(array $tokens, string $title, string $body, array $data = 
       'data'      => $data,
       'priority'  => 'high',
       'ttl'       => 60, // วินาที (พลาดแล้วไม่ต้อง retry นาน)
-      'url'      => "pogopartyth://rooms/".$roomId."chat",
     ];
   }
 
@@ -177,6 +176,7 @@ try {
     'message_id'   => (int)$row['id'],
     'from_user_id' => (int)$row['user_id'],
     'boss'         => $boss,
+    'url'      => "pogopartyth://rooms/".$roomId."chat",
   ];
 
   $notiResult = sendExpoPush($tokens, $title, $body, $data);
