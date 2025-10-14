@@ -23,6 +23,7 @@ type FullUser = {
   username: string;
   avatar?: string | null;
   friend_code?: string | null;
+  team?: string | null;
   level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
@@ -63,6 +64,12 @@ export default function Profile() {
     }
     await Clipboard.setStringAsync(user.friend_code);
     showSnack({ text: "คัดลอก Friend Code เรียบร้อย", variant: "info" });
+  };
+
+  const teamColors: Record<string, string> = {
+    Mystic: "#3B82F6",
+    Valor: "#EF4444",
+    Instinct: "#FBBF24",
   };
 
   function formatFriendCode(v: string) {
@@ -168,6 +175,18 @@ export default function Profile() {
           </Text>
         </View>
 
+        {/* Team ทีม */}
+        <View style={styles.row}>
+          <Ionicons name="cube-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>ทีม</Text>
+          <View style={{ flex: 1 }} />
+          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: teamColors[user?.team ?? ""] ?? "#E5E7EB", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+            <Text style={[styles.rowValue, { color: "#ffffffff" }]}>
+              {user?.team || "-"}
+            </Text>
+          </View>
+        </View>
+
         {/* ปุ่มการทำงาน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           <TouchableOpacity
@@ -257,7 +276,7 @@ const styles = StyleSheet.create({
 
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },
   rowText: { marginLeft: 8, color: "#374151", fontSize: 14 },
-  rowValue: { color: "#111827", fontWeight: "700", marginLeft: 8 },
+  rowValue: { color: "#111827", fontWeight: "700" },
 
   outlineBtn: {
     flex: 1,

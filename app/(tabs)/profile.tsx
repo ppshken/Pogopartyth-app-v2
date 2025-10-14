@@ -238,14 +238,16 @@ export default function Profile() {
           </Text>
         </View>
 
-        {/* Rating (หัวห้อง) */}
+        {/* Team ทีม */}
         <View style={styles.row}>
           <Ionicons name="cube-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>ทีม</Text>
           <View style={{ flex: 1 }} />
-          <Text style={styles.rowValue}>
-            {user?.team || "-"}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: teamColors [user.team ?? ""] ?? "#E5E7EB", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+            <Text style={[styles.rowValue, { color: "#ffffffff" }]}>
+              {user?.team || "-"}
+            </Text>
+          </View>
         </View>
 
         {/* ปุ่มคัดลอก Friend Code กับ ห้องของฉัน */}
@@ -418,12 +420,12 @@ const styles = StyleSheet.create({
 
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },
   rowText: { marginLeft: 8, color: "#374151", fontSize: 14 },
-  rowValue: { color: "#111827", fontWeight: "700", marginLeft: 8 },
+  rowValue: { color: "#111827", fontWeight: "700" },
 
   outlineBtn: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#111827",
+    borderColor: "#E5E7EB",
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",

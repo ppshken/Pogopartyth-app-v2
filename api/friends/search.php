@@ -55,7 +55,7 @@ try {
   // หมายเหตุ: ถ้ามีสถานะรีวิว ให้เติม AND r.status = 'approved'
   $sql = "
     SELECT 
-      u.id, u.username, u.email, u.avatar, u.friend_code, u.level,
+      u.id, u.username, u.email, u.avatar, u.friend_code, u.team, u.level,
       -- ค่าเรตติ้งรวมต่อเจ้าของห้อง (จากรีวิวของแต่ละห้องที่เขาสร้าง)
       ROUND(ro.avg_rating, 2)   AS owner_avg_rating,
       COALESCE(ro.cnt_rating,0) AS owner_rating_count
@@ -102,6 +102,7 @@ try {
       'username'           => $r['username'],
       'avatar'             => $r['avatar'],
       'friend_code_masked' => $masked,
+      'team'               => $r['team'],
       'level'              => (int)$r['level'],
       'rating_owner'       => (float)$r['owner_avg_rating'] ,
     ];

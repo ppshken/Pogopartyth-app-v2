@@ -90,7 +90,13 @@ export default function FriendsScreen() {
     setRefreshing(false);
   };
 
+
   const renderItem = ({ item }: { item: Friend }) => {
+    const teamColors: Record<string, string> = {
+      Mystic: "#3B82F6", // น้ำเงิน
+      Valor: "#EF4444", // แดง
+      Instinct: "#FBBF24", // เหลือง
+    };
     return (
       <TouchableOpacity
         activeOpacity={0.7}
@@ -122,7 +128,7 @@ export default function FriendsScreen() {
             </Text>
             <View
               style={{
-                backgroundColor: "#dce5eeff",
+                backgroundColor: teamColors [item.team ?? ""] ?? "#9CA3AF",
                 padding: 2,
                 paddingHorizontal: 4,
                 borderRadius: 4,
@@ -130,7 +136,7 @@ export default function FriendsScreen() {
             >
               <Text
                 style={{
-                  color: "#0a3eeaff",
+                  color: "#ffffffff",
                   fontSize: 12,
                   fontWeight: "600",
                 }}
@@ -152,10 +158,8 @@ export default function FriendsScreen() {
           ) : (
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >              
-              <Text style={{ color: "#6B7280", marginTop: 2 }}>
-                -
-              </Text>
+            >
+              <Text style={{ color: "#6B7280", marginTop: 2 }}>-</Text>
             </View>
           )}
 
@@ -195,7 +199,7 @@ export default function FriendsScreen() {
             onChangeText={onChangeQ}
             autoCapitalize="none"
             autoCorrect={false}
-            style={{ fontSize: 16, flex:1 }}
+            style={{ fontSize: 16, flex: 1 }}
             returnKeyType="search"
             onSubmitEditing={() => fetchFirst(q)}
           />

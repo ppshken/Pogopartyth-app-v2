@@ -12,6 +12,7 @@ export type Friend = {
   username: string;
   avatar?: string | null;
   friend_code_masked?: string | null;
+  team?: string | null;
   level?: number;
   rating_owner?: number | null;
   relation?: FriendRelation;
