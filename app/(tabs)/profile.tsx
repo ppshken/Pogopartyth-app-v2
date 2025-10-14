@@ -321,9 +321,6 @@ export default function Profile() {
           >
             สร้างโดย PogoParty TH
           </Text>
-          <Text>
-            {user.noti_status}
-          </Text>
         </View>
       </View>
     </ScrollView>

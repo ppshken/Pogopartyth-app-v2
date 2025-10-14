@@ -59,7 +59,7 @@ $qCount->execute([':rid' => $roomId]);
 $currentMembers = (int)$qCount->fetchColumn();
 $isFull = $currentMembers >= (int)$room['max_members'];
 
-// รายชื่อสมาชิกในห้อง (✅ เพิ่ม friend_code ของสมาชิกด้วย เผื่ออยากใช้)
+// รายชื่อสมาชิกในห้อง (+ is_review: สมาชิกคนนั้นเคยรีวิวห้องนี้หรือยัง)
 $qMembers = $db->prepare("
   SELECT
     ur.user_id,
@@ -68,7 +68,16 @@ $qMembers = $db->prepare("
     uu.username,
     uu.avatar,
     uu.friend_code AS friend_code,
-    uu.level AS member_level
+    uu.level AS member_level,
+    CASE 
+      WHEN EXISTS (
+        SELECT 1 
+        FROM raid_reviews rv 
+        WHERE rv.room_id = :rid 
+          AND rv.user_id = ur.user_id
+        LIMIT 1
+      ) THEN 1 ELSE 0
+    END AS is_review
   FROM user_raid_rooms ur
   JOIN users uu ON uu.id = ur.user_id
   WHERE ur.room_id = :rid
@@ -76,6 +85,15 @@ $qMembers = $db->prepare("
 ");
 $qMembers->execute([':rid' => $roomId]);
 $members = $qMembers->fetchAll(PDO::FETCH_ASSOC);
+
+// แปลงชนิดข้อมูลบางฟิลด์ให้อ่านง่าย (optional)
+foreach ($members as &$m) {
+  $m['user_id'] = (int)$m['user_id'];
+  $m['member_level'] = isset($m['member_level']) ? (int)$m['member_level'] : null;
+  $m['is_review'] = (int)$m['is_review']; // 0|1
+}
+unset($m);
+
 
 // สถานะของผู้เรียกดู (ถ้ามี token)
 $you = null;

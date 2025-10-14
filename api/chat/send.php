@@ -151,6 +151,7 @@ try {
     FROM user_raid_rooms urr
     JOIN users u ON u.id = urr.user_id
     WHERE urr.room_id = :r
+      AND u.noti_status = 'on'
       AND u.id <> :u
       AND u.device_token IS NOT NULL
       AND u.device_token <> ''

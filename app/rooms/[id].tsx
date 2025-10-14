@@ -45,6 +45,7 @@ type Member = {
   friend_code?: string | null;
   member_level: number;
   friend_ready?: 0 | 1;
+  is_review?: 0 | 1;
 };
 
 type RoomOwner = {
@@ -640,12 +641,15 @@ export default function RoomDetail() {
 
               // เข้าร่วมไหม
               const joined = data.you?.is_member;
-
-              // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
-              const showBtn = !isOwnerRow && joined;
-
+              
               // สถานะห้อง = เชิญแล้ว
               const isInvited = room.status === "invited";
+
+              // หัวห้องเตะสมาชิกได้ ตอน ห้องถูกเชิญ
+              const onCkickMember = owner && !isInvited;
+
+              // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
+              const showBtn = !isOwnerRow && joined && !isInvited;
 
               // สถานะ "เพิ่มเพื่อนแล้ว" (ใช้ค่าที่ sync กับ server ถ้าไม่มีใช้ local)
               const added = Boolean(
@@ -654,6 +658,10 @@ export default function RoomDetail() {
 
               // ✅ กดได้เฉพาะแถวของตัวเอง และไม่อยู่สถานะที่ไม่ให้กด
               const disabledBtn = !iAmThisMember || isInvited || expired;
+
+              // สมาชิกรีวิวห้อง
+              const isReview = m.is_review === 1 && isInvited;
+              const isWaitReview = m.is_review === 0 && isInvited;
 
               return (
                 <TouchableOpacity
@@ -751,7 +759,7 @@ export default function RoomDetail() {
                   )}
 
                   {/* ปุ่มเตะสมาชิก */}
-                  {owner && (
+                  {onCkickMember && (
                     <TouchableOpacity
                       style={{
                         backgroundColor: "#e03f3fff",
@@ -764,6 +772,16 @@ export default function RoomDetail() {
                       <Ionicons name="close" color="#ffffffff" />
                     </TouchableOpacity>
                   )}
+
+                  {/* สถานะรีวิว*/}
+                  {isReview && (
+                    <Text style={styles.review}>รีวิวแล้ว</Text>
+                  )}
+                  {isWaitReview && (
+                    <Text style={styles.review}>รอการรีวิว...</Text>
+                  )}
+                    
+
                 </TouchableOpacity>
               );
             })
@@ -1545,4 +1563,8 @@ const styles = StyleSheet.create({
     borderColor: "#60A5FA",
     borderWidth: 1,
   },
+  review: {
+    fontSize: 12,
+    fontWeight: "500"
+  }
 });

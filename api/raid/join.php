@@ -123,12 +123,12 @@ try {
   if ($ownerId > 0 && $ownerId !== (int)$userId) {
     try {
       // ดึง token ของหัวห้อง
-      $stmt = $db->prepare("SELECT device_token, username FROM users WHERE id = :id LIMIT 1");
+      $stmt = $db->prepare("SELECT device_token, username FROM users WHERE id = :id AND noti_status = 'on' LIMIT 1");
       $stmt->execute([':id' => $ownerId]);
       $owner = $stmt->fetch();
 
       // ดึงชื่อผู้เข้าร่วม
-      $stmt = $db->prepare("SELECT username FROM users WHERE id = :id LIMIT 1");
+      $stmt = $db->prepare("SELECT username FROM users WHERE id = :id AND noti_status = 'on' LIMIT 1");
       $stmt->execute([':id' => $userId]);
       $joiner = $stmt->fetch();
 

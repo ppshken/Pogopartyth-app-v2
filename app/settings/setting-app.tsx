@@ -1,3 +1,4 @@
+// app/(tabs)/settings/SettingApp.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
@@ -6,47 +7,96 @@ import {
   Switch,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import * as Linking from "expo-linking";
+import * as Notifications from "expo-notifications";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showSnack } from "../../components/Snackbar";
 import { getProfile } from "../../lib/user";
+import { api } from "../../lib/api";
 
-type noti = {
-  noti_status: string;
+type NotiProfile = {
+  noti_status: "on" | "off";
 };
 
 export default function SettingApp() {
   const insets = useSafeAreaInsets();
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(false);       // โหลดโปรไฟล์
+  const [updating, setUpdating] = useState(false);     // ยิง API toggle
   const [enabled, setEnabled] = useState<boolean>(false);
 
-  // โหลด ข้อมูล
+  // โหลดข้อมูลจาก backend
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const u = (await getProfile()) as noti;
-      if (u.noti_status === "on") {
-        setEnabled(true);
-      } else {
-        setEnabled(false);
-      }
+      const u = (await getProfile()) as NotiProfile;
+      setEnabled(u?.noti_status === "on");
     } catch (e: any) {
-      Alert.alert("โหลดไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
+      Alert.alert("โหลดไม่สำเร็จ", e?.message || "ลองใหม่อีกครั้ง");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // โหลดข้อมูลเมื่อเปิดหน้า
+  // เรียกตอนเข้าเพจ
   useEffect(() => {
     load();
   }, [load]);
 
-  const onToggle = () => setEnabled(previousState => !previousState);
+  // ฟังก์ชันอัปเดตสถานะแจ้งเตือนบนเซิร์ฟเวอร์
+  const updateNotiStatus = useCallback(
+    async (nextOn: boolean) => {
+      setUpdating(true);
+
+      try {
+        // ถ้าจะ "เปิด" — ขอสิทธิ์แจ้งเตือนก่อน (iOS/Android)
+        if (nextOn) {
+          const { status: existing } = await Notifications.getPermissionsAsync();
+          let finalStatus = existing;
+          if (existing !== "granted") {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+          }
+          if (finalStatus !== "granted") {
+            showSnack({ text: "ต้องอนุญาตการแจ้งเตือนในระบบก่อน", variant: "success" });
+            // ไม่อนุญาต => ไม่อัปเดตฝั่งเซิร์ฟเวอร์ และคงไว้เป็น OFF
+            setEnabled(false);
+            setUpdating(false);
+            return;
+          }
+        }
+
+        // ยิง API ไป backend (ปรับ path ตามของคุณ)
+        // ตัวอย่าง: POST /api/user/noti_status  { status: 'on' | 'off' }
+        const status = nextOn ? "on" : "off";
+        await api.post("/api/auth/noti_status.php", { status });
+        showSnack({ text: nextOn ? "เปิดการแจ้งเตือนแล้ว" : "ปิดการแจ้งเตือนแล้ว", variant: "success" });
+
+        // reload โปรไฟล์ทุกครั้งหลังสลับ (ตามที่ต้องการ)
+        await load();
+      } catch (e: any) {
+        // revert ค่าในกรณีผิดพลาด
+        setEnabled((prev) => !prev);
+        Alert.alert("อัปเดตไม่สำเร็จ", e?.message || "กรุณาลองใหม่");
+      } finally {
+        setUpdating(false);
+      }
+    },
+    [load]
+  );
+
+  // กดสวิตช์
+  const onToggle = useCallback(() => {
+    if (loading || updating) return;
+    const next = !enabled;
+    setEnabled(next);          // optimistic UI
+    updateNotiStatus(next);    // แล้วค่อยยิง API (+ reload)
+  }, [enabled, loading, updating, updateNotiStatus]);
 
   const onReport = async () => {
-    const to = "support@pogopartyth.app"; // change if you have a support email
+    const to = "support@pogopartyth.app";
     const subject = encodeURIComponent("รายงานจากแอป Pogopartyth");
     const body = encodeURIComponent(
       "กรุณาระบุปัญหาที่พบ\n\n(เวอร์ชันแอป, ข้อความแสดงข้อผิดพลาด, ขั้นตอนการทำซ้ำ)"
@@ -75,10 +125,23 @@ export default function SettingApp() {
           <Text style={styles.label}>การแจ้งเตือน</Text>
           <Text style={styles.desc}>เปิด/ปิด การแจ้งเตือนจากแอป</Text>
         </View>
-        <Switch value={enabled} onValueChange={onToggle} disabled={loading} />
+
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <Switch
+            value={enabled}
+            onValueChange={onToggle}
+            disabled={loading || updating}
+          />
+        )}
       </View>
 
-      <TouchableOpacity style={styles.reportBtn} onPress={onReport}>
+      <TouchableOpacity
+        style={[styles.reportBtn, updating && { opacity: 0.7 }]}
+        onPress={onReport}
+        disabled={updating}
+      >
         <Text style={styles.reportBtnText}>รายงานปัญหา / ส่งความคิดเห็น</Text>
       </TouchableOpacity>
 
