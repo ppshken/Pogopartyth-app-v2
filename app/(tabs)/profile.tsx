@@ -24,6 +24,7 @@ type FullUser = {
   username: string;
   avatar?: string | null;
   friend_code?: string | null;
+  team?: string | null;
   level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
@@ -130,6 +131,12 @@ export default function Profile() {
     const digits = v.replace(/\D/g, "").slice(0, 12);
     return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
   }
+
+  const teamColors: Record<string, string> = {
+    Mystic: "#3B82F6",
+    Valor: "#EF4444",
+    Instinct: "#F59E0B",
+  };
   
   if (!user) {
     return (
@@ -228,6 +235,16 @@ export default function Profile() {
             <Ionicons name="star" size={14} color="#FBBF24" />
             {" "}
             {rat?.avg ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)` : "ยังไม่มีรีวิว"}
+          </Text>
+        </View>
+
+        {/* Rating (หัวห้อง) */}
+        <View style={styles.row}>
+          <Ionicons name="cube-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>ทีม</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.rowValue}>
+            {user?.team || "-"}
           </Text>
         </View>
 

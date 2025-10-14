@@ -177,7 +177,7 @@ try {
     'message_id'   => (int)$row['id'],
     'from_user_id' => (int)$row['user_id'],
     'boss'         => $boss,
-    'url'      => "pogopartyth://rooms/".$roomId."chat",
+    'url'      => "pogopartyth://rooms/".$roomId."/chat",
   ];
 
   $notiResult = sendExpoPush($tokens, $title, $body, $data);

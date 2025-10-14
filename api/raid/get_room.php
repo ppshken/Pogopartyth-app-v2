@@ -68,6 +68,7 @@ $qMembers = $db->prepare("
     uu.username,
     uu.avatar,
     uu.friend_code AS friend_code,
+    uu.team,
     uu.level AS member_level,
     CASE 
       WHEN EXISTS (

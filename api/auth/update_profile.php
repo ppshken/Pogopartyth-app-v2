@@ -19,6 +19,7 @@ try {
   $password    = isset($in['password']) ? trim((string)$in['password']) : null;
   $username    = isset($in['username']) ? trim((string)$in['username']) : null;
   $friend_code = array_key_exists('friend_code', $in) ? trim((string)$in['friend_code']) : null;
+  $team        = array_key_exists('team', $in) ? trim((string)$in['team']) : null;
   $level_raw   = array_key_exists('level', $in) ? $in['level'] : null;
 
   $set = [];
@@ -43,6 +44,16 @@ try {
   $hash = password_hash($password, PASSWORD_DEFAULT);
     $set[] = 'password_hash = :password';
     $params[':password'] = $hash;
+  }
+
+  // team
+  $allowed_teams = ['Valor', 'Mystic', 'Instinct', ''];
+  if ($team !== null) {
+    if (!in_array($team, $allowed_teams, true)) {
+      jsonResponse(false, null, 'team ต้องเป็นค่า Valor, Mystic, Instinct หรือเว้นว่าง', 422);
+    }
+    $set[] = 'team = :team';
+    $params[':team'] = $team;
   }
 
   // level (ต้องเป็น int 1–80)

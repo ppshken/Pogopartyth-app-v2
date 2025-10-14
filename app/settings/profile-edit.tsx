@@ -1,8 +1,18 @@
 // app/(tabs)/settings/profile-edit.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,
-  ActivityIndicator, Image, Alert, KeyboardAvoidingView, Platform
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -16,9 +26,28 @@ type FullUser = {
   username: string;
   avatar?: string | null;
   friend_code?: string | null; // คาดว่าบันทึกแบบไม่มีเว้นวรรค
+  team?: string | null;
   level?: number | null;
   created_at?: string | null;
 };
+
+const teams = [
+  {
+    team: "Valor",
+    image:
+      "https://static.wikia.nocookie.net/pokemongo/images/2/22/Team_Valor.png/revision/latest?cb=20160717150715",
+  },
+  {
+    team: "Mystic",
+    image:
+      "https://static.wikia.nocookie.net/pokemongo/images/f/f4/Team_Mystic.png/revision/latest?cb=20160717150716",
+  },
+  {
+    team: "Instinct",
+    image:
+      "https://static.wikia.nocookie.net/pokemongo/images/d/d4/Team_Instinct.png/revision/latest?cb=20200803123751",
+  },
+];
 
 export default function ProfileEdit() {
   const router = useRouter();
@@ -26,11 +55,14 @@ export default function ProfileEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [teamopen, setTeamopen] = useState(false); // modal เลือกทีม
+  const [teamImage, setTeamImage] = useState(""); // รูปทีม
 
   // ฟอร์ม
   const [username, setUsername] = useState("");
   const [friendCode, setFriendCode] = useState("");
-  const [level, setLevel] = useState("");            // เก็บเป็น string เพื่อคุม input
+  const [team, setTeam] = useState(""); // เพิ่มทีม
+  const [level, setLevel] = useState(""); // เก็บเป็น string เพื่อคุม input
   const [avatar, setAvatar] = useState<string | null>(null); // preview
 
   // รับเฉพาะตัวเลข สูงสุด 2 หลัก และคงอยู่ในช่วง 1–50
@@ -58,6 +90,10 @@ export default function ProfileEdit() {
       setFriendCode(formatFriendCode(u.friend_code || ""));
       setLevel(u.level ? String(u.level) : "");
       setAvatar(u.avatar || null);
+      setTeam(u.team || "");
+      setTeamImage(
+        teams.find((t) => t.team === u.team)?.image || ""
+      );
     } catch (e: any) {
       Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ", e.message || "ลองใหม่อีกครั้ง");
     } finally {
@@ -132,6 +168,7 @@ export default function ProfileEdit() {
       await updateProfile({
         username: username.trim(),
         friend_code: fcDigits || undefined,
+        team: team || undefined,
         level: levelNum, // ✅ ส่ง level ไป API
       });
       showSnack({ text: "แก้ไขโปรไฟล์เรียบร้อย", variant: "success" });
@@ -166,7 +203,11 @@ export default function ProfileEdit() {
               <Image source={{ uri: avatar }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarEmpty}>
-                <Ionicons name="person-circle-outline" size={56} color="#9CA3AF" />
+                <Ionicons
+                  name="person-circle-outline"
+                  size={56}
+                  color="#9CA3AF"
+                />
               </View>
             )}
 
@@ -184,7 +225,11 @@ export default function ProfileEdit() {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <>
-                    <Ionicons name="cloud-upload-outline" size={16} color="#fff" />
+                    <Ionicons
+                      name="cloud-upload-outline"
+                      size={16}
+                      color="#fff"
+                    />
                     <Text style={styles.primaryBtnText}>อัปโหลด</Text>
                   </>
                 )}
@@ -216,6 +261,86 @@ export default function ProfileEdit() {
             keyboardType="number-pad"
             maxLength={14} // 12 ตัว + เว้นวรรค 2 ช่อง
           />
+
+          {/* เลือกทีม */}
+          <Text style={styles.label}>ทีม</Text>
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => setTeamopen(true)}
+          >
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+            >
+              {teamImage && (
+                <Image
+                  source={{ uri: teamImage }}
+                  style={{ height: 20, width: 20 }}
+                />
+              )}
+              <Text style={{ color: team ? "#111827" : "#9CA3AF" }}>
+                {team || "เลือกทีม"}
+              </Text>
+            </View>
+            <Ionicons
+              name="chevron-down-outline"
+              size={18}
+              color="#9CA3AF"
+              style={{ position: "absolute", right: 10, top: 10 }}
+            />
+          </TouchableOpacity>
+
+          {/* modal เลือกทีม */}
+          <Modal
+            visible={teamopen}
+            animationType="slide"
+            transparent
+            onRequestClose={() => setTeamopen(false)}
+          >
+            <TouchableOpacity
+              style={styles.modalOverlay}
+              activeOpacity={1}
+              onPressOut={() => setTeamopen(false)}
+            >
+              <View style={styles.modalContent}>
+                <Text style={{ fontSize: 18, fontWeight: "600" }}>
+                  เลือกทีม
+                </Text>
+                {teams.map((t) => (
+                  <TouchableOpacity
+                    key={t.team}
+                    style={styles.modalItem}
+                    onPress={() => {
+                      setTeam(t.team);
+                      setTeamImage(t.image);
+                      setTeamopen(false);
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <Image
+                        source={{ uri: t.image }}
+                        style={{ height: 40, width: 40 }}
+                      />
+                      <Text style={{ fontSize: 16 }}>{t.team}</Text>
+                      {team === t.team && (
+                        <Ionicons
+                          name="checkmark"
+                          size={30}
+                          color="#10B981"
+                          style={{ marginLeft: "auto" }}
+                        />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </TouchableOpacity>
+          </Modal>
 
           <Text style={styles.label}>เลเวล</Text>
           <TextInput
@@ -315,4 +440,21 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   primaryBtnText: { color: "#fff", fontWeight: "800", marginLeft: 6 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    width: 400,
+  },
+  modalItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+  },
 });

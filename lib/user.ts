@@ -13,6 +13,7 @@ export async function getProfile() {
     username: string;
     avatar?: string | null;
     friend_code?: string | null;
+    team?: string | null;
     level: number;
     created_at?: string | null;
     noti_status: string;
@@ -24,6 +25,7 @@ export async function updateProfile(payload: {
   password?: string;
   username?: string;
   friend_code?: string;
+  team?: string;
   level?: number;
 }) {
   const { data } = await api.post("/api/auth/update_profile.php", payload, {

@@ -27,6 +27,7 @@ $stmt = $db->prepare("
     username,
     avatar,
     friend_code,
+    team,
     level,
     device_token,
     noti_status,

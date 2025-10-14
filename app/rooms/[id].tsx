@@ -43,6 +43,7 @@ type Member = {
   username: string;
   avatar?: string | null;
   friend_code?: string | null;
+  team?: string | null;
   member_level: number;
   friend_ready?: 0 | 1;
   is_review?: 0 | 1;
@@ -601,7 +602,7 @@ export default function RoomDetail() {
           </View>
 
           {/* สมาชิก (ไม่ใช่เจ้าของ) -> คัดลอกรหัสหัวห้อง */}
-          {isMember && !isOwner ? (
+          {isMember && !isOwner && room.status !== "closed" ? (
             <TouchableOpacity
               onPress={copyFriendCode}
               style={styles.outlineBtn}
@@ -612,7 +613,7 @@ export default function RoomDetail() {
           ) : null}
 
           {/* เจ้าของ -> คัดลอกชื่อผู้เล่น */}
-          {isOwner && allAdded ? (
+          {isOwner && allAdded && room.status !== "closed" ? (
             <TouchableOpacity onPress={copyUsernames} style={styles.outlineBtn}>
               <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>คัดลอกชื่อผู้เล่น</Text>
@@ -641,15 +642,18 @@ export default function RoomDetail() {
 
               // เข้าร่วมไหม
               const joined = data.you?.is_member;
-              
+
               // สถานะห้อง = เชิญแล้ว
               const isInvited = room.status === "invited";
 
+              // สถานห้อง = ปิดห้อง
+              const isClosed = room.status === "closed";
+
               // หัวห้องเตะสมาชิกได้ ตอน ห้องถูกเชิญ
-              const onCkickMember = owner && !isInvited;
+              const onCkickMember = owner && !isInvited && !isClosed;
 
               // โชว์ปุ่มเฉพาะ "ไม่ใช่หัวห้อง"
-              const showBtn = !isOwnerRow && joined && !isInvited;
+              const showBtn = !isOwnerRow && joined && !isInvited && !isClosed;
 
               // สถานะ "เพิ่มเพื่อนแล้ว" (ใช้ค่าที่ sync กับ server ถ้าไม่มีใช้ local)
               const added = Boolean(
@@ -660,8 +664,17 @@ export default function RoomDetail() {
               const disabledBtn = !iAmThisMember || isInvited || expired;
 
               // สมาชิกรีวิวห้อง
-              const isReview = m.is_review === 1 && isInvited;
-              const isWaitReview = m.is_review === 0 && isInvited;
+              const isReview = m.is_review === 1 && (isInvited || isClosed);
+              const isWaitReview = m.is_review === 0 && (isInvited || isClosed);
+
+              const teamColor =
+                m.team === "Valor"
+                  ? "#ef4444ff"
+                  : m.team === "Mystic"
+                  ? "#3b82f6ff"
+                  : m.team === "Instinct"
+                  ? "#facc15ff"
+                  : "#9CA3AF";
 
               return (
                 <TouchableOpacity
@@ -710,7 +723,7 @@ export default function RoomDetail() {
 
                       <View
                         style={{
-                          backgroundColor: "#3066dbff",
+                          backgroundColor: teamColor,
                           padding: 2,
                           paddingHorizontal: 4,
                           borderRadius: 4,
@@ -775,13 +788,26 @@ export default function RoomDetail() {
 
                   {/* สถานะรีวิว*/}
                   {isReview && (
-                    <Text style={styles.review}>รีวิวแล้ว</Text>
+                    <>
+                      <Ionicons
+                        name="checkmark-outline"
+                        color="#50d444ff"
+                        size={18}
+                      />
+                      <Text style={styles.review}>รีวิวแล้ว</Text>
+                    </>
                   )}
-                  {isWaitReview && (
-                    <Text style={styles.review}>รอการรีวิว...</Text>
-                  )}
-                    
 
+                  {isWaitReview && (
+                    <>
+                      <Ionicons
+                        name="ellipsis-vertical-outline"
+                        color="#d48a44ff"
+                        size={18}
+                      />
+                      <Text style={styles.review}>รอการรีวิว...</Text>
+                    </>
+                  )}
                 </TouchableOpacity>
               );
             })
@@ -878,7 +904,7 @@ export default function RoomDetail() {
           </View>
         ) : null}
 
-        {isOwner && allAdded && room.status !== "invited" ? (
+        {isOwner && allAdded && room.status == "active" ? (
           <TouchableOpacity
             onPress={onInvite}
             style={[styles.primaryBtn, { backgroundColor: "#2563EB" }]}
@@ -911,7 +937,12 @@ export default function RoomDetail() {
         {!isOwner && room.status !== "invited" ? (
           <TouchableOpacity
             onPress={onJoinLeave}
-            disabled={loading || expired}
+            disabled={
+              loading ||
+              expired ||
+              room.status === "canceled" ||
+              room.status === "closed"
+            }
             style={[
               styles.primaryBtn,
               {
@@ -1034,7 +1065,11 @@ export default function RoomDetail() {
       </Modal>
 
       {/* Modal: หมดเวลา */}
-      <Modal visible={expired} transparent animationType="fade">
+      <Modal
+        visible={expired && room.status === "active"}
+        transparent
+        animationType="fade"
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>เวลาห้องนี้หมดลงแล้ว!</Text>
@@ -1291,9 +1326,7 @@ export default function RoomDetail() {
                 setLoadingAdd(false);
                 setJoinModal(false);
               }}
-              style={[
-                styles.modalBtn, { backgroundColor: "#10B981" },
-              ]}
+              style={[styles.modalBtn, { backgroundColor: "#10B981" }]}
               disabled={Boolean(friendAdded[data.you?.user_id || -1])}
             >
               {loadingAdd ? (
@@ -1565,6 +1598,7 @@ const styles = StyleSheet.create({
   },
   review: {
     fontSize: 12,
-    fontWeight: "500"
-  }
+    fontWeight: "600",
+    marginLeft: 4,
+  },
 });
