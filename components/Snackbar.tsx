@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Variant = "default" | "success" | "error" | "info" | "warning";
 type ShowArgs = {
@@ -15,6 +16,7 @@ type ShowArgs = {
   actionLabel?: string;
   onAction?: () => void;
 };
+type Placement = "top" | "bottom";
 
 let _externalShow: ((args: ShowArgs) => void) | undefined;
 let _externalHide: (() => void) | undefined;
@@ -30,8 +32,13 @@ export function hideSnack() {
   _externalHide?.();
 }
 
-/** วางไว้ท้ายๆ ของ root (เช่น _layout.tsx หรือ App.tsx) */
-export function SnackHost() {
+/** วางไว้ท้ายๆ ของ root (เช่น _layout.tsx หรือ App.tsx)
+ *  <SnackHost placement="top" />  // ด้านบน (ค่าเริ่มต้น)
+ *  <SnackHost placement="bottom" /> // ด้านล่าง
+ */
+export function SnackHost({ placement = "top" }: { placement?: Placement }) {
+  const insets = useSafeAreaInsets();
+
   const [visible, setVisible] = useState(false);
   const [state, setState] = useState<ShowArgs>({
     text: "",
@@ -39,8 +46,10 @@ export function SnackHost() {
     variant: "default",
   });
 
+  // ถ้าอยู่บน ให้แอนิเมตจาก -20 → 0, ถ้าอยู่ล่าง 20 → 0
+  const startOffset = placement === "top" ? -20 : 20;
   const opacity = useRef(new Animated.Value(0)).current;
-  const translate = useRef(new Animated.Value(20)).current;
+  const translate = useRef(new Animated.Value(startOffset)).current;
   const timer = useRef<NodeJS.Timeout | null>(null);
 
   const colors: Record<Variant, string> = {
@@ -55,8 +64,8 @@ export function SnackHost() {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 0, duration: 160, useNativeDriver: true }),
-      Animated.timing(translate, { toValue: 20, duration: 160, useNativeDriver: true }),
+      Animated.timing(opacity,   { toValue: 0,  duration: 160, useNativeDriver: true }),
+      Animated.timing(translate, { toValue: startOffset, duration: 160, useNativeDriver: true }),
     ]).start(() => setVisible(false));
   };
 
@@ -66,9 +75,9 @@ export function SnackHost() {
     setState(next);
     setVisible(true);
     opacity.setValue(0);
-    translate.setValue(20);
+    translate.setValue(startOffset);
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 1, duration: 160, useNativeDriver: true }),
+      Animated.timing(opacity,   { toValue: 1, duration: 160, useNativeDriver: true }),
       Animated.timing(translate, { toValue: 0, duration: 160, useNativeDriver: true }),
     ]).start();
 
@@ -85,13 +94,21 @@ export function SnackHost() {
       _externalHide = undefined;
       if (timer.current) clearTimeout(timer.current);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placement]); // เปลี่ยนตำแหน่งให้รีเซ็ต animator ให้ถูก
+  
 
   if (!visible) return null;
 
+  // ระยะห่างจากขอบ: ใช้ safe-area เสมอ
+  const verticalStyle =
+    placement === "top"
+      ? { top: Math.max(insets.top, 12) + 8, bottom: undefined }
+      : { bottom: Math.max(insets.bottom, 12) + 8, top: undefined };
+
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-      <View pointerEvents="box-none" style={styles.container}>
+      <View pointerEvents="box-none" style={[styles.container, verticalStyle]}>
         <Animated.View
           style={[
             styles.snack,
@@ -124,7 +141,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 37.5,
     alignItems: "center",
   },
   snack: {
@@ -143,6 +159,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
+  // ใช้ Kanit จาก defaultProps ของคุณอยู่แล้ว
   text: { color: "#fff", fontWeight: "700", flexShrink: 1 },
   action: { color: "#fff", fontWeight: "800", marginLeft: 8, textDecorationLine: "underline" },
 });

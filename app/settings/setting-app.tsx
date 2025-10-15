@@ -8,10 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-  ScrollView,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import * as Notifications from "expo-notifications";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,6 +31,7 @@ export default function SettingApp() {
   const [loading, setLoading] = useState(false); // โหลดโปรไฟล์
   const [updating, setUpdating] = useState(false); // ยิง API toggle
   const [enabled, setEnabled] = useState<boolean>(false);
+  const [addPushTokenListener, setAddPushTokenListener] = useState<any>(null);
 
   // โหลดข้อมูลจาก backend
   const load = useCallback(async () => {
