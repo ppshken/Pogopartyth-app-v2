@@ -217,6 +217,7 @@ export default function Login() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   returnKeyType="next"
+                  style={[styles.input,{ paddingVertical: 2 }]} // แก้ padding แนวตั้ง
                 />
               </View>
               {!!emailError && (

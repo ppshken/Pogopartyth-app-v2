@@ -10,6 +10,8 @@ import {
   Image,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -196,136 +198,149 @@ export default function CreateRoom() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
-        {/* Boss dropdown */}
-        <View style={styles.card}>
-          <Text style={styles.label}>บอส</Text>
-          <TouchableOpacity
-            style={styles.dropdown}
-            onPress={() => setBossOpen(true)}
-          >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={80}
+      >
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+          {/* Boss dropdown */}
+          <View style={styles.card}>
+            <Text style={styles.label}>บอส</Text>
+            <TouchableOpacity
+              style={styles.dropdown}
+              onPress={() => setBossOpen(true)}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                  flex: 1,
+                }}
+              >
+                <Image
+                  source={{ uri: boss?.pokemon_image || FALLBACK }}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 8,
+                    backgroundColor: "#F3F4F6",
+                  }}
+                />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontWeight: "800", color: "#111827" }}>
+                    {boss?.pokemon_name || "เลือกบอสจากรายการ"}
+                  </Text>
+                  {!!boss && (
+                    <Text style={{ color: "#6B7280", fontSize: 12 }}>
+                      <TierStars
+                        pokemon_tier={boss.pokemon_tier}
+                        color="#ffcc00"
+                      />
+                    </Text>
+                  )}
+                </View>
+              </View>
+              <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Time dropdown */}
+          <View style={styles.card}>
             <View
               style={{
                 flexDirection: "row",
+                justifyContent: "space-between",
                 alignItems: "center",
-                gap: 10,
-                flex: 1,
               }}
             >
-              <Image
-                source={{ uri: boss?.pokemon_image || FALLBACK }}
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  backgroundColor: "#F3F4F6",
-                }}
-              />
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontWeight: "800", color: "#111827" }}>
-                  {boss?.pokemon_name || "เลือกบอสจากรายการ"}
-                </Text>
-                {!!boss && (
-                  <Text style={{ color: "#6B7280", fontSize: 12 }}>
-                    <TierStars
-                      pokemon_tier={boss.pokemon_tier}
-                      color="#ffcc00"
-                    />
-                  </Text>
-                )}
-              </View>
+              <Text style={styles.label}>เวลาที่รอห้อง</Text>
+              <TouchableOpacity onPress={refreshTimeSlots}>
+                <Text style={styles.link}>รีเฟรชเวลา</Text>
+              </TouchableOpacity>
             </View>
-            <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Time dropdown */}
-        <View style={styles.card}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={styles.label}>เวลาที่รอห้อง</Text>
-            <TouchableOpacity onPress={refreshTimeSlots}>
-              <Text style={styles.link}>รีเฟรชเวลา</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={styles.dropdown}
-            onPress={() => setTimeOpen(true)}
-          >
-            <Text style={{ fontWeight: "800", color: "#111827" }}>
-              {startAt.toLocaleTimeString("th-TH", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </Text>
-            <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
-          </TouchableOpacity>
-          {isPast && (
-            <Text style={{ color: "#EF4444", marginTop: 8, fontSize: 12 }}>
-              เวลาต้องอยู่ในอนาคต
-            </Text>
-          )}
-          <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
-            เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออก รอบละ 5 นาที
-          </Text>
-        </View>
-
-        {/* People dropdown */}
-        <View style={styles.card}>
-          <Text style={styles.label}>จำนวนสมาชิก</Text>
-          <TouchableOpacity
-            style={styles.dropdown}
-            onPress={() => setPeopleOpen(true)}
-          >
-            <Text style={{ fontWeight: "800", color: "#111827" }}>
-              {max} คน
-            </Text>
-            <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
-          </TouchableOpacity>
-          <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
-            เลือกสมาชิกได้สูงสุด 2–20 คน
-          </Text>
-        </View>
-
-        {/* Note */}
-        <View style={styles.card}>
-          <Text style={styles.label}>หมายเหตุ</Text>
-          <TextInput
-            placeholder="พิมพ์หมายเหตุ เช่น ขอคนมี Remote Pass"
-            value={note}
-            onChangeText={setNote}
-            multiline
-            maxLength={100}
-            style={styles.textarea}
-            placeholderTextColor="#9CA3AF"
-          />
-          <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
-            สามารถใส่หมายเหตุได้ไม่เกิน 100 ตัวอักษร
-          </Text>
-        </View>
-
-        {/* Submit */}
-        <TouchableOpacity
-          onPress={onSubmit}
-          disabled={!canSubmit}
-          style={[styles.submit, !canSubmit && { backgroundColor: "#D1D5DB" }]}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text
-              style={{ color: "#fff", fontWeight: "800", textAlign: "center" }}
+            <TouchableOpacity
+              style={styles.dropdown}
+              onPress={() => setTimeOpen(true)}
             >
-              สร้างห้อง
+              <Text style={{ fontWeight: "800", color: "#111827" }}>
+                {startAt.toLocaleTimeString("th-TH", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
+              <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
+            </TouchableOpacity>
+            {isPast && (
+              <Text style={{ color: "#EF4444", marginTop: 8, fontSize: 12 }}>
+                เวลาต้องอยู่ในอนาคต
+              </Text>
+            )}
+            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
+              เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออก รอบละ 5 นาที
             </Text>
-          )}
-        </TouchableOpacity>
-      </ScrollView>
+          </View>
+
+          {/* People dropdown */}
+          <View style={styles.card}>
+            <Text style={styles.label}>จำนวนสมาชิก</Text>
+            <TouchableOpacity
+              style={styles.dropdown}
+              onPress={() => setPeopleOpen(true)}
+            >
+              <Text style={{ fontWeight: "800", color: "#111827" }}>
+                {max} คน
+              </Text>
+              <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
+            </TouchableOpacity>
+            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
+              เลือกสมาชิกได้สูงสุด 2–20 คน
+            </Text>
+          </View>
+
+          {/* Note */}
+          <View style={styles.card}>
+            <Text style={styles.label}>หมายเหตุ</Text>
+            <TextInput
+              placeholder="พิมพ์หมายเหตุ เช่น ขอคนมี Remote Pass"
+              value={note}
+              onChangeText={setNote}
+              multiline
+              maxLength={100}
+              style={styles.textarea}
+              placeholderTextColor="#9CA3AF"
+            />
+            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
+              สามารถใส่หมายเหตุได้ไม่เกิน 100 ตัวอักษร
+            </Text>
+          </View>
+
+          {/* Submit */}
+          <TouchableOpacity
+            onPress={onSubmit}
+            disabled={!canSubmit}
+            style={[
+              styles.submit,
+              !canSubmit && { backgroundColor: "#D1D5DB" },
+            ]}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text
+                style={{
+                  color: "#fff",
+                  fontWeight: "800",
+                  textAlign: "center",
+                }}
+              >
+                สร้างห้อง
+              </Text>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Boss modal */}
       <Modal
