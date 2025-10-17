@@ -52,10 +52,14 @@ $sql = "
     rb.pokemon_tier,
     rb.start_date,
     rb.end_date,
+    rb.cp_normal_min,
+    rb.cp_normal_max,
+    rb.cp_boost_min,
+    rb.cp_boost_max,
     rb.created_at
   FROM raid_boss rb
   $where
-  ORDER BY rb.end_date ASC, rb.pokemon_name ASC
+  ORDER BY rb.end_date ASC, rb.pokemon_tier DESC, rb.pokemon_name ASC
 ";
 
 // โหมด all=1 (ดึงทั้งหมดที่ active ตอนนี้ เหมาะสำหรับ dropdown)
@@ -76,6 +80,10 @@ if ($isAll) {
       'pokemon_tier' => $r['pokemon_tier'],
       'start_date'    => $r['start_date'],
       'end_date'      => $r['end_date'],
+      'cp_normal_min' => (int)$r['cp_normal_min'],
+      'cp_normal_max' => (int)$r['cp_normal_max'],
+      'cp_boost_min'  => (int)$r['cp_boost_min'],
+      'cp_boost_max'  => (int)$r['cp_boost_max'],
       'created_at'    => $r['created_at'],
     ];
   }, $rows);
@@ -110,6 +118,10 @@ $items = array_map(function(array $r) {
     'pokemon_tier' => $r['pokemon_tier'],
     'start_date'    => $r['start_date'],
     'end_date'      => $r['end_date'],
+    'cp_normal_min' => (int)$r['cp_normal_min'],
+    'cp_normal_max' => (int)$r['cp_normal_max'],
+    'cp_boost_min'  => (int)$r['cp_boost_min'],
+    'cp_boost_max'  => (int)$r['cp_boost_max'],
     'created_at'    => $r['created_at'],
   ];
 }, $rows);

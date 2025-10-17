@@ -288,7 +288,7 @@ export default function ProfileEdit() {
                 {teams.map((t) => (
                   <TouchableOpacity
                     key={t.team}
-                    style={styles.modalItem}
+                    style={[styles.modalItem, team === t.team && { backgroundColor: "#e5ebf7ff" }]}
                     onPress={() => {
                       setTeam(t.team);
                       setTeamImage(t.image);
@@ -307,6 +307,14 @@ export default function ProfileEdit() {
                         style={{ height: 40, width: 40 }}
                       />
                       <Text style={{ fontSize: 16 }}>{t.team}</Text>
+                      {team === t.team && (
+                        <Ionicons
+                          name="checkmark"
+                          size={30}
+                          color="#10B981"
+                          style={{ marginLeft: "auto" }}
+                        />
+                      )}                     
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -437,7 +445,10 @@ const styles = StyleSheet.create({
   },
   modalItem: {
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    marginTop: 8,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
 });

@@ -36,6 +36,7 @@
     "ios": {
       "bundleIdentifier": "com.ppshken.pogopartyth",
       "infoPlist": {
+        "LSApplicationQueriesSchemes": ["pokemongo"],
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [

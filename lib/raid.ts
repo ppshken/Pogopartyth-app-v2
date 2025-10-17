@@ -101,4 +101,10 @@ export async function setFriendReady(room_id: number, ready?: boolean, user_id?:
   return data.data;
 }
 
-
+export async function CancelRoom(payload: { room_id: number; reason?: string }) {
+  const { data } = await api.post("/api/raid/cancel_room.php", payload, {
+    validateStatus: () => true,
+  });
+  if (!data?.success) throw new Error(data?.message || "Cancel room failed");
+  return data.data;
+}

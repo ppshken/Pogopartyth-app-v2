@@ -79,7 +79,7 @@ export function RoomCardMinimal({
     ? "เปิดรับ"
     : room.status;
 
-  const is_joinedbg = room.is_joined === 1 ? "#c6d9ebff" : "#ffffffff";
+  const is_joinedbg = room.is_joined === 1 ? "#dde9f5ff" : "#ffffffff";
 
   return (
     <Pressable

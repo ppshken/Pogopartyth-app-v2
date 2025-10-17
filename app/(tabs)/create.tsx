@@ -33,7 +33,7 @@ type RaidBoss = {
 };
 
 const FALLBACK =
-  "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1200&auto=format&fit=crop";
+  "https://static.wikia.nocookie.net/pokemongo/images/5/55/Emblem_Raid.png/revision/latest?cb=20170907130239";
 
 const MIN_HOUR = 5; // 05:00
 const MAX_HOUR = 23; // 23:00
@@ -404,37 +404,46 @@ export default function CreateRoom() {
               <FlatList
                 data={bosses}
                 keyExtractor={(x) => String(x.pokemon_id) + x.pokemon_name}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setBoss(item);
-                      setBossOpen(false);
-                    }}
-                    style={styles.itemRow}
-                  >
-                    <Image
-                      source={{ uri: item.pokemon_image || FALLBACK }}
-                      style={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 10,
-                        marginRight: 12,
-                        backgroundColor: "#F3F4F6",
+                renderItem={({ item }) => {
+                  const selected = boss?.raid_boss_id === item.raid_boss_id;
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setBoss(item);
+                        setBossOpen(false);
                       }}
-                    />
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontWeight: "800", color: "#111827" }}>
-                        {item.pokemon_name}
-                      </Text>
-                      <Text style={{ color: "#6B7280", fontSize: 12 }}>
-                        <TierStars
-                          pokemon_tier={item.pokemon_tier}
-                          color="#ffcc00"
-                        />
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
+                      style={[
+                        styles.itemRow,
+                        selected && { backgroundColor: "#e5ebf7ff" },
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: item.pokemon_image || FALLBACK }}
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 10,
+                          marginRight: 12,
+                          backgroundColor: "#F3F4F6",
+                        }}
+                      />
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontWeight: "800", color: "#111827" }}>
+                          {item.pokemon_name}
+                        </Text>
+                        <Text style={{ color: "#6B7280", fontSize: 12 }}>
+                          <TierStars
+                            pokemon_tier={item.pokemon_tier}
+                            color="#ffcc00"
+                          />
+                        </Text>
+                      </View>
+                      {selected ? (
+                        <Ionicons name="checkmark" size={20} color="#2563EB" />
+                      ) : null}
+                    </TouchableOpacity>
+                  );
+                }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 ListEmptyComponent={
                   <Text
@@ -498,7 +507,7 @@ export default function CreateRoom() {
                     }}
                     style={[
                       styles.listItem,
-                      selected && { backgroundColor: "#F3F4F6" },
+                      selected && { backgroundColor: "#e5ebf7ff" },
                     ]}
                   >
                     <Text style={{ fontWeight: "700", color: "#111827" }}>
@@ -546,13 +555,15 @@ export default function CreateRoom() {
             <FlatList
               data={PEOPLE}
               keyExtractor={(x) => String(x)}
-              renderItem={({ item }) => (
+              renderItem={({ item }) => {
+                const selected = item === max;
+                return (
                 <TouchableOpacity
                   onPress={() => {
                     setMax(item);
                     setPeopleOpen(false);
                   }}
-                  style={styles.listItem}
+                  style={[styles.listItem, selected && { backgroundColor: "#e5ebf7ff" }]}
                 >
                   <Text style={{ fontWeight: "700", color: "#111827" }}>
                     {item} คน
@@ -561,7 +572,7 @@ export default function CreateRoom() {
                     <Ionicons name="checkmark" size={20} color="#2563EB" />
                   ) : null}
                 </TouchableOpacity>
-              )}
+              )}}
               ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
             />
           </View>

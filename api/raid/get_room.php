@@ -53,6 +53,42 @@ if (!$room) {
   jsonResponse(false, null, 'ไม่พบห้อง', 404);
 }
 
+if (
+  (empty($room['raid_boss_id']) || ($room['rb_cp_normal_min'] === null && $room['rb_cp_boost_min'] === null))
+  && !empty($room['boss'])
+) {
+  $qRb = $db->prepare("
+    SELECT cp_normal_min, cp_normal_max, cp_boost_min, cp_boost_max
+    FROM raid_boss
+    WHERE LOWER(pokemon_name) = LOWER(:name)
+    ORDER BY id DESC
+    LIMIT 1
+  ");
+  $qRb->execute([':name' => $room['boss']]);
+  if ($rb = $qRb->fetch(PDO::FETCH_ASSOC)) {
+    $room['rb_cp_normal_min']  = $rb['cp_normal_min'];
+    $room['rb_cp_normal_max']  = $rb['cp_normal_max'];
+    $room['rb_cp_boost_min']   = $rb['cp_boost_min'];
+    $room['rb_cp_boost_max']   = $rb['cp_boost_max'];
+  }
+}
+
+// เตรียมข้อมูล raid_boss (อาจว่างได้ถ้าไม่พบ)
+$raidBoss = null;
+if (
+  $room['rb_cp_normal_min'] !== null ||
+  $room['rb_cp_normal_max'] !== null ||
+  $room['rb_cp_boost_min']  !== null ||
+  $room['rb_cp_boost_max']  !== null
+) {
+  $raidBoss = [
+    'combat_power' => [
+      'normal'  => ['min' => (int)$room['rb_cp_normal_min'], 'max' => (int)$room['rb_cp_normal_max']],
+      'boosted' => ['min' => (int)$room['rb_cp_boost_min'],  'max' => (int)$room['rb_cp_boost_max']],
+    ],
+  ];
+}
+
 // จำนวนสมาชิกปัจจุบัน
 $qCount = $db->prepare("SELECT COUNT(*) FROM user_raid_rooms WHERE room_id = :rid");
 $qCount->execute([':rid' => $roomId]);
@@ -134,6 +170,8 @@ jsonResponse(true, [
     'current_chat_messages' => (int)$room['current_chat_messages'],
     'current_members' => $currentMembers,
     'is_full'         => $isFull,
+        // ✅ เพิ่มข้อมูลบอส (รวม CP)
+    'raid_boss'       => $raidBoss,
   ],
   'members' => $members,  // ตอนนี้สมาชิกแต่ละคนมี friend_code ด้วยแล้ว
   'you'     => $you,      // null ถ้าไม่ได้ส่ง token มา

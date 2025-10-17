@@ -604,3 +604,7 @@ Stack trace:
 #0 C:\xampp\htdocs\Pogopartyth-app-v2\api\raid_boss\get_raid_boss.php(42): PDOStatement->execute(Array)
 #1 {main}
   thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid_boss\get_raid_boss.php on line 42
+[17-Oct-2025 17:35:13 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[17-Oct-2025 17:35:13 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[17-Oct-2025 17:35:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[17-Oct-2025 17:35:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57

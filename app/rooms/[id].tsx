@@ -17,6 +17,8 @@ import {
   Modal,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
@@ -30,11 +32,13 @@ import {
   updateStatus,
   reviewRoom,
   kickMember,
+  CancelRoom,
 } from "../../lib/raid";
 import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
+import ShareRoom from "../../components/ShareRoom";
 
 type Member = {
   user_id: number;
@@ -56,6 +60,13 @@ type RoomOwner = {
   friend_code?: string | null;
 };
 
+type Raidboss = {
+  combat_power: {
+    normal: { min: number; max: number };
+    boosted: { min: number; max: number };
+  };
+};
+
 type RoomPayload = {
   room: {
     id: number;
@@ -71,6 +82,7 @@ type RoomPayload = {
     is_full?: boolean;
     note?: string | null;
     owner: RoomOwner;
+    raid_boss?: Raidboss;
   };
   members: Member[];
   you: {
@@ -96,6 +108,13 @@ const Reasonfail = [
   { id: 3, reasonfail: "ทีม/ตัวคาวน์เตอร์ไม่เหมาะ (CP ต่ำ ดาเมจน้อย)" },
   { id: 4, reasonfail: "สัญญาณเน็ต/แอปหลุด/เครื่องค้าง" },
   { id: 5, reasonfail: "อื่นๆ (โปรดระบุ)" },
+];
+
+const ReasonCancel = [
+  { id: 1, reasoncancel: "เปลี่ยนใจไม่ตีบอส" },
+  { id: 2, reasoncancel: "บอสหมดเวลา" },
+  { id: 3, reasoncancel: "สร้างห้องผิดพลาด" },
+  { id: 4, reasoncancel: "อื่นๆ (โปรดระบุ)" },
 ];
 
 const pad2 = (n: number) => n.toString().padStart(2, "0");
@@ -145,7 +164,6 @@ export default function RoomDetail() {
   // ตีบอส - รีวิว ไม่สำเร็จ
   const [selectedReasonId, setSelectedReasonId] = useState<number | null>(null);
   const [customReason, setCustomReason] = useState("");
-
   const isOther = selectedReasonId === 5; // id=5 ใน Reasonfail คือ “อื่นๆ”
   const canSave =
     selectedReasonId !== null && (!isOther || customReason.trim().length > 0);
@@ -158,7 +176,14 @@ export default function RoomDetail() {
   const [data, setData] = useState<RoomPayload | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
+  const [loadingKick, setLoadingKick] = useState(false);
+  const [loadingExit, setLoadingExit] = useState(false);
+  const [loadingClose, setLoadingClose] = useState(false);
+  const [loadingSaveReview, setLoadingSaveReview] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [forseReview, setForseReview] = useState(true);
+
+  const [copied, setCopied] = useState(false); // คัดลอกชื่อผู้เล่น
 
   //เปิด modal เข้าร่วมห้อง
   const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
@@ -170,6 +195,17 @@ export default function RoomDetail() {
   const [resultModal, setResultModal] = useState(false); // เลือก สำเร็จ/ไม่สำเร็จ
   const [ratingModal, setRatingModal] = useState(false); // ให้คะแนน 1-5
   const [failureModal, setFailureModal] = useState(false); // กรอกเหตุผลไม่สำเร็จ
+
+  // Modal ยกเลิกห้อง
+  const [cancelRoomModal, setCancelRoomModal] = useState(false);
+  const [cancelReasonId, setCancelReasonId] = useState<number | null>(null);
+  const [cancelCustomReason, setCancelCustomReason] = useState("");
+  const cancelOther = cancelReasonId === 4; // id=4 ใน ReasonCancel คือ “อื่นๆ”
+  const canCancel =
+    cancelReasonId !== null &&
+    (cancelReasonId !== 4 || cancelCustomReason.trim().length > 0); // id=4 ใน ReasonCancel คือ “อื่นๆ”
+
+  // สถานะยืนยันต่างๆ
   const [canceledRoom, setCanceledRoom] = useState(false); // ยกเลิกสร้างห้อง
   const [exitRoom, setExitRoom] = useState(false); // ออกจากห้อง
   const [kickmember, setKickmember] = useState<number | false>(false); // เตะ
@@ -256,6 +292,256 @@ export default function RoomDetail() {
     );
   }
 
+  // --- ฟังก์ชันจัดการต่าง ๆ ---
+
+  // เข้าร่วมห้อง
+  const onJoinLeave = async () => {
+    try {
+      if (isMember && !isOwner) {
+        setExitRoom(true);
+        return;
+      }
+      setLoading(true);
+      await joinRoom(room.id);
+      await load();
+      setJoinModal(true);
+      showSnack({ text: "เข้าห้องแล้ว", variant: "success" });
+      setLoading(false);
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ออกจากห้อง (สมาชิกธรรมดา)
+  const onExitroom = async () => {
+    try {
+      setLoadingExit(true);
+      if (isMember && !isOwner) await leaveRoom(room.id);
+      else if (!isMember) await joinRoom(room.id);
+      showSnack({ text: "ออกจากห้องแล้ว", variant: "success" });
+      setExitRoom(false);
+      await load();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoadingExit(false);
+      setJoinModal(false);
+    }
+  };
+
+  // คัดลอกชื่อผู้เล่น
+  const copyUsernames = async () => {
+    try {
+      const names = members
+        .filter((m) => m.role !== "owner")
+        .map((m) => m.username || `User#${m.user_id}`);
+      await Clipboard.setStringAsync(names.join(", "));
+      setCopied(true);
+      showSnack({ text: "คัดลอกชื่อผู้เล่นเรียบร้อย", variant: "success" });
+    } catch {
+      showSnack({ text: "คัดลอกไม่สำเร็จ ลองใหม่อีกครั้ง", variant: "error" });
+    }
+  };
+
+  // คัดลอกรหัสเพิ่มเพื่อนหัวห้อง
+  const copyFriendCode = async () => {
+    const code = room.owner?.friend_code?.trim();
+    if (!code)
+      return showSnack({
+        text: "ไม่พบรหัส หัวห้องยังไม่ระบุ Friend Code",
+        variant: "error",
+      });
+    await Clipboard.setStringAsync(code);
+    showSnack({
+      text: "คัดลอกรหัสเพิ่มเพื่อนของหัวห้องเรียบร้อย",
+      variant: "info",
+    });
+  };
+
+  // รีเฟรช
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await load();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // สถานะเพิ่มเพื่อน
+  const toggleFriend = async (uid: number) => {
+    const prev = friendAdded[uid] || false;
+    const next = !prev;
+    setFriendAdded((m) => ({ ...m, [uid]: next })); // optimistic
+    try {
+      await setFriendReady(
+        room.id,
+        next,
+        isOwner && uid !== you.user_id ? uid : undefined
+      );
+      showSnack({ text: "เพิ่มเพื่อนแล้ว", variant: "success" });
+      if (!next) {
+        // ถ้าเปลี่ยนเป็นยังไม่เพิ่มเพื่อน ให้รีเฟรชสถานะจากเซิร์ฟเวอร์อีกที
+        showSnack({ text: "ยกเลิกการเพิ่มเพื่อนแล้ว", variant: "info" });
+        await load();
+      }
+    } catch (e: any) {
+      setFriendAdded((m) => ({ ...m, [uid]: prev })); // revert
+      showSnack({ text: e.message, variant: "error" });
+    }
+  };
+
+  // ยกเลิกห้อง → เปลี่ยนสถานะเป็น canceled
+  const onCanceled = async () => {
+    const selectedCancel = ReasonCancel.find((rc) => rc.id === cancelReasonId);
+    try {
+      setForseReview(true);
+      const payload = {
+        room_id: room.id,
+        reason: cancelOther
+          ? cancelCustomReason.trim()
+          : selectedCancel?.reasoncancel || "",
+      };
+      await CancelRoom(payload);
+      showSnack({ text: "ยกเลิกห้องแล้วเรียบร้อย", variant: "success" });
+      router.back();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setForseReview(false);
+      setCancelRoomModal(false);
+    }
+  };
+
+  // ปิดห้องเนื่องจากหมดเวลา → เปลี่ยนสถานะเป็น close
+  const onClosed = async () => {
+    try {
+      setLoadingClose(true);
+      await updateStatus(room.id, "closed");
+      showSnack({ text: "ปิดห้องเรียบร้อย", variant: "success" });
+      router.back();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoadingClose(false);
+    }
+  };
+
+  // เตะสมาชิกออกจากห้อง
+  const onKickMember = async (userId: number) => {
+    try {
+      setLoadingKick(true);
+      await kickMember(room.id, userId);
+      showSnack({
+        text: "เตะสมาชิกออกจากห้องแล้วเรียบร้อย",
+        variant: "success",
+      });
+      setLoadingKick(false);
+      setKickmember(false);
+      await load();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoadingKick(false);
+      setKickmember(false);
+    }
+  };
+
+  // เชิญในเกม → เปลี่ยนสถานะเป็น invited
+  const onInvite = async () => {
+    try {
+      setLoading(true);
+      await updateStatus(room.id, "invited");
+      showSnack({ text: "ได้ส่งเชิญไปยังสมาชิกเรียบร้อย", variant: "success" });
+      await load();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // เปิด modal ยกเลิกห้อง
+  const onCanceledRoom = () => setCanceledRoom(true);
+
+  // เปิด modal “ตีบอสเสร็จ”
+  const onBattleFinished = () => setResultModal(true);
+
+  // ผล “สำเร็จ” ⇒ ให้ทุกคนรีวิว (รวม Owner ด้วย)
+  const onResultSuccess = () => {
+    setResultModal(false);
+    setRating(5);
+    setRatingModal(true);
+  };
+
+  // ส่งคะแนนรีวิว (ทุกคน)
+  const onSubmitRating = async () => {
+    try {
+      setLoadingSaveReview(true);
+      await reviewRoom(room.id, rating, "Raid success");
+      setForseReview(false);
+      setRatingModal(false);
+      showSnack({ text: "บันทึกรีวิวเรียบร้อย", variant: "success" });
+      await load();
+      router.back();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoadingSaveReview(false);
+      setForseReview(false);
+    }
+  };
+
+  // ผล “ไม่สำเร็จ”
+  const onResultFail = () => {
+    setResultModal(false);
+    setSelectedReasonId(null);
+    setCustomReason("");
+    setFailureModal(true);
+  };
+
+  // ส่งเหตุผลไม่สำเร็จ (ให้คะแนน 1 พร้อมเหตุผล)
+  const onSubmitFailReason = async () => {
+    const selected = Reasonfail.find((r) => r.id === selectedReasonId);
+    const reasonText = isOther
+      ? customReason.trim()
+      : selected?.reasonfail || "";
+
+    if (!reasonText) {
+      showSnack({
+        text: "โปรดเลือกเหตุผลหรือระบุ 'อื่นๆ'",
+        variant: "warning",
+      });
+    }
+
+    try {
+      setLoadingSaveReview(true);
+      // จะ setFailReason(reasonText) ด้วยก็ได้ ถ้าต้องเก็บ state นี้ไว้ใช้อย่างอื่น
+      await reviewRoom(room.id, 1, `FAILED: ${reasonText}`);
+      setForseReview(false);
+      setFailureModal(false);
+      showSnack({ text: "บันทึกเหตุผลเรียบร้อย", variant: "success" });
+      await load();
+      router.back();
+    } catch (e: any) {
+      showSnack({ text: e.message, variant: "error" });
+    } finally {
+      setLoadingSaveReview(false);
+      setForseReview(false);
+    }
+  };
+
+  // เช็คก่อนปิดโมดัลเข้าร่วมห้อง
+  const KickAndCancel = async () => {
+    if (!isMember && !isOwner) {
+      setJoinModal(false);
+    } else {
+      onExitroom();
+    }
+  };
+
   // --- ตัวแปรช่วย ---
   const { room, you } = data;
   const isMember = you?.is_member;
@@ -295,230 +581,6 @@ export default function RoomDetail() {
       : room.status === "closed"
       ? "ปิดห้อง"
       : room.status;
-
-  // --- ฟังก์ชันจัดการต่าง ๆ ---
-  const onJoinLeave = async () => {
-    try {
-      // If already a member (and not owner) open the exit confirmation modal.
-      if (isMember && !isOwner) {
-        setExitRoom(true);
-        return;
-      }
-
-      // Otherwise attempt to join the room and show the join modal on success.
-      setLoading(true);
-      await joinRoom(room.id);
-      await load();
-      setJoinModal(true);
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ออกจากห้อง (สมาชิกธรรมดา)
-  const onExitroom = async () => {
-    try {
-      setLoading(true);
-      if (isMember && !isOwner) await leaveRoom(room.id);
-      else if (!isMember) await joinRoom(room.id);
-      await load();
-      showSnack({ text: "ออกจากห้องแล้ว", variant: "success" });
-      setExitRoom(false);
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-      setJoinModal(false);
-    }
-  };
-
-  // คัดลอกชื่อผู้เล่น
-  const copyUsernames = async () => {
-    try {
-      const names = members
-        .filter((m) => m.role !== "owner")
-        .map((m) => m.username || `User#${m.user_id}`);
-      await Clipboard.setStringAsync(names.join(", "));
-      showSnack({ text: "คัดลอกชื่อผู้เล่นเรียบร้อย", variant: "success" });
-    } catch {
-      showSnack({ text: "คัดลอกไม่สำเร็จ ลองใหม่อีกครั้ง", variant: "error" });
-    }
-  };
-
-  // คัดลอกรหัสเพิ่มเพื่อนหัวห้อง
-  const copyFriendCode = async () => {
-    const code = room.owner?.friend_code?.trim();
-    if (!code)
-      return showSnack({
-        text: "ไม่พบรหัส หัวห้องยังไม่ระบุ Friend Code",
-        variant: "error",
-      });
-    await Clipboard.setStringAsync(code);
-    showSnack({
-      text: "คัดลอกรหัสเพิ่มเพื่อนของหัวห้องเรียบร้อย",
-      variant: "success",
-    });
-  };
-
-  // รีเฟรช
-  const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-      await load();
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  // สถานะเพิ่มเพื่อน
-  const toggleFriend = async (uid: number) => {
-    const prev = friendAdded[uid] || false;
-    const next = !prev;
-    setFriendAdded((m) => ({ ...m, [uid]: next })); // optimistic
-    try {
-      await setFriendReady(
-        room.id,
-        next,
-        isOwner && uid !== you.user_id ? uid : undefined
-      );
-      showSnack({ text: "เพิ่มเพื่อนแล้ว", variant: "success" });
-      if (!next) {
-        // ถ้าเปลี่ยนเป็นยังไม่เพิ่มเพื่อน ให้รีเฟรชสถานะจากเซิร์ฟเวอร์อีกที
-        showSnack({ text: "ยกเลิกการเพิ่มเพื่อนแล้ว", variant: "info" });
-        await load();
-      }
-    } catch (e: any) {
-      setFriendAdded((m) => ({ ...m, [uid]: prev })); // revert
-      showSnack({ text: e.message, variant: "error" });
-    }
-  };
-
-  // ยกเลิกห้อง → เปลี่ยนสถานะเป็น canceled
-  const onCanceled = async () => {
-    try {
-      setLoading(true);
-      await updateStatus(room.id, "canceled");
-      showSnack({ text: "ยกเลิกห้องแล้วเรียบร้อย", variant: "success" });
-      router.back();
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ปิดห้องเนื่องจากหมดเวลา → เปลี่ยนสถานะเป็น close
-  const onClosed = async () => {
-    try {
-      setLoading(true);
-      await updateStatus(room.id, "closed");
-      showSnack({ text: "ปิดห้องเรียบร้อย", variant: "success" });
-      router.back();
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // เตะสมาชิกออกจากห้อง
-  const onKickMember = async (userId: number) => {
-    try {
-      setLoading(true);
-      await kickMember(room.id, userId);
-      showSnack({
-        text: "เตะสมาชิกออกจากห้องแล้วเรียบร้อย",
-        variant: "success",
-      });
-      await load();
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // เชิญในเกม → เปลี่ยนสถานะเป็น invited
-  const onInvite = async () => {
-    try {
-      setLoading(true);
-      await updateStatus(room.id, "invited");
-      showSnack({ text: "ได้ส่งเชิญไปยังสมาชิกเรียบร้อย", variant: "success" });
-      await load();
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // เปิด modal ยกเลิกห้อง
-  const onCanceledRoom = () => setCanceledRoom(true);
-
-  // เปิด modal “ตีบอสเสร็จ”
-  const onBattleFinished = () => setResultModal(true);
-
-  // ผล “สำเร็จ” ⇒ ให้ทุกคนรีวิว (รวม Owner ด้วย)
-  const onResultSuccess = () => {
-    setResultModal(false);
-    setRating(5);
-    setRatingModal(true);
-  };
-
-  // ส่งคะแนนรีวิว (ทุกคน)
-  const onSubmitRating = async () => {
-    try {
-      setLoading(true);
-      await reviewRoom(room.id, rating, "Raid success");
-      setRatingModal(false);
-      showSnack({ text: "บันทึกรีวิวเรียบร้อย", variant: "success" });
-      await load();
-      router.back();
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ผล “ไม่สำเร็จ”
-  const onResultFail = () => {
-    setResultModal(false);
-    setSelectedReasonId(null);
-    setCustomReason("");
-    setFailureModal(true);
-  };
-
-  // ส่งเหตุผลไม่สำเร็จ (ให้คะแนน 1 พร้อมเหตุผล)
-  const onSubmitFailReason = async () => {
-    const selected = Reasonfail.find((r) => r.id === selectedReasonId);
-    const reasonText = isOther
-      ? customReason.trim()
-      : selected?.reasonfail || "";
-
-    if (!reasonText) {
-      showSnack({
-        text: "โปรดเลือกเหตุผลหรือระบุ 'อื่นๆ'",
-        variant: "warning",
-      });
-    }
-
-    try {
-      setLoading(true);
-      // จะ setFailReason(reasonText) ด้วยก็ได้ ถ้าต้องเก็บ state นี้ไว้ใช้อย่างอื่น
-      await reviewRoom(room.id, 1, `FAILED: ${reasonText}`);
-      setFailureModal(false);
-      showSnack({ text: "บันทึกเหตุผลเรียบร้อย", variant: "success" });
-      await load();
-      router.back();
-    } catch (e: any) {
-      showSnack({ text: e.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
@@ -585,21 +647,100 @@ export default function RoomDetail() {
           </View>
         </View>
 
-        {/* Friend code เจ้าของ */}
+        {/* รายละเอียดห้อง */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
+
+          {/* ชื่อ และ รหัสหัวห้อง */}
           <View style={styles.friendRow}>
-            <View style={{ flexDirection: "column", gap: 5 }}>
+            <View
+              style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
+            >
               <Text style={styles.friendText}>
                 {room.owner?.username || "-"}
               </Text>
-              {isMember ? (
-                <Text style={styles.friendCodeText}>
-                  {formatFriendCode(room.owner?.friend_code || "-")}
-                </Text>
-              ) : null}
+              <Text style={styles.friendCodeText}>
+                {formatFriendCode(room.owner?.friend_code || "-")}
+              </Text>
             </View>
           </View>
+
+          {/* ข้อมูลบอส CP Normal */}
+          <View style={styles.friendRow}>
+            <View
+              style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
+            >
+              <Text style={styles.friendText}>CP (Normal)</Text>
+              <Text style={styles.cptext}>
+                {room.raid_boss
+                  ? `${room.raid_boss.combat_power.normal.min} - ${room.raid_boss.combat_power.normal.max}`
+                  : "-"}
+              </Text>
+            </View>
+          </View>
+
+          {/* ข้อมูลบอส CP Boosted */}
+          <View style={styles.friendRow}>
+            <View
+              style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
+            >
+              <Text style={styles.friendText}>CP (Boosted)</Text>
+              <Text style={styles.cptext}>
+                {room.raid_boss
+                  ? `${room.raid_boss.combat_power.boosted.min} - ${room.raid_boss.combat_power.boosted.max}`
+                  : "-"}
+              </Text>
+            </View>
+          </View>
+
+          {/* ปุ่มแชร์ห้อง */}
+          {isMember && <ShareRoom roomId={room.id} />}
+
+          {/* ปุ่มเปิดเกม Pokemon Go */}
+          {isMember && room.status === "active" && !expired ? (
+            <TouchableOpacity
+              onPress={openPokemonGo}
+              style={[styles.outlineBtn, { backgroundColor: "#d34228ff" }]}
+            >
+              <Image
+                source={{ uri: PokemonGoIcon }}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginRight: 6,
+                  borderRadius: 4,
+                }}
+              />
+              <Text style={styles.modalBtnText}>เปิด Pokemon Go</Text>
+            </TouchableOpacity>
+          ) : null}
+
+          {/* เจ้าของ -> คัดลอกชื่อผู้เล่น */}
+          {isOwner && room.status !== "closed" ? (
+            <TouchableOpacity
+              onPress={copyUsernames}
+              style={[
+                styles.outlineBtn,
+                { backgroundColor: allAdded ? "#2563EB" : "#9ab3e9ff" },
+              ]}
+              disabled={!allAdded}
+            >
+              {copied ? (
+                <Ionicons
+                  name="checkmark-done-outline"
+                  size={16}
+                  color="#2fcc5eff"
+                />
+              ) : (
+                <Ionicons name="copy-outline" size={16} color="#ffffffff" />
+              )}
+              <Text style={styles.outlineBtnText}>
+                {allAdded
+                  ? "คัดลอกรายชื่อผู้เล่น"
+                  : "รอสมาชิกเข้าร่วมและเพิ่มเพื่อน...."}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
 
           {/* สมาชิก (ไม่ใช่เจ้าของ) -> คัดลอกรหัสหัวห้อง */}
           {isMember && !isOwner && room.status !== "closed" ? (
@@ -609,14 +750,6 @@ export default function RoomDetail() {
             >
               <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>คัดลอกรหัสหัวห้อง</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          {/* เจ้าของ -> คัดลอกชื่อผู้เล่น */}
-          {isOwner && allAdded && room.status !== "closed" ? (
-            <TouchableOpacity onPress={copyUsernames} style={styles.outlineBtn}>
-              <Ionicons name="copy-outline" size={16} color="#ffffffff" />
-              <Text style={styles.outlineBtnText}>คัดลอกชื่อผู้เล่น</Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -665,7 +798,7 @@ export default function RoomDetail() {
 
               // สมาชิกรีวิวห้อง
               const isReview = m.is_review === 1 && (isInvited || isClosed);
-              const isWaitReview = m.is_review === 0 && (isInvited || isClosed);
+              const isWaitReview = m.is_review === 0 && isInvited;
 
               const teamColor =
                 m.team === "Valor"
@@ -775,7 +908,7 @@ export default function RoomDetail() {
                   {onCkickMember && (
                     <TouchableOpacity
                       style={{
-                        backgroundColor: "#e03f3fff",
+                        backgroundColor: "#da1f1fff",
                         padding: 8,
                         borderRadius: 8,
                         marginLeft: 3,
@@ -850,6 +983,7 @@ export default function RoomDetail() {
           { paddingBottom: Math.max(insets.bottom, 12) },
         ]}
       >
+        {/* ปุ่มแชท */}
         {isMember ? (
           <View>
             <TouchableOpacity
@@ -904,16 +1038,24 @@ export default function RoomDetail() {
           </View>
         ) : null}
 
+        {/* ปุ่มเชิญในเกม */}
         {isOwner && allAdded && room.status == "active" ? (
           <TouchableOpacity
             onPress={onInvite}
             style={[styles.primaryBtn, { backgroundColor: "#2563EB" }]}
           >
-            <Ionicons name="send-outline" size={18} color="#fff" />
-            <Text style={styles.primaryBtnText}>เชิญในเกม</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <>
+                <Ionicons name="send-outline" size={18} color="#fff" />
+                <Text style={styles.primaryBtnText}>เชิญในเกม</Text>
+              </>
+            )}
           </TouchableOpacity>
         ) : null}
 
+        {/* ปุ่มตีบอสเสร็จ */}
         {room.status === "invited" && isMember ? (
           <TouchableOpacity
             onPress={onBattleFinished}
@@ -924,7 +1066,8 @@ export default function RoomDetail() {
           </TouchableOpacity>
         ) : null}
 
-        {room.current_members < 2 && isOwner && (
+        {/* ปุ่มยกเลิกห้อง */}
+        {room.current_members < 2 && isOwner && room.status === "active" && (
           <TouchableOpacity
             onPress={onCanceledRoom}
             style={[styles.primaryBtn, { backgroundColor: "#d0444bff" }]}
@@ -934,7 +1077,8 @@ export default function RoomDetail() {
           </TouchableOpacity>
         )}
 
-        {!isOwner && room.status !== "invited" ? (
+        {/* ปุ่มเข้าร่วมห้อง / ออกจากห้อง */}
+        {!isOwner && room.status !== "invited" && room.status !== "closed" ? (
           <TouchableOpacity
             onPress={onJoinLeave}
             disabled={
@@ -985,7 +1129,10 @@ export default function RoomDetail() {
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>ต้องการยกเลิกห้อง?</Text>
             <TouchableOpacity
-              onPress={onCanceled}
+              onPress={() => {
+                setCancelRoomModal(true);
+                setCanceledRoom(false);
+              }}
               style={[styles.modalBtn, { backgroundColor: "#d0444bff" }]}
             >
               <Ionicons name="close-circle-outline" size={18} color="#fff" />
@@ -1003,6 +1150,110 @@ export default function RoomDetail() {
         </View>
       </Modal>
 
+      {/* Modal: เหตุผลยกเลิกห้อง */}
+      <Modal
+        visible={cancelRoomModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setCancelRoomModal(false);
+          setCancelReasonId(null);
+          setCancelCustomReason("");
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>เหตุผลที่ยกเลิกห้อง</Text>
+
+              {/* ตัวเลือกเหตุผลแบบรายการ */}
+              <View style={{ gap: 8, marginBottom: 8 }}>
+                {ReasonCancel.map((rc) => {
+                  const selected = rc.id === cancelReasonId;
+                  return (
+                    <TouchableOpacity
+                      key={rc.id}
+                      onPress={() => setCancelReasonId(rc.id)}
+                      style={[
+                        styles.reasonOption,
+                        selected && styles.reasonOptionSelected,
+                      ]}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected }}
+                    >
+                      <Ionicons
+                        name={selected ? "radio-button-on" : "radio-button-off"}
+                        size={18}
+                        color={selected ? "#111827" : "#6B7280"}
+                        style={{ marginRight: 8 }}
+                      />
+                      <Text
+                        style={[
+                          styles.reasonLabel,
+                          selected && { color: "#111827", fontWeight: "700" },
+                        ]}
+                      >
+                        {rc.reasoncancel}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* เลือก "อื่นๆ" แล้วค่อยแสดงช่องกรอก */}
+              {cancelOther && (
+                <TextInput
+                  value={cancelCustomReason}
+                  onChangeText={setCancelCustomReason}
+                  placeholder="โปรดระบุเหตุผล"
+                  placeholderTextColor="#9CA3AF"
+                  multiline
+                  style={[styles.textArea, { marginTop: 4 }]}
+                />
+              )}
+
+              <TouchableOpacity
+                onPress={onCanceled}
+                disabled={!canCancel}
+                style={[
+                  styles.modalBtn,
+                  { backgroundColor: "#111827" },
+                  !canCancel && styles.modalBtnDisabled,
+                ]}
+                accessibilityState={{ disabled: !canCancel }}
+              >
+                {loadingSaveReview ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.modalBtnText}>บันทึก</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setCancelRoomModal(false);
+                  setCancelReasonId(null);
+                  setCancelCustomReason("");
+                }}
+                style={[styles.modalBtn, styles.modalCancel]}
+              >
+                <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                  ยกเลิก
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
       {/* Modal: ออกจากห้อง */}
       <Modal
         visible={exitRoom}
@@ -1017,14 +1268,18 @@ export default function RoomDetail() {
               onPress={onExitroom}
               style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
             >
-              <Text style={styles.modalBtnText}>ออกจากห้อง</Text>
+              {loadingExit ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.modalBtnText}>ออกจากห้อง</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setExitRoom(false)}
               style={[styles.modalBtn, styles.modalCancel]}
             >
               <Text style={[styles.modalBtnText, { color: "#111827" }]}>
-                ยกเลิก
+                อยู่ต่อ
               </Text>
             </TouchableOpacity>
           </View>
@@ -1046,11 +1301,14 @@ export default function RoomDetail() {
                 if (kickmember !== false) {
                   onKickMember(kickmember);
                 }
-                setKickmember(false);
               }}
               style={[styles.modalBtn, { backgroundColor: "#EF4444" }]}
             >
-              <Text style={styles.modalBtnText}>เตะ</Text>
+              {loadingKick ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.modalBtnText}>เตะ</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setKickmember(false)}
@@ -1077,9 +1335,40 @@ export default function RoomDetail() {
               onPress={onClosed}
               style={[styles.modalBtn, styles.modalCancel]}
             >
-              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
-                กลับ
-              </Text>
+              {loadingClose ? (
+                <ActivityIndicator size="small" color="#111827" />
+              ) : (
+                <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                  กลับ
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: หมดเวลา และ เชิญแล้ว รอ รีวิว */}
+      <Modal
+        visible={expired && room.status === "invited" && forseReview}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>
+              เวลาห้องนี้หมดลงแล้ว คุณต้องทำการ รีวิว ห้องนี้
+            </Text>
+            <TouchableOpacity
+              onPress={() => setResultModal(true)}
+              style={[styles.modalBtn, { backgroundColor: "#10B981" }]}
+            >
+              {loadingClose ? (
+                <ActivityIndicator size="small" color="#ffffffff" />
+              ) : (
+                <Text style={[styles.modalBtnText, { color: "#ffffffff" }]}>
+                  รีวิวตอนนี้
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -1087,7 +1376,7 @@ export default function RoomDetail() {
 
       {/* Modal: เลือกผลลัพธ์ */}
       <Modal
-        visible={resultModal}
+        visible={resultModal && room.status === "invited" && isMember}
         transparent
         animationType="fade"
         onRequestClose={() => setResultModal(false)}
@@ -1160,7 +1449,11 @@ export default function RoomDetail() {
               onPress={onSubmitRating}
               style={[styles.modalBtn, { backgroundColor: "#111827" }]}
             >
-              <Text style={styles.modalBtnText}>บันทึก</Text>
+              {loadingSaveReview ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.modalBtnText}>บันทึก</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setRatingModal(false)}
@@ -1186,81 +1479,95 @@ export default function RoomDetail() {
         }}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>เหตุผลที่ไม่สำเร็จ</Text>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>เหตุผลที่ไม่สำเร็จ</Text>
 
-            {/* ตัวเลือกเหตุผลแบบรายการ */}
-            <View style={{ gap: 8, marginBottom: 8 }}>
-              {Reasonfail.map((r) => {
-                const selected = r.id === selectedReasonId;
-                return (
-                  <TouchableOpacity
-                    key={r.id}
-                    onPress={() => setSelectedReasonId(r.id)}
-                    style={[
-                      styles.reasonOption,
-                      selected && styles.reasonOptionSelected,
-                    ]}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected }}
-                  >
-                    <Ionicons
-                      name={selected ? "radio-button-on" : "radio-button-off"}
-                      size={18}
-                      color={selected ? "#111827" : "#6B7280"}
-                      style={{ marginRight: 8 }}
-                    />
-                    <Text
+              {/* ตัวเลือกเหตุผลแบบรายการ */}
+              <View style={{ gap: 8, marginBottom: 8 }}>
+                {Reasonfail.map((r) => {
+                  const selected = r.id === selectedReasonId;
+                  return (
+                    <TouchableOpacity
+                      key={r.id}
+                      onPress={() => setSelectedReasonId(r.id)}
                       style={[
-                        styles.reasonLabel,
-                        selected && { color: "#111827", fontWeight: "700" },
+                        styles.reasonOption,
+                        selected && styles.reasonOptionSelected,
                       ]}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected }}
                     >
-                      {r.reasonfail}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+                      <Ionicons
+                        name={selected ? "radio-button-on" : "radio-button-off"}
+                        size={18}
+                        color={selected ? "#111827" : "#6B7280"}
+                        style={{ marginRight: 8 }}
+                      />
+                      <Text
+                        style={[
+                          styles.reasonLabel,
+                          selected && { color: "#111827", fontWeight: "700" },
+                        ]}
+                      >
+                        {r.reasonfail}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* เลือก "อื่นๆ" แล้วค่อยแสดงช่องกรอก */}
+              {isOther && (
+                <TextInput
+                  value={customReason}
+                  onChangeText={setCustomReason}
+                  placeholder="โปรดระบุเหตุผล"
+                  placeholderTextColor="#9CA3AF"
+                  multiline
+                  style={[styles.textArea, { marginTop: 4 }]}
+                />
+              )}
+
+              <TouchableOpacity
+                onPress={onSubmitFailReason}
+                disabled={!canSave}
+                style={[
+                  styles.modalBtn,
+                  { backgroundColor: "#111827" },
+                  !canSave && styles.modalBtnDisabled,
+                ]}
+                accessibilityState={{ disabled: !canSave }}
+              >
+                {loadingSaveReview ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.modalBtnText}>บันทึก</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setFailureModal(false);
+                  setSelectedReasonId(null);
+                  setCustomReason("");
+                }}
+                style={[styles.modalBtn, styles.modalCancel]}
+              >
+                <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                  ยกเลิก
+                </Text>
+              </TouchableOpacity>
             </View>
-
-            {/* เลือก "อื่นๆ" แล้วค่อยแสดงช่องกรอก */}
-            {isOther && (
-              <TextInput
-                value={customReason}
-                onChangeText={setCustomReason}
-                placeholder="โปรดระบุเหตุผล"
-                placeholderTextColor="#9CA3AF"
-                multiline
-                style={[styles.textArea, { marginTop: 4 }]}
-              />
-            )}
-
-            <TouchableOpacity
-              onPress={onSubmitFailReason}
-              disabled={!canSave}
-              style={[
-                styles.modalBtn,
-                { backgroundColor: "#111827" },
-                !canSave && styles.modalBtnDisabled,
-              ]}
-              accessibilityState={{ disabled: !canSave }}
-            >
-              <Text style={styles.modalBtnText}>บันทึก</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                setFailureModal(false);
-                setSelectedReasonId(null);
-                setCustomReason("");
-              }}
-              style={[styles.modalBtn, styles.modalCancel]}
-            >
-              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
-                ยกเลิก
-              </Text>
-            </TouchableOpacity>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
 
@@ -1343,12 +1650,16 @@ export default function RoomDetail() {
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={onExitroom}
+              onPress={KickAndCancel}
               style={[styles.modalBtn, styles.modalCancel]}
             >
-              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
-                ยกเลิก
-              </Text>
+              {loadingExit ? (
+                <ActivityIndicator size="small" color="#111827" />
+              ) : (
+                <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                  ยกเลิก
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -1419,8 +1730,13 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#111827",
   },
-  friendRow: { flexDirection: "row", alignItems: "center" },
-  friendText: { color: "#374151", marginLeft: 6 },
+  friendRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  friendText: { color: "#374151", fontSize: 14, alignItems: "center" },
   friendCodeText: {
     color: "#374151",
     marginLeft: 6,
@@ -1584,12 +1900,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#E5E7EB",
     paddingHorizontal: 16,
     paddingTop: 8,
-    gap: 8, // ระยะห่างระหว่างปุ่ม
-    // เผื่ออยากให้มีเงาเล็ก ๆ
-    // shadowColor: "#000",
-    // shadowOpacity: 0.06,
-    // shadowRadius: 6,
-    // elevation: 6,   // Android
+    gap: 8,
   },
   meItem: {
     backgroundColor: "#E6F0FF", // ฟ้าอ่อน
@@ -1600,5 +1911,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     marginLeft: 4,
+  },
+  cptext: {
+    color: "#374151",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

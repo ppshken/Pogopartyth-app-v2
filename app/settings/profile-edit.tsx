@@ -305,10 +305,11 @@ export default function ProfileEdit() {
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
                   เลือกทีม
                 </Text>
-                {teams.map((t) => (
+                {teams.map((t) => {
+                return (
                   <TouchableOpacity
                     key={t.team}
-                    style={styles.modalItem}
+                    style={[styles.modalItem, team === t.team && { backgroundColor: "#e5ebf7ff" }]}
                     onPress={() => {
                       setTeam(t.team);
                       setTeamImage(t.image);
@@ -337,7 +338,7 @@ export default function ProfileEdit() {
                       )}
                     </View>
                   </TouchableOpacity>
-                ))}
+                )})}
               </View>
             </TouchableOpacity>
           </Modal>
@@ -454,7 +455,10 @@ const styles = StyleSheet.create({
   },
   modalItem: {
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    marginTop: 8,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
 });
