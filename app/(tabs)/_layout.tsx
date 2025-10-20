@@ -7,14 +7,13 @@ export default function TabsLayout() {
       screenOptions={({ route }) => ({
         headerShown: true,
         // ใช้ฟอนต์หนาจริง แทน fontWeight
-        headerTitleStyle: { fontSize: 20, marginBottom: 8, fontFamily: "KanitMedium" },
+        headerTitleStyle: { fontSize: 20, marginBottom: 8, fontFamily: "KanitSemiBold" },
         tabBarActiveTintColor: "#000000ff",
         tabBarInactiveTintColor: "#6b7280ff",
         tabBarStyle: { paddingBottom: 8, height: 85 },
         tabBarLabelStyle: {
           fontSize: 13,
           fontFamily: "KanitSemiBold",
-          marginBottom: 4,
         },
         tabBarItemStyle: { marginTop: 6 },
         tabBarIcon: ({ color, size, focused }) => {

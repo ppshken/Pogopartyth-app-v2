@@ -74,6 +74,7 @@ export default function Layout() {
           screenOptions={{
             headerShown: false,
             headerBackTitle: "กลับ",
+            headerBackTitleStyle: { fontSize: 16, fontFamily: "KanitSemiBold" },
             headerTitleStyle: { fontSize: 16, fontFamily: "KanitSemiBold" },
           }}
         >

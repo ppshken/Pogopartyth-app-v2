@@ -407,12 +407,10 @@ const styles = StyleSheet.create({
   badgeDark: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 6,
+    borderRadius: 4,
     paddingHorizontal: 10,
     paddingVertical: 2,
     alignSelf: "flex-start",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
   },
   badgeDarkText: { fontSize: 14, fontFamily: "KanitMedium", color: "#ffffffff" },
 
@@ -443,7 +441,7 @@ const styles = StyleSheet.create({
   outlineBtn: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#525252ff",
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",

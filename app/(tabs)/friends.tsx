@@ -90,7 +90,6 @@ export default function FriendsScreen() {
     setRefreshing(false);
   };
 
-
   const renderItem = ({ item }: { item: Friend }) => {
     const teamColors: Record<string, string> = {
       Mystic: "#3B82F6", // น้ำเงิน
@@ -108,7 +107,8 @@ export default function FriendsScreen() {
         }
         style={{
           flexDirection: "row",
-          padding: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
           borderRadius: 14,
           backgroundColor: "#FFFFFF",
           borderWidth: 1,
@@ -128,7 +128,7 @@ export default function FriendsScreen() {
             </Text>
             <View
               style={{
-                backgroundColor: teamColors [item.team ?? ""] ?? "#9CA3AF",
+                backgroundColor: teamColors[item.team ?? ""] ?? "#9CA3AF",
                 padding: 2,
                 paddingHorizontal: 4,
                 borderRadius: 4,
@@ -151,7 +151,13 @@ export default function FriendsScreen() {
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
               <Ionicons name="star" size={14} color="#FBBF24" />
-              <Text style={{ color: "#000000ff", marginTop: 2, fontFamily: "KanitMedium" }}>
+              <Text
+                style={{
+                  color: "#000000ff",
+                  marginTop: 2,
+                  fontFamily: "KanitMedium",
+                }}
+              >
                 {item.rating_owner}
               </Text>
             </View>
@@ -159,12 +165,26 @@ export default function FriendsScreen() {
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
-              <Text style={{ color: "#6B7280", marginTop: 2, fontFamily: "KanitMedium" }}>-</Text>
+              <Text
+                style={{
+                  color: "#6B7280",
+                  marginTop: 2,
+                  fontFamily: "KanitMedium",
+                }}
+              >
+                -
+              </Text>
             </View>
           )}
 
           {item.friend_code_masked ? (
-            <Text style={{ color: "#6B7280", marginTop: 2, fontFamily: "KanitMedium" }}>
+            <Text
+              style={{
+                color: "#6B7280",
+                marginTop: 2,
+                fontFamily: "KanitMedium",
+              }}
+            >
               Friend code: {item.friend_code_masked}
             </Text>
           ) : null}
@@ -199,7 +219,12 @@ export default function FriendsScreen() {
             onChangeText={onChangeQ}
             autoCapitalize="none"
             autoCorrect={false}
-            style={{ fontSize: 16, flex: 1, color: "#111827", fontFamily: "KanitMedium" }}
+            style={{
+              fontSize: 16,
+              flex: 1,
+              color: "#111827",
+              fontFamily: "KanitMedium",
+            }}
             returnKeyType="search"
             onSubmitEditing={() => fetchFirst(q)}
           />
@@ -227,7 +252,15 @@ export default function FriendsScreen() {
         ListEmptyComponent={
           !loading ? (
             <View style={{ padding: 24, alignItems: "center" }}>
-              <Text style={{ color: "#6B7280", fontFamily: "KanitMedium", fontSize: 16 }}>ไม่พบผลลัพธ์ที่ค้นหา</Text>
+              <Text
+                style={{
+                  color: "#6B7280",
+                  fontFamily: "KanitMedium",
+                  fontSize: 16,
+                }}
+              >
+                ไม่พบผลลัพธ์ที่ค้นหา
+              </Text>
             </View>
           ) : null
         }

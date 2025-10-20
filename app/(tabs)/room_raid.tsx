@@ -206,7 +206,7 @@ export default function RoomsIndex() {
           <Text
             style={{ color: "#9CA3AF", textAlign: "center", marginTop: 24, fontSize: 16, fontFamily: "KanitMedium" }}
           >
-            {q || selectedBossId ? "ไม่พบห้องที่ตรงกับตัวกรอง" : "ยังไม่มีห้อง"}
+            {q || selectedBossId ? "ไม่พบห้องที่ตรงกับตัวกรอง" : "ยังไม่มีห้องบอสในขณะนี้"}
           </Text>
         }
         renderItem={({ item }) => (

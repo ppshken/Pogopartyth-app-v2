@@ -102,7 +102,7 @@ export function MyRoomCard({
 
         <View style={styles.metaRow}>
           <View style={{ flexDirection: "row", gap: 6 }}>
-            <View style={styles.chipDark}>
+            <View style={[styles.chipDark, expired ? { backgroundColor: "#9CA3AF" } : null]}>
               <Ionicons
                 name="time-outline"
                 size={14}
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   chipDark_Wait_review: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 6,
     backgroundColor: "#10B981",
     flexDirection: "row",
     alignItems: "center",

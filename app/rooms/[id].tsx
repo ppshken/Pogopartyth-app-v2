@@ -39,6 +39,7 @@ import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
 import ShareRoom from "../../components/ShareRoom";
+import { Friend, searchFriends, avatarOrFallback } from "../../lib/friend";
 
 type Member = {
   user_id: number;
@@ -184,6 +185,10 @@ export default function RoomDetail() {
   const [forseReview, setForseReview] = useState(true);
 
   const [copied, setCopied] = useState(false); // คัดลอกชื่อผู้เล่น
+
+  // เปิด Modal เชิญเพื่อน
+  const [onInvitedFriend, setOnInvitedFriend] = useState(false);
+  const [friendsData, setFriendsData] = useState<Friend[]>([]);
 
   //เปิด modal เข้าร่วมห้อง
   const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
@@ -909,7 +914,7 @@ export default function RoomDetail() {
                     <TouchableOpacity
                       style={{
                         backgroundColor: "#da1f1fff",
-                        padding: 8,
+                        padding: 9,
                         borderRadius: 8,
                         marginLeft: 3,
                       }}
@@ -947,6 +952,17 @@ export default function RoomDetail() {
           ) : (
             <Text style={{ color: "#9CA3AF" }}>ยังไม่มีสมาชิก</Text>
           )}
+
+          {/* ปุ่มเชิญเพื่อน */}
+          <TouchableOpacity
+            onPress={() =>
+              setOnInvitedFriend(true)
+            }
+            style={styles.outlineBtn}
+          >
+            <Ionicons name="people-outline" size={16} color="#ffffffff" />
+            <Text style={styles.outlineBtnText}>เชิญเพื่อน</Text>
+          </TouchableOpacity>
         </View>
 
         {/* How to วิธีการใช้งาน */}
@@ -1669,6 +1685,37 @@ export default function RoomDetail() {
           </View>
         </View>
       </Modal>
+
+      {/* Modal: เชิญเพื่อน */}
+      <Modal
+        visible={onInvitedFriend}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnInvitedFriend(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalSheet}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
+                จำนวนสมาชิก
+              </Text>
+              <TouchableOpacity
+                onPress={() => setOnInvitedFriend(false)}
+                style={styles.iconBtn}
+              >
+                <Ionicons name="close" size={20} color="#111827" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -1889,7 +1936,7 @@ const styles = StyleSheet.create({
     color: "#374151",
     fontSize: 14,
     lineHeight: 20,
-    fontFamily: "KanitSemiBold",
+    fontFamily: "KanitMedium",
   },
   sectionHowto: {
     backgroundColor: "#fff",
@@ -1926,5 +1973,27 @@ const styles = StyleSheet.create({
     color: "#374151",
     fontSize: 16,
     fontFamily: "KanitSemiBold",
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 16,
+    maxHeight: "80%",
+    paddingBottom: 30,
+  },
+  iconBtn: {
+    marginLeft: "auto",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F3F4F6",
   },
 });

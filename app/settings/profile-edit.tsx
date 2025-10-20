@@ -193,6 +193,7 @@ export default function ProfileEdit() {
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#F9FAFB" }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={100}
     >
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
         {/* การ์ดรูปโปรไฟล์ */}

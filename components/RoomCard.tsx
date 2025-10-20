@@ -138,8 +138,9 @@ export function RoomCardMinimal({
           <View style={{ flexDirection: "row", gap: 4 }}>
             {room.is_joined === 1 && (
               <View
-                style={[styles.statusBadge, { backgroundColor: "#6b3ab9ff" }]}
+                style={[styles.statusBadge, { backgroundColor: "#6b3ab9ff", flexDirection: "row", alignItems: "center", gap: 4 }]}
               >
+                <Ionicons name="checkmark" size={12} color="#2ac61fff" />
                 <Text style={styles.statusText}>เข้าร่วมแล้ว</Text>
               </View>
             )}
