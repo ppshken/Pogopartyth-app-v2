@@ -6,11 +6,16 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: true,
-        headerTitleStyle: { fontSize: 20, fontWeight: "800", marginBottom: 8 },
+        // ใช้ฟอนต์หนาจริง แทน fontWeight
+        headerTitleStyle: { fontSize: 20, marginBottom: 8, fontFamily: "KanitMedium" },
         tabBarActiveTintColor: "#000000ff",
         tabBarInactiveTintColor: "#6b7280ff",
         tabBarStyle: { paddingBottom: 8, height: 85 },
-        tabBarLabelStyle: { fontSize: 12, fontWeight: "700", marginBottom: 4 },
+        tabBarLabelStyle: {
+          fontSize: 13,
+          fontFamily: "KanitSemiBold",
+          marginBottom: 4,
+        },
         tabBarItemStyle: { marginTop: 6 },
         tabBarIcon: ({ color, size, focused }) => {
           const map: Record<string, string> = {
@@ -20,9 +25,7 @@ export default function TabsLayout() {
             profile: focused ? "person" : "person-outline",
             friends: focused ? "people" : "people-outline",
           };
-          return (
-            <Ionicons name={map[route.name] as any} size={size} color={color} />
-          );
+          return <Ionicons name={map[route.name] as any} size={size} color={color} />;
         },
       })}
     >
@@ -31,7 +34,6 @@ export default function TabsLayout() {
       <Tabs.Screen name="my_raid" options={{ title: "ห้องของฉัน" }} />
       <Tabs.Screen name="friends" options={{ title: "หาเพื่อน" }} />
       <Tabs.Screen name="profile" options={{ title: "โปรไฟล์" }} />
-      
     </Tabs>
   );
 }

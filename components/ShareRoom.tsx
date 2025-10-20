@@ -32,7 +32,7 @@ export default function ShareRoom({ roomId }: Props) {
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, justifyContent: "center" }}>
             <Ionicons name="share-social" size={20} color="#fff" style={{ marginBottom: 4, alignSelf: "center" }} />
-            <Text style={{ color: "#fff", textAlign: "center", fontWeight: "600" }}>แชร์ห้อง</Text>
+            <Text style={{ color: "#fff", textAlign: "center", fontFamily: "KanitSemiBold" }}>แชร์ห้อง</Text>
         </View>
       </TouchableOpacity>
     </View>

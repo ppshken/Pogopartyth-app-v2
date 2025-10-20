@@ -33,7 +33,7 @@ export function MessageItem({ m }: { m: any }) {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#fff" }}>
+            <Text style={{ color: "#fff", fontFamily: "KanitMedium" }}>
               {m.username ? m.username.charAt(0).toUpperCase() : "?"}
             </Text>
           </View>
@@ -52,17 +52,18 @@ export function MessageItem({ m }: { m: any }) {
         }}
       >
         {!isMe && (
-          <Text style={{ fontSize: 12, color: "#555", marginBottom: 4 }}>
+          <Text style={{ fontSize: 12, color: "#555", marginBottom: 4, fontFamily: "KanitRegular" }}>
             {m.username || `User#${m.user_id}`}
           </Text>
         )}
-        <Text style={{ color: isMe ? "#fff" : "#000" }}>{m.message}</Text>
+        <Text style={{ color: isMe ? "#fff" : "#000", fontFamily: "KanitRegular" }}>{m.message}</Text>
         <Text
           style={{
             fontSize: 10,
             color: isMe ? "#ddd" : "#666",
             marginTop: 4,
             textAlign: "right",
+            fontFamily: "KanitRegular",
           }}
         >
           {new Date(m.created_at).toLocaleTimeString("th-TH", {

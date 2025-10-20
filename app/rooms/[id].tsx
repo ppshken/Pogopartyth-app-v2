@@ -633,7 +633,7 @@ export default function RoomDetail() {
                 <Text
                   style={[
                     styles.noteText,
-                    { color: "#1E3A8A", fontWeight: "700" },
+                    { color: "#1E3A8A", fontFamily: "KanitSemiBold" },
                   ]}
                 >
                   เชิญในเกมแล้ว — โปรดรีวิวหลังจบการตีบอส
@@ -656,9 +656,6 @@ export default function RoomDetail() {
             <View
               style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
             >
-              <Text style={styles.friendText}>
-                {room.owner?.username || "-"}
-              </Text>
               <Text style={styles.friendCodeText}>
                 {formatFriendCode(room.owner?.friend_code || "-")}
               </Text>
@@ -729,8 +726,8 @@ export default function RoomDetail() {
             >
               {copied ? (
                 <Ionicons
-                  name="checkmark-done-outline"
-                  size={16}
+                  name="checkmark"
+                  size={18}
                   color="#2fcc5eff"
                 />
               ) : (
@@ -827,7 +824,7 @@ export default function RoomDetail() {
                     <Image source={{ uri: m.avatar }} style={styles.avatar} />
                   ) : (
                     <View style={styles.avatarEmpty}>
-                      <Text style={{ color: "#fff", fontWeight: "800" }}>
+                      <Text style={{ color: "#fff", fontFamily: "KanitSemiBold" }}>
                         {m.username ? m.username.charAt(0).toUpperCase() : "?"}
                       </Text>
                     </View>
@@ -844,7 +841,7 @@ export default function RoomDetail() {
                       <Text
                         style={{
                           fontSize: 14,
-                          fontWeight: "700",
+                          fontFamily: "KanitSemiBold",
                           color: "#111827",
                         }}
                         numberOfLines={1}
@@ -861,6 +858,7 @@ export default function RoomDetail() {
                           backgroundColor: teamColor,
                           padding: 2,
                           paddingHorizontal: 4,
+                          paddingVertical: 1,
                           borderRadius: 4,
                         }}
                       >
@@ -868,7 +866,7 @@ export default function RoomDetail() {
                           style={{
                             color: "#ffffffff",
                             fontSize: 12,
-                            fontWeight: "600",
+                            fontFamily: "KanitSemiBold",
                           }}
                         >
                           Level {m.member_level}
@@ -876,7 +874,7 @@ export default function RoomDetail() {
                       </View>
                     </View>
 
-                    <Text style={{ fontSize: 12, color: "#6B7280" }}>
+                    <Text style={{ fontSize: 12, color: "#6B7280", fontFamily: "KanitMedium" }}>
                       {isOwnerRow ? "เจ้าของห้อง" : "สมาชิก"} •{" "}
                       {new Date(m.joined_at).toLocaleTimeString("th-TH", {
                         hour: "2-digit",
@@ -1200,7 +1198,7 @@ export default function RoomDetail() {
                       <Text
                         style={[
                           styles.reasonLabel,
-                          selected && { color: "#111827", fontWeight: "700" },
+                          selected && { color: "#111827", fontFamily: "KanitSemiBold" },
                         ]}
                       >
                         {rc.reasoncancel}
@@ -1218,7 +1216,7 @@ export default function RoomDetail() {
                   placeholder="โปรดระบุเหตุผล"
                   placeholderTextColor="#9CA3AF"
                   multiline
-                  style={[styles.textArea, { marginTop: 4 }]}
+                  style={[styles.textArea, { marginTop: 4, fontFamily: "KanitMedium" }]}
                 />
               )}
 
@@ -1522,7 +1520,7 @@ export default function RoomDetail() {
                       <Text
                         style={[
                           styles.reasonLabel,
-                          selected && { color: "#111827", fontWeight: "700" },
+                          selected && { color: "#111827", fontFamily: "KanitSemiBold" },
                         ]}
                       >
                         {r.reasonfail}
@@ -1540,7 +1538,7 @@ export default function RoomDetail() {
                   placeholder="โปรดระบุเหตุผล"
                   placeholderTextColor="#9CA3AF"
                   multiline
-                  style={[styles.textArea, { marginTop: 4 }]}
+                  style={[styles.textArea, { marginTop: 4, fontFamily: "KanitMedium" }]}
                 />
               )}
 
@@ -1588,7 +1586,7 @@ export default function RoomDetail() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>เข้าร่วมห้องบอส</Text>
-            <Text style={{ color: "#374151", textAlign: "center" }}>
+            <Text style={{ color: "#374151", textAlign: "center", fontSize: 14, fontFamily: "KanitMedium" }}>
               กรุณาเพิ่มเพื่อนหัวห้องด้วย Friend Code
             </Text>
             <Text
@@ -1695,20 +1693,20 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: "KanitMedium",
     color: "#111827",
     marginRight: 8,
   },
   badge: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
     alignSelf: "flex-start",
   },
-  badgeText: { color: "#fff", fontWeight: "800", fontSize: 12 },
+  badgeText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 12 },
 
   lineRow: { flexDirection: "row", alignItems: "center", marginTop: 6 },
-  lineText: { color: "#374151", fontSize: 14, marginLeft: 6 },
+  lineText: { color: "#374151", fontSize: 14, marginLeft: 6, fontFamily: "KanitMedium" },
 
   noteBox: {
     backgroundColor: "#F3F4F6",
@@ -1716,7 +1714,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 8,
   },
-  noteText: { color: "#4B5563", fontSize: 12 },
+  noteText: { color: "#4B5563", fontSize: 12, fontFamily: "KanitMedium" },
 
   section: {
     backgroundColor: "#fff",
@@ -1728,13 +1726,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 8,
   },
   sectionTitleHowto: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
   },
   friendRow: {
@@ -1747,12 +1745,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 6,
   },
-  friendText: { color: "#374151", fontSize: 14, alignItems: "center" },
+  friendText: { color: "#374151", fontSize: 14, alignItems: "center", fontFamily: "KanitMedium" },
   friendCodeText: {
     color: "#374151",
     marginLeft: 6,
     fontSize: 24,
-    fontWeight: "500",
+    fontFamily: "KanitMedium",
   },
 
   outlineBtn: {
@@ -1765,7 +1763,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  outlineBtnText: { color: "#ffffffff", fontWeight: "800" },
+  outlineBtnText: { color: "#ffffffff", fontFamily: "KanitSemiBold" },
 
   memberItem: {
     backgroundColor: "#fff",
@@ -1798,7 +1796,7 @@ const styles = StyleSheet.create({
   },
   smallBtnIdle: { backgroundColor: "#fff", borderColor: "#111827" },
   smallBtnDone: { backgroundColor: "#10B981", borderColor: "#10B981" },
-  smallBtnText: { fontSize: 12, fontWeight: "800", color: "#111827" },
+  smallBtnText: { fontSize: 12, fontFamily: "KanitSemiBold", color: "#111827" },
 
   primaryBtn: {
     marginTop: 4,
@@ -1809,7 +1807,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  primaryBtnText: { color: "#fff", fontWeight: "800", marginLeft: 8 },
+  primaryBtnText: { color: "#fff", fontFamily: "KanitSemiBold", marginLeft: 8 },
 
   // Modal
   modalOverlay: {
@@ -1830,7 +1828,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 12,
     textAlign: "center",
@@ -1844,7 +1842,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  modalBtnText: { color: "#fff", fontWeight: "800" },
+  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold" },
   modalCancel: {
     backgroundColor: "#F3F4F6",
     borderWidth: 1,
@@ -1881,6 +1879,7 @@ const styles = StyleSheet.create({
   reasonLabel: {
     fontSize: 14,
     color: "#374151",
+    fontFamily: "KanitMedium",
   },
   modalBtnDisabled: {
     opacity: 0.5,
@@ -1890,7 +1889,7 @@ const styles = StyleSheet.create({
     color: "#374151",
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: "600",
+    fontFamily: "KanitSemiBold",
   },
   sectionHowto: {
     backgroundColor: "#fff",
@@ -1919,13 +1918,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   review: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 13,
+    fontFamily: "KanitMedium",
     marginLeft: 4,
   },
   cptext: {
     color: "#374151",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "KanitSemiBold",
   },
 });

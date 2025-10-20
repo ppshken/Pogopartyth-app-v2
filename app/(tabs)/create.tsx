@@ -229,7 +229,7 @@ export default function CreateRoom() {
                   }}
                 />
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontWeight: "800", color: "#111827" }}>
+                  <Text style={{ color: "#111827", fontFamily: "KanitSemiBold" }}>
                     {boss?.pokemon_name || "เลือกบอสจากรายการ"}
                   </Text>
                   {!!boss && (
@@ -264,7 +264,7 @@ export default function CreateRoom() {
               style={styles.dropdown}
               onPress={() => setTimeOpen(true)}
             >
-              <Text style={{ fontWeight: "800", color: "#111827" }}>
+              <Text style={{ fontFamily: "KanitMedium", color: "#111827" }}>
                 {startAt.toLocaleTimeString("th-TH", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -273,11 +273,11 @@ export default function CreateRoom() {
               <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
             </TouchableOpacity>
             {isPast && (
-              <Text style={{ color: "#EF4444", marginTop: 8, fontSize: 12 }}>
+              <Text style={{ color: "#EF4444", marginTop: 8, fontSize: 12, fontFamily: "KanitMedium" }}>
                 เวลาต้องอยู่ในอนาคต
               </Text>
             )}
-            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
+            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" }}>
               เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออก รอบละ 5 นาที
             </Text>
           </View>
@@ -289,12 +289,12 @@ export default function CreateRoom() {
               style={styles.dropdown}
               onPress={() => setPeopleOpen(true)}
             >
-              <Text style={{ fontWeight: "800", color: "#111827" }}>
+              <Text style={{ fontFamily: "KanitMedium", color: "#111827" }}>
                 {max} คน
               </Text>
               <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
             </TouchableOpacity>
-            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
+            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" }}>
               เลือกสมาชิกได้สูงสุด 2–20 คน
             </Text>
           </View>
@@ -308,11 +308,11 @@ export default function CreateRoom() {
               onChangeText={setNote}
               multiline
               maxLength={100}
-              style={styles.textarea}
+              style={[styles.textarea, {fontFamily: "KanitRegular"}]}
               placeholderTextColor="#9CA3AF"
             />
-            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12 }}>
-              สามารถใส่หมายเหตุได้ไม่เกิน 100 ตัวอักษร
+            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" }}>
+              สามารถใส่ได้ไม่เกิน 100 ตัวอักษร
             </Text>
           </View>
 
@@ -331,7 +331,7 @@ export default function CreateRoom() {
               <Text
                 style={{
                   color: "#fff",
-                  fontWeight: "800",
+                  fontFamily: "KanitSemiBold",
                   textAlign: "center",
                 }}
               >
@@ -361,7 +361,7 @@ export default function CreateRoom() {
             >
               <Text
                 style={{
-                  fontWeight: "800",
+                  fontFamily: "KanitSemiBold",
                   fontSize: 16,
                   marginBottom: 8,
                   textAlign: "center",
@@ -386,7 +386,7 @@ export default function CreateRoom() {
                 value={q}
                 onChangeText={setQ}
                 onSubmitEditing={loadBosses}
-                style={styles.searchInput}
+                style={[styles.searchInput, { fontFamily: "KanitRegular" }]}
               />
               <TouchableOpacity onPress={loadBosses}>
                 <Text style={styles.link}>ค้นหา</Text>
@@ -428,7 +428,7 @@ export default function CreateRoom() {
                         }}
                       />
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontWeight: "800", color: "#111827" }}>
+                        <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
                           {item.pokemon_name}
                         </Text>
                         <Text style={{ color: "#6B7280", fontSize: 12 }}>
@@ -451,6 +451,7 @@ export default function CreateRoom() {
                       color: "#9CA3AF",
                       textAlign: "center",
                       marginTop: 8,
+                      fontFamily: "KanitRegular",
                     }}
                   >
                     ไม่พบบอสในช่วงเวลานี้
@@ -479,7 +480,7 @@ export default function CreateRoom() {
                 marginBottom: 16,
               }}
             >
-              <Text style={{ fontWeight: "800", fontSize: 16 }}>เลือกเวลา</Text>
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>เลือกเวลา</Text>
               <TouchableOpacity
                 onPress={() => setTimeOpen(false)}
                 style={styles.iconBtn}
@@ -510,7 +511,7 @@ export default function CreateRoom() {
                       selected && { backgroundColor: "#e5ebf7ff" },
                     ]}
                   >
-                    <Text style={{ fontWeight: "700", color: "#111827" }}>
+                    <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
                       {item.label}
                     </Text>
                     {selected ? (
@@ -542,7 +543,7 @@ export default function CreateRoom() {
                 marginBottom: 16,
               }}
             >
-              <Text style={{ fontWeight: "800", fontSize: 16 }}>
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
                 จำนวนสมาชิก
               </Text>
               <TouchableOpacity
@@ -565,7 +566,7 @@ export default function CreateRoom() {
                   }}
                   style={[styles.listItem, selected && { backgroundColor: "#e5ebf7ff" }]}
                 >
-                  <Text style={{ fontWeight: "700", color: "#111827" }}>
+                  <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
                     {item} คน
                   </Text>
                   {item === max ? (
@@ -639,7 +640,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
-  label: { fontWeight: "800", fontSize: 14, color: "#111827", marginBottom: 8 },
+  label: { fontSize: 14, color: "#111827", marginBottom: 8, fontFamily: "KanitSemiBold" },
   dropdown: {
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 
-  link: { color: "#2563EB", fontWeight: "700" },
+  link: { color: "#2563EB", fontFamily: "KanitMedium" },
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.35)",
@@ -760,8 +761,8 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: "800",
+    fontSize: 18,
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 12,
     textAlign: "center",
@@ -772,7 +773,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  bulletText: { flex: 1, color: "#374151", fontSize: 14, lineHeight: 20 },
+  bulletText: { flex: 1, color: "#374151", fontSize: 14, lineHeight: 20, fontFamily: "KanitRegular" },
 
   modalPrimaryBtn: {
     marginTop: 12,
@@ -781,7 +782,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: "center",
   },
-  modalPrimaryBtnText: { color: "#fff", fontWeight: "800" },
+  modalPrimaryBtnText: { color: "#fff", fontFamily: "KanitMedium" },
   iconBtn: {
     marginLeft: "auto",
     width: 36,

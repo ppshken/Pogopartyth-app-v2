@@ -29,9 +29,9 @@ type FullUser = {
   created_at?: string | null;
 };
 
-type RatingOwner = { 
-  avg: number | null; 
-  count: number 
+type RatingOwner = {
+  avg: number | null;
+  count: number;
 };
 
 export default function Profile() {
@@ -69,7 +69,7 @@ export default function Profile() {
   const teamColors: Record<string, string> = {
     Mystic: "#3B82F6",
     Valor: "#EF4444",
-    Instinct: "#FBBF24",
+    Instinct: "#e6ae21ff",
   };
 
   function formatFriendCode(v: string) {
@@ -119,13 +119,6 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            <View style={styles.badgeDark}>
-              <Ionicons name="calendar-outline" size={14} />
-              <Text style={styles.badgeDarkText}>
-                {" เข้าร่วมเมื่อ "}
-                {user?.created_at ? user.created_at : "—"}
-              </Text>
-            </View>
             {user?.trainer_name ? (
               <View style={styles.badgeMuted}>
                 <Ionicons name="ribbon-outline" size={14} color="#111827" />
@@ -177,7 +170,16 @@ export default function Profile() {
           <Ionicons name="cube-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>ทีม</Text>
           <View style={{ flex: 1 }} />
-          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: teamColors[user?.team ?? ""] ?? "#E5E7EB", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: teamColors[user?.team ?? ""] ?? "#E5E7EB",
+              paddingHorizontal: 8,
+              paddingVertical: 2,
+              borderRadius: 4,
+            }}
+          >
             <Text style={[styles.rowValue, { color: "#ffffffff" }]}>
               {user?.team || "-"}
             </Text>
@@ -202,7 +204,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 22,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 12,
   },
@@ -233,25 +235,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
   },
-  avatarLetter: { fontSize: 28, fontWeight: "800", color: "#374151" },
+  avatarLetter: { fontSize: 28, fontFamily: "KanitSemiBold", color: "#374151" },
 
   name: {
     fontSize: 18,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     textAlign: "center",
   },
-  email: { fontSize: 13, color: "#6B7280", textAlign: "center", marginTop: 2 },
 
   badgeDark: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 999,
+    borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
     alignSelf: "flex-start",
   },
-  badgeDarkText: { fontSize: 12, fontWeight: "700" },
+  badgeDarkText: {
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+    color: "#ffffffff",
+  },
 
   badgeMuted: {
     flexDirection: "row",
@@ -262,18 +267,27 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     alignSelf: "flex-start",
   },
-  badgeMutedText: { color: "#111827", fontSize: 12, fontWeight: "700" },
+  badgeMutedText: {
+    color: "#111827",
+    fontSize: 12,
+    fontFamily: "KanitSemiBold",
+  },
 
   cardTitle: {
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 8,
   },
 
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },
-  rowText: { marginLeft: 8, color: "#374151", fontSize: 14 },
-  rowValue: { color: "#111827", fontWeight: "700" },
+  rowText: {
+    marginLeft: 8,
+    color: "#374151",
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+  },
+  rowValue: { color: "#111827", fontFamily: "KanitSemiBold" },
 
   outlineBtn: {
     flex: 1,
@@ -287,7 +301,7 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: "#fff",
   },
-  outlineBtnText: { color: "#111827", fontWeight: "800" },
+  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
 
   primaryBtn: {
     marginTop: 10,
@@ -298,7 +312,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  primaryBtnText: { color: "#fff", fontWeight: "800", marginLeft: 6 },
+  primaryBtnText: { color: "#fff", fontFamily: "KanitSemiBold", marginLeft: 6 },
   card_stats: {
     backgroundColor: "#fff",
     borderRadius: 16,

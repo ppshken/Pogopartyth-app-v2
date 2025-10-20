@@ -277,7 +277,7 @@ export default function ProfileEdit() {
                   style={{ height: 20, width: 20 }}
                 />
               )}
-              <Text style={{ color: team ? "#111827" : "#9CA3AF" }}>
+              <Text style={{ color: team ? "#111827" : "#9CA3AF", fontFamily: "KanitMedium" }}>
                 {team || "เลือกทีม"}
               </Text>
             </View>
@@ -292,7 +292,7 @@ export default function ProfileEdit() {
           {/* modal เลือกทีม */}
           <Modal
             visible={teamopen}
-            animationType="slide"
+            animationType="fade"
             transparent
             onRequestClose={() => setTeamopen(false)}
           >
@@ -302,7 +302,7 @@ export default function ProfileEdit() {
               onPressOut={() => setTeamopen(false)}
             >
               <View style={styles.modalContent}>
-                <Text style={{ fontSize: 18, fontWeight: "600" }}>
+                <Text style={{ fontSize: 16, fontFamily: "KanitSemiBold" }}>
                   เลือกทีม
                 </Text>
                 {teams.map((t) => {
@@ -327,7 +327,7 @@ export default function ProfileEdit() {
                         source={{ uri: t.image }}
                         style={{ height: 40, width: 40 }}
                       />
-                      <Text style={{ fontSize: 16 }}>{t.team}</Text>
+                      <Text style={{ fontSize: 16, fontFamily: "KanitMedium" }}>{t.team}</Text>
                       {team === t.team && (
                         <Ionicons
                           name="checkmark"
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
   },
-  cardTitle: { fontSize: 16, fontWeight: "800", color: "#111827" },
+  cardTitle: { fontSize: 16, fontFamily: "KanitSemiBold", color: "#111827" },
 
   avatar: {
     width: 96,
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     color: "#374151",
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "KanitSemiBold",
   },
   input: {
     borderWidth: 1,
@@ -416,9 +416,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: "#111827",
     backgroundColor: "#fff",
+    fontFamily: "KanitMedium"
   },
 
-  outlineBtnText: { color: "#111827", fontWeight: "800" },
+  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
 
   primaryBtn: {
     marginTop: 8,
@@ -440,7 +441,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  primaryBtnText: { color: "#fff", fontWeight: "800", marginLeft: 6 },
+  primaryBtnText: { color: "#fff", fontFamily: "KanitSemiBold", marginLeft: 6 },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",

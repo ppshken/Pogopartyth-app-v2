@@ -204,7 +204,7 @@ export default function RoomsIndex() {
         }
         ListEmptyComponent={
           <Text
-            style={{ color: "#9CA3AF", textAlign: "center", marginTop: 24 }}
+            style={{ color: "#9CA3AF", textAlign: "center", marginTop: 24, fontSize: 16, fontFamily: "KanitMedium" }}
           >
             {q || selectedBossId ? "ไม่พบห้องที่ตรงกับตัวกรอง" : "ยังไม่มีห้อง"}
           </Text>
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
   },
-  searchInput: { flex: 1, color: "#111827" },
+  searchInput: { flex: 1, color: "#111827", fontSize: 14, fontFamily: "KanitMedium" },
 
   // ✅ บาร์ตัวเลือก “สูงคงที่”
   bossBar: {
@@ -275,8 +275,8 @@ const styles = StyleSheet.create({
   bossImgAll: { alignItems: "center", justifyContent: "center" },
 
   bossText: {
-    fontSize: 12,
-    fontWeight: "800",
+    fontSize: 14,
+    fontFamily: "KanitSemiBold",
     lineHeight: 16, // ฟิกบรรทัด กันสูงเปลี่ยน
     maxWidth: 110, // กันชื่อยาวห่อบรรทัด
   },

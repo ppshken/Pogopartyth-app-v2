@@ -164,18 +164,23 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginRight: 8,
   },
   badge: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingVertical: 2,
+    borderRadius: 6,
     alignSelf: "flex-start",
   },
-  badgeText: { color: "#fff", fontWeight: "800", fontSize: 12 },
-  subtle: { marginTop: 2, color: "#6B7280", fontSize: 12 },
+  badgeText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 12 },
+  subtle: {
+    marginTop: 2,
+    color: "#6B7280",
+    fontSize: 12,
+    fontFamily: "KanitMedium",
+  },
 
   metaRow: {
     flexDirection: "row",
@@ -184,17 +189,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
     justifyContent: "space-between",
   },
-  metaText: { color: "#374151", fontSize: 12, fontWeight: "700" },
+  metaText: { color: "#374151", fontSize: 12, fontFamily: "KanitSemiBold" },
 
   chipDark: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
     backgroundColor: "#3066dbff",
     flexDirection: "row",
     alignItems: "center",
   },
-  chipDarkText: { color: "#fff", fontWeight: "700", fontSize: 12 },
+  chipDarkText: { color: "#fff", fontFamily: "KanitMedium", fontSize: 12 },
 
   note: { marginTop: 6, color: "#4B5563", fontSize: 12 },
 

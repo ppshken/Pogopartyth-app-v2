@@ -140,7 +140,7 @@ export default function MyRaid() {
               </View>
 
               {data.length === 0 ? (
-                <Text style={{ color: "#9CA3AF", paddingVertical: 8 }}>
+                <Text style={{ color: "#9CA3AF", paddingVertical: 8, fontSize: 14, fontFamily: "KanitMedium" }}>
                   {isCreatedSection
                     ? "ยังไม่มีห้องที่คุณสร้าง"
                     : "ยังไม่มีห้องที่คุณเข้าร่วม"}
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
   },
 });

@@ -123,7 +123,7 @@ export default function FriendsScreen() {
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Text style={{ fontWeight: "700", fontSize: 16 }}>
+            <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
               {item.username}
             </Text>
             <View
@@ -138,7 +138,7 @@ export default function FriendsScreen() {
                 style={{
                   color: "#ffffffff",
                   fontSize: 12,
-                  fontWeight: "600",
+                  fontFamily: "KanitSemiBold",
                 }}
               >
                 Level {item.level}
@@ -151,7 +151,7 @@ export default function FriendsScreen() {
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
               <Ionicons name="star" size={14} color="#FBBF24" />
-              <Text style={{ color: "#000000ff", marginTop: 2 }}>
+              <Text style={{ color: "#000000ff", marginTop: 2, fontFamily: "KanitMedium" }}>
                 {item.rating_owner}
               </Text>
             </View>
@@ -159,12 +159,12 @@ export default function FriendsScreen() {
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
-              <Text style={{ color: "#6B7280", marginTop: 2 }}>-</Text>
+              <Text style={{ color: "#6B7280", marginTop: 2, fontFamily: "KanitMedium" }}>-</Text>
             </View>
           )}
 
           {item.friend_code_masked ? (
-            <Text style={{ color: "#6B7280", marginTop: 2 }}>
+            <Text style={{ color: "#6B7280", marginTop: 2, fontFamily: "KanitMedium" }}>
               Friend code: {item.friend_code_masked}
             </Text>
           ) : null}
@@ -199,7 +199,7 @@ export default function FriendsScreen() {
             onChangeText={onChangeQ}
             autoCapitalize="none"
             autoCorrect={false}
-            style={{ fontSize: 16, flex: 1 }}
+            style={{ fontSize: 16, flex: 1, color: "#111827", fontFamily: "KanitMedium" }}
             returnKeyType="search"
             onSubmitEditing={() => fetchFirst(q)}
           />
@@ -227,7 +227,7 @@ export default function FriendsScreen() {
         ListEmptyComponent={
           !loading ? (
             <View style={{ padding: 24, alignItems: "center" }}>
-              <Text style={{ color: "#6B7280" }}>ไม่พบผลลัพธ์ที่ค้นหา</Text>
+              <Text style={{ color: "#6B7280", fontFamily: "KanitMedium", fontSize: 16 }}>ไม่พบผลลัพธ์ที่ค้นหา</Text>
             </View>
           ) : null
         }

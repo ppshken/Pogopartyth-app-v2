@@ -147,6 +147,7 @@ export default function ChatScreen() {
               borderColor: "#c5c5c5ff",
               padding: 12,
               borderRadius: 10,
+              fontFamily: "KanitMedium",
             }}
             onSubmitEditing={onSend}
             returnKeyType="send"

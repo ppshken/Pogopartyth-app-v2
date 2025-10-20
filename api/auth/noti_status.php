@@ -41,11 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   try {
     $db = pdo();
-    if($status === 'off'){
-      // ปิดการแจ้งเตือน ให้ล้าง device_token ด้วย
-      $stmt = $db->prepare("UPDATE users SET noti_status = ?, device_token = NULL WHERE id = ?");
-      $ok = $stmt->execute([$status, $userId]);
-    } 
 
     $stmt = $db->prepare("UPDATE users SET noti_status = ? WHERE id = ?");
     $ok = $stmt->execute([$status, $userId]);

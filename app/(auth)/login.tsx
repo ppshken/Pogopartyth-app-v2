@@ -232,7 +232,7 @@ export default function Login() {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPw}
-                  style={styles.input}
+                  style={[styles.input,{ paddingVertical: 2 }]}
                   returnKeyType="done"
                   onSubmitEditing={onLogin}
                 />
@@ -275,7 +275,7 @@ export default function Login() {
               >
                 <View style={{ flex: 1, height: 1, backgroundColor: BORDER }} />
                 <Text
-                  style={{ marginHorizontal: 8, color: TEXT_SUB, fontSize: 12 }}
+                  style={{ marginHorizontal: 8, color: TEXT_SUB, fontSize: 12, fontFamily: "KanitRegular" }}
                 >
                   หรือ
                 </Text>
@@ -309,7 +309,7 @@ export default function Login() {
               </TouchableOpacity>
 
               <View style={styles.bottomRow}>
-                <Text style={{ color: TEXT_SUB }}>ยังไม่มีบัญชี?</Text>
+                <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>ยังไม่มีบัญชี?</Text>
                 <TouchableOpacity
                   onPress={() => router.push("/(auth)/register")}
                 >
@@ -389,8 +389,8 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 0,
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 24,
+    fontFamily: "KanitMedium",
     color: TEXT_MAIN,
     marginRight: 8,
     letterSpacing: 0.3,
@@ -402,9 +402,9 @@ const styles = StyleSheet.create({
     backgroundColor: ACCENT,
     alignSelf: "flex-start",
   },
-  badgeText: { color: "#fff", fontWeight: "800", fontSize: 12 },
+  badgeText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 12 },
   lineRow: { flexDirection: "row", alignItems: "center", marginTop: 6, gap: 6 },
-  lineText: { color: TEXT_DIM, fontSize: 14 },
+  lineText: { color: TEXT_DIM, fontSize: 14, fontFamily: "KanitRegular" },
   card: {
     backgroundColor: CARD_BG,
     borderRadius: 18,
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 8,
   },
-  label: { color: TEXT_MAIN, fontWeight: "700", marginBottom: 6 },
+  label: { color: TEXT_MAIN, fontFamily: "KanitSemiBold", marginBottom: 6 },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -427,8 +427,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  input: { flex: 1, color: TEXT_MAIN },
-  errorText: { color: ERROR, marginTop: 6, fontSize: 12 },
+  input: { flex: 1, color: TEXT_MAIN, fontSize: 15, fontFamily: "KanitRegular" },
+  errorText: { color: ERROR, marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" },
   primaryBtn: {
     marginTop: 16,
     borderRadius: 12,
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     color: "#fff",
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     fontSize: 16,
     letterSpacing: 0.2,
   },
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
   },
   googleBtnText: {
     color: TEXT_MAIN,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     fontSize: 15,
     letterSpacing: 0.2,
   },
@@ -473,5 +473,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  link: { color: ACCENT, textDecorationLine: "underline", fontWeight: "800" },
+  link: { color: ACCENT, textDecorationLine: "underline", fontFamily: "KanitSemiBold", fontSize: 14 },
 });

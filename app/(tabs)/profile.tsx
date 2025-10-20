@@ -182,10 +182,11 @@ export default function Profile() {
               flexWrap: "wrap",
               gap: 8,
               justifyContent: "center",
+              marginTop: 8,
             }}
           >
-            <View style={styles.badgeDark}>
-              <Ionicons name="calendar-outline" size={14} />
+            <View style={[styles.badgeDark, {backgroundColor: teamColors [user.team ?? ""] ?? "#E5E7EB"}]}>
+              <Ionicons name="calendar-outline" size={14} color="#ffffff" />
               <Text style={styles.badgeDarkText}>
                 {" เข้าร่วมเมื่อ "}
                 {user?.created_at ? user.created_at : "—"}
@@ -243,7 +244,7 @@ export default function Profile() {
           <Ionicons name="cube-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>ทีม</Text>
           <View style={{ flex: 1 }} />
-          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: teamColors [user.team ?? ""] ?? "#E5E7EB", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: teamColors [user.team ?? ""] ?? "#E5E7EB", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
             <Text style={[styles.rowValue, { color: "#ffffffff" }]}>
               {user?.team || "-"}
             </Text>
@@ -276,19 +277,19 @@ export default function Profile() {
         <View style={styles.cardSection}>
           <View style={styles.card_stats_detail}>
             <Ionicons name="paw-outline" size={24} />
-            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
               จำนวนห้องที่สร้างทั้งหมด
             </Text>
-            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
               {stats?.rooms_owned}
             </Text>
           </View>
           <View style={styles.card_stats_detail}>
             <Ionicons name="invert-mode-outline" size={24} />
-            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
               จำนวนห้องที่เข้าร่วมทั้งหมด
             </Text>
-            <Text style={{ fontSize: 12, fontWeight: "700" }}>
+            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
               {stats?.rooms_joined}
             </Text>
           </View>
@@ -326,6 +327,7 @@ export default function Profile() {
               fontSize: 12,
               textAlign: "center",
               marginTop: 12,
+              fontFamily: "KanitRegular",
             }}
           >
             เวอร์ชัน 1.0.0
@@ -336,6 +338,7 @@ export default function Profile() {
               fontSize: 12,
               textAlign: "center",
               marginTop: 4,
+              fontFamily: "KanitRegular",
             }}
           >
             สร้างโดย PogoParty TH
@@ -349,9 +352,9 @@ export default function Profile() {
 const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 22,
-    fontWeight: "800",
     color: "#111827",
     marginBottom: 12,
+    fontFamily: "KanitBold",
   },
 
   card: {
@@ -361,6 +364,11 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     padding: 16,
     marginBottom: 12,
+    shadowColor: "rgba(16,24,40,0.06)",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
   },
 
   avatar: {
@@ -380,25 +388,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
   },
-  avatarLetter: { fontSize: 28, fontWeight: "800", color: "#374151" },
+  avatarLetter: { fontSize: 28, color: "#374151", fontFamily: "KanitBold" },
 
   name: {
     fontSize: 18,
-    fontWeight: "800",
     color: "#111827",
     textAlign: "center",
+    fontFamily: "KanitSemiBold",
   },
-  email: { fontSize: 13, color: "#6B7280", textAlign: "center", marginTop: 2 },
+  email: {
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    marginTop: 2,
+    fontFamily: "KanitRegular",
+  },
 
   badgeDark: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 999,
+    borderRadius: 6,
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 2,
     alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
-  badgeDarkText: { fontSize: 12, fontWeight: "700" },
+  badgeDarkText: { fontSize: 14, fontFamily: "KanitMedium", color: "#ffffffff" },
 
   badgeMuted: {
     flexDirection: "row",
@@ -408,19 +424,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
-  badgeMutedText: { color: "#111827", fontSize: 12, fontWeight: "700" },
+  badgeMutedText: { color: "#111827", fontSize: 12, fontFamily: "KanitSemiBold" },
 
   cardTitle: {
     fontSize: 16,
-    fontWeight: "800",
     color: "#111827",
     marginBottom: 8,
+    fontFamily: "KanitBold",
   },
 
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },
-  rowText: { marginLeft: 8, color: "#374151", fontSize: 14 },
-  rowValue: { color: "#111827", fontWeight: "700" },
+  rowText: { marginLeft: 8, color: "#374151", fontSize: 14, fontFamily: "KanitRegular" },
+  rowValue: { color: "#111827", fontFamily: "KanitSemiBold" },
 
   outlineBtn: {
     flex: 1,
@@ -434,7 +452,7 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: "#fff",
   },
-  outlineBtnText: { color: "#111827", fontWeight: "800" },
+  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
 
   primaryBtn: {
     marginTop: 10,
@@ -445,7 +463,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  primaryBtnText: { color: "#fff", fontWeight: "800", marginLeft: 6 },
+  primaryBtnText: { color: "#fff", marginLeft: 6, fontFamily: "KanitBold" },
+
   card_stats: {
     backgroundColor: "#fff",
     borderRadius: 16,
@@ -470,4 +489,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
+
+  // เพิ่มสไตล์สำหรับบล็อกสถิติ (แทน inline fontWeight)
+  statLabel: { fontSize: 12, fontFamily: "KanitSemiBold", color: "#111827" },
+  statNumber: { fontSize: 12, fontFamily: "KanitBold", color: "#111827" },
+
+  // footer ข้างล่าง
+  footNote: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 12,
+    fontFamily: "KanitRegular",
+  },
+  footNote2: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 4,
+    fontFamily: "KanitRegular",
+  },
 });
+

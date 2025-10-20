@@ -8,8 +8,20 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SnackHost } from "../components/Snackbar";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
+import { useFonts } from "expo-font";
 
 export default function Layout() {
+  const [fontsLoaded] = useFonts({
+    KanitRegular: require("../assets/fonts/Kanit-Regular.ttf"), // ฟอนต์ปกติ
+    KanitMedium: require("../assets/fonts/Kanit-Medium.ttf"), // ฟอนต์น้ำหนักกลาง
+    KanitSemiBold: require("../assets/fonts/Kanit-SemiBold.ttf"), // ฟอนต์หนากว่า
+    KanitBold: require("../assets/fonts/Kanit-Bold.ttf"), // ฟอนต์หนาสุด
+  });
+
+  useEffect(() => {
+    if (!fontsLoaded) return;
+  }, [fontsLoaded]);
+
   // ตั้งค่า header Authorization จาก token ที่เคยเก็บไว้
   useEffect(() => {
     (async () => {
@@ -62,7 +74,7 @@ export default function Layout() {
           screenOptions={{
             headerShown: false,
             headerBackTitle: "กลับ",
-            headerTitleStyle: { fontSize: 16, fontWeight: "800" },
+            headerTitleStyle: { fontSize: 16, fontFamily: "KanitSemiBold" },
           }}
         >
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />

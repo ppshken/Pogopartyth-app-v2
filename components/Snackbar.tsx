@@ -160,6 +160,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   // ใช้ Kanit จาก defaultProps ของคุณอยู่แล้ว
-  text: { color: "#fff", fontWeight: "700", flexShrink: 1 },
-  action: { color: "#fff", fontWeight: "800", marginLeft: 8, textDecorationLine: "underline" },
+  text: { color: "#fff", fontFamily: "KanitSemiBold", flexShrink: 1 },
+  action: { color: "#fff", fontFamily: "KanitSemiBold", marginLeft: 8, textDecorationLine: "underline" },
 });

@@ -31,7 +31,6 @@ export default function SettingApp() {
   const [loading, setLoading] = useState(false); // โหลดโปรไฟล์
   const [updating, setUpdating] = useState(false); // ยิง API toggle
   const [enabled, setEnabled] = useState<boolean>(false);
-  const [addPushTokenListener, setAddPushTokenListener] = useState<any>(null);
 
   // โหลดข้อมูลจาก backend
   const load = useCallback(async () => {
@@ -212,7 +211,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 16,
   },
@@ -226,8 +225,8 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     marginBottom: 12,
   },
-  label: { fontSize: 16, fontWeight: "800", color: "#111827" },
-  desc: { color: "#6B7280", marginTop: 2 },
+  label: { fontSize: 16, fontFamily: "KanitSemiBold", color: "#111827" },
+  desc: { color: "#6B7280", marginTop: 2, fontSize: 14, fontFamily: "KanitMedium" },
   reportBtn: {
     backgroundColor: "#2563EB",
     paddingVertical: 12,
@@ -237,7 +236,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   reportBtnText: { color: "#fff", fontWeight: "800" },
-  note: { color: "#6B7280", marginTop: 12, fontSize: 12 },
+  note: { color: "#6B7280", marginTop: 12, fontSize: 14, fontFamily: "KanitMedium" },
   input: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -248,6 +247,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginTop: 8,
+    fontFamily: "KanitMedium",
   },
   submitBtn: {
     backgroundColor: "#2563EB",
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   submitText: {
     color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
   },
 });

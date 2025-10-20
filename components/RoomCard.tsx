@@ -178,18 +178,24 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#111827",
     marginRight: 8,
+    fontFamily: "KanitSemiBold",
   },
 
   countChip: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
     flexDirection: "row",
     alignItems: "center",
   },
-  countText: { color: "#FFFFFF", fontSize: 12, fontWeight: "700" },
+  countText: { color: "#FFFFFF", fontSize: 12, fontFamily: "KanitMedium" },
 
-  owner: { marginTop: 2, color: "#111827", fontSize: 12, fontWeight: "700" },
+  owner: {
+    marginTop: 2,
+    color: "#111827",
+    fontSize: 12,
+    fontFamily: "KanitMedium",
+  },
 
   metaRow: {
     flexDirection: "row",
@@ -197,14 +203,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   people: { flexDirection: "row", alignItems: "center" },
-  metaText: { color: "#374151", fontSize: 12, fontWeight: "700" },
+  metaText: { color: "#374151", fontSize: 12, fontFamily: "KanitSemiBold" },
 
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 6 },
   statusText: {
     color: "#fff",
-    fontWeight: "800",
     fontSize: 12,
     letterSpacing: 0.2,
+    fontFamily: "KanitSemiBold",
   },
 
   note: { marginTop: 6, color: "#4B5563", fontSize: 14 },

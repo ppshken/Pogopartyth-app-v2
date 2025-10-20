@@ -1,6 +1,14 @@
 // components/HowToJoinRoomModal.tsx
 import React from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 type Props = {
@@ -11,15 +19,20 @@ type Props = {
 export default function HowToJoinRoomModal({ visible, onClose }: Props) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
+      {/* แตะพื้นหลังเพื่อปิด */}
+      <Pressable style={styles.overlay} onPress={onClose}>
+        {/* กันไม่ให้แตะทะลุเนื้อหา */}
+        <Pressable style={styles.sheet} onPress={() => {}}>
+          {/* Grabber */}
+          <View style={styles.grabber} />
+
           {/* Header */}
           <View style={styles.header}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Ionicons name="help-circle-outline" size={20} color="#111827" />
               <Text style={styles.title}>วิธีใช้งานเมื่อเข้าห้อง</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.iconBtn}>
+            <TouchableOpacity onPress={onClose} style={styles.iconBtn} accessibilityLabel="ปิด">
               <Ionicons name="close" size={18} color="#111827" />
             </TouchableOpacity>
           </View>
@@ -29,7 +42,7 @@ export default function HowToJoinRoomModal({ visible, onClose }: Props) {
             contentContainerStyle={{ paddingBottom: 8 }}
             showsVerticalScrollIndicator={false}
           >
-            <Section title="ภาพรวม">
+            <Section title="ภาพรวม" style={{ marginBottom: 12 }}>
               <Bullet>ดูรูปบอส, ชื่อห้อง, เวลานับถอยหลัง, สถานะ (เปิดรับ/เชิญแล้ว/เต็ม/หมดเวลา)</Bullet>
               <Bullet>เห็นจำนวนสมาชิกปัจจุบัน / สูงสุด</Bullet>
             </Section>
@@ -64,16 +77,23 @@ export default function HowToJoinRoomModal({ visible, onClose }: Props) {
               <Bullet>ห้องเต็ม ➜ ขึ้น “เต็ม” และไม่สามารถเข้าร่วมเพิ่มได้</Bullet>
             </Section>
           </ScrollView>
-
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+  style,
+}: {
+  title: string;
+  children: React.ReactNode;
+  style?: any;
+}) {
   return (
-    <View style={{ marginBottom: 12 }}>
+    <View style={[{ marginBottom: 12 }, style]}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={{ gap: 6 }}>{children}</View>
     </View>
@@ -103,6 +123,20 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     padding: 16,
     maxHeight: "80%",
+    // เงา/ยกชั้นเล็กๆ
+    shadowColor: "rgba(16,24,40,0.06)",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 2,
+  },
+  grabber: {
+    alignSelf: "center",
+    width: 40,
+    height: 4,
+    borderRadius: 999,
+    backgroundColor: "#E5E7EB",
+    marginBottom: 8,
   },
   header: {
     flexDirection: "row",
@@ -111,8 +145,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "800",
     color: "#111827",
+    fontFamily: "KanitSemiBold",
   },
   iconBtn: {
     marginLeft: "auto",
@@ -125,17 +159,17 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: "800",
     color: "#111827",
     marginBottom: 4,
+    fontFamily: "KanitBold",
   },
   bulletRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 8,
   },
-  bulletDot: { color: "#111827", fontSize: 14, lineHeight: 20 },
-  bulletText: { color: "#374151", fontSize: 14, flex: 1, lineHeight: 20 },
+  bulletDot: { color: "#111827", fontSize: 14, lineHeight: 20, fontFamily: "KanitBold" },
+  bulletText: { color: "#374151", fontSize: 14, flex: 1, lineHeight: 20, fontFamily: "KanitRegular" },
   closeBtn: {
     marginTop: 8,
     backgroundColor: "#111827",
@@ -143,5 +177,5 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: "center",
   },
-  closeBtnText: { color: "#fff", fontWeight: "800" },
+  closeBtnText: { color: "#fff", fontFamily: "KanitBold" },
 });

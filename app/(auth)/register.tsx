@@ -291,8 +291,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  title: { fontSize: 20, fontWeight: "900", color: COLORS.text },
-  subtitle: { color: COLORS.sub },
+  // เดิม fontWeight: "900"
+  title: { fontSize: 20, color: COLORS.text, fontFamily: "KanitBold" },
+  subtitle: { color: COLORS.sub, fontFamily: "KanitRegular" },
 
   card: {
     backgroundColor: COLORS.card,
@@ -301,13 +302,15 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     padding: 16,
   },
+  // เดิม fontWeight: "900"
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "900",
     color: COLORS.text,
     marginBottom: 12,
+    fontFamily: "KanitBold",
   },
-  label: { color: COLORS.text, fontWeight: "700", marginBottom: 6 },
+  // เดิม fontWeight: "700"
+  label: { color: COLORS.text, marginBottom: 6, fontFamily: "KanitSemiBold" },
 
   inputRow: {
     flexDirection: "row",
@@ -319,13 +322,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  input: { flex: 1, color: COLORS.text },
+  // ให้ default เป็น Regular (จะซ้อนกับ TextInput.defaultProps อยู่แล้ว)
+  input: { flex: 1, color: COLORS.text, fontFamily: "KanitRegular" },
 
+  // เดิม fontWeight: "700"
   hintError: {
     color: "#DC2626",
     fontSize: 12,
     marginTop: 6,
-    fontWeight: "700",
+    fontFamily: "KanitSemiBold",
   },
 
   agreeRow: {
@@ -348,7 +353,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
-  agreeText: { color: COLORS.sub, flex: 1, lineHeight: 18 },
+  // ข้อความยาว อ่านง่าย → ใช้ Regular
+  agreeText: { color: COLORS.sub, flex: 1, lineHeight: 18, fontFamily: "KanitRegular" },
 
   primaryBtn: {
     borderRadius: 12,
@@ -362,11 +368,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
+  // เดิม fontWeight: "900"
   primaryBtnText: {
     color: "#fff",
-    fontWeight: "900",
     fontSize: 16,
     letterSpacing: 0.2,
+    fontFamily: "KanitBold",
   },
 
   bottomRow: {
@@ -375,10 +382,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
   },
+  // เดิม fontWeight: "900"
   link: {
     color: COLORS.primary,
     textDecorationLine: "underline",
-    fontWeight: "900",
     marginLeft: 4,
+    fontFamily: "KanitBold",
   },
 });
+
