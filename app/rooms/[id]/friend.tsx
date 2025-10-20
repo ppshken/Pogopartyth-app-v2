@@ -109,9 +109,6 @@ export default function Profile() {
           <Text style={styles.name} numberOfLines={1}>
             {user?.username || "ไม่ระบุชื่อ"}
           </Text>
-          <Text style={styles.email} numberOfLines={1}>
-            {user?.email || "-"}
-          </Text>
 
           {/* Chips / quick actions */}
           <View

@@ -143,7 +143,7 @@ export default function CreateRoom() {
 
   // 3) Max members
   const [peopleOpen, setPeopleOpen] = useState(false);
-  const PEOPLE = useMemo(() => Array.from({ length: 19 }, (_, i) => i + 2), []);
+  const PEOPLE = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 2), []);
   const [max, setMax] = useState<number>(6);
 
   // 4) Note

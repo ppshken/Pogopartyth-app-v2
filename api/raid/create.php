@@ -59,8 +59,10 @@ try {
     jsonResponse(false, null, 'คุณสร้างห้องถี่เกินไป ลองใหม่อีกครั้งภายใน 2 นาที', 429);
   }
 
-  // ป้องกันสร้างห้องบอสซ้ำของตัวเอง (ยังไม่ปิด)
-  $antiRaidboss = $db->prepare("
+  // ---- เช็กห้องบอสตัวเดียวกันของเจ้าของ ตามเงื่อนไขที่กำหนด ----
+
+  // 1) ถ้ามีห้องสถานะ ACTIVE ของบอสตัวนี้อยู่แล้ว → บล็อก: ให้ยกเลิกห้องก่อน
+  $qActive = $db->prepare("
     SELECT r.id
     FROM raid_rooms r
     WHERE r.owner_id = :owner
@@ -69,21 +71,58 @@ try {
         OR
         (:raid_boss_id IS NULL AND r.boss IS NOT NULL AND LOWER(r.boss) = LOWER(:boss))
       )
-      AND LOWER(r.status) NOT IN ('closed','canceled')
+      AND LOWER(r.status) = 'active'
     ORDER BY r.id DESC
     LIMIT 1
   ");
-
-  $antiRaidboss->execute([
+  $qActive->execute([
     ':owner'        => $userId,
-    ':raid_boss_id' => $raid_boss_id,            // อาจเป็น null ได้
+    ':raid_boss_id' => $raid_boss_id,
+    ':boss'         => $boss !== '' ? $boss : null,
+  ]);
+  if ($qActive->fetch()) {
+    $db->rollBack();
+    jsonResponse(false, null, 'คุณมีห้องสถานะ Active อยู่แล้ว กรุณายกเลิกห้องก่อน', 409);
+  }
+
+  // 2) ถ้าห้องล่าสุดของบอสตัวนี้เป็น INVITED และยังไม่มีรีวิวของ "เจ้าของเอง" → บล็อก: ให้ไปรีวิวก่อน
+  $qInvitedNeedReview = $db->prepare("
+    SELECT 
+      r.id,
+      r.boss,
+      rv.room_id AS reviewed_room_id
+    FROM raid_rooms r
+    LEFT JOIN raid_reviews rv
+      ON rv.room_id = r.id
+     AND rv.user_id = r.owner_id
+    WHERE r.owner_id = :owner
+      AND (
+        (:raid_boss_id IS NOT NULL AND r.raid_boss_id = :raid_boss_id)
+        OR
+        (:raid_boss_id IS NULL AND r.boss IS NOT NULL AND LOWER(r.boss) = LOWER(:boss))
+      )
+      AND LOWER(r.status) = 'invited'
+    ORDER BY r.id DESC
+    LIMIT 1
+  ");
+  $qInvitedNeedReview->execute([
+    ':owner'        => $userId,
+    ':raid_boss_id' => $raid_boss_id,
     ':boss'         => $boss !== '' ? $boss : null,
   ]);
 
-  if ($antiRaidboss->fetch()) {
-    $db->rollBack();
-    jsonResponse(false, null, 'คุณมีห้องของบอสนี้อยู่แล้ว กรุณาปิดห้องเดิม หรือยกเลิกก่อน', 409);
+  if ($row = $qInvitedNeedReview->fetch(PDO::FETCH_ASSOC)) {
+    if (empty($row['reviewed_room_id'])) {
+      $db->rollBack();
+      $msg = sprintf(
+        'กรุณารีวิว ห้องของคุณก่อน (ห้อง #%d%s) แล้วจึงสร้างห้องใหม่',
+        (int)$row['id'],
+        $row['boss'] ? " - บอส {$row['boss']}" : ''
+      );
+      jsonResponse(false, null, $msg, 409);
+    }
   }
+
   
   // สร้างห้อง
   $stmt = $db->prepare("

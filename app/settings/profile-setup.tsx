@@ -311,7 +311,7 @@ export default function ProfileEdit() {
                         <Ionicons
                           name="checkmark"
                           size={30}
-                          color="#10B981"
+                          color="#2563EB"
                           style={{ marginLeft: "auto" }}
                         />
                       )}                     
@@ -446,9 +446,10 @@ const styles = StyleSheet.create({
   modalItem: {
     paddingVertical: 12,
     marginTop: 8,
-    borderRadius: 8,
+    borderRadius: 14,
     paddingHorizontal: 8,
     borderWidth: 1,
     borderColor: "#E5E7EB",
+    paddingLeft: 12,
   },
 });

@@ -665,8 +665,10 @@ export default function RoomDetail() {
             </View>
           </View>
 
+          <Text style={styles.sectionTitle}>ข้อมูลบอส</Text>
+
           {/* ข้อมูลบอส CP Normal */}
-          <View style={styles.friendRow}>
+          <View style={styles.infoRow}>
             <View
               style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
             >
@@ -680,7 +682,7 @@ export default function RoomDetail() {
           </View>
 
           {/* ข้อมูลบอส CP Boosted */}
-          <View style={styles.friendRow}>
+          <View style={styles.infoRow}>
             <View
               style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
             >
@@ -697,7 +699,7 @@ export default function RoomDetail() {
           {isMember && <ShareRoom roomId={room.id} />}
 
           {/* ปุ่มเปิดเกม Pokemon Go */}
-          {isMember && room.status === "active" && !expired ? (
+          {isMember ? (
             <TouchableOpacity
               onPress={openPokemonGo}
               style={[styles.outlineBtn, { backgroundColor: "#d34228ff" }]}
@@ -1359,7 +1361,10 @@ export default function RoomDetail() {
               เวลาห้องนี้หมดลงแล้ว คุณต้องทำการ รีวิว ห้องนี้
             </Text>
             <TouchableOpacity
-              onPress={() => setResultModal(true)}
+              onPress={async () => {
+                setResultModal(true);
+                setForseReview(false);
+              }}
               style={[styles.modalBtn, { backgroundColor: "#10B981" }]}
             >
               {loadingClose ? (
@@ -1402,14 +1407,16 @@ export default function RoomDetail() {
               <Ionicons name="close-circle-outline" size={18} color="#fff" />
               <Text style={styles.modalBtnText}>ไม่สำเร็จ (ใส่เหตุผล)</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setResultModal(false)}
-              style={[styles.modalBtn, styles.modalCancel]}
-            >
-              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
-                ยกเลิก
-              </Text>
-            </TouchableOpacity>
+            {!expired && (
+              <TouchableOpacity
+                onPress={() => setResultModal(false)}
+                style={[styles.modalBtn, styles.modalCancel]}
+              >
+                <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                  ยกเลิก
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
@@ -1733,8 +1740,12 @@ const styles = StyleSheet.create({
   friendRow: {
     alignItems: "center",
     flexDirection: "row",
-    marginTop: 4,
-    marginBottom: 4,
+    marginBottom: 12,
+  },
+  infoRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 6,
   },
   friendText: { color: "#374151", fontSize: 14, alignItems: "center" },
   friendCodeText: {
@@ -1790,7 +1801,7 @@ const styles = StyleSheet.create({
   smallBtnText: { fontSize: 12, fontWeight: "800", color: "#111827" },
 
   primaryBtn: {
-    marginTop: 10,
+    marginTop: 4,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
