@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 $authUserId = authGuard(); // อ่านจาก Authorization: Bearer <token>
+
 if (!$authUserId) {
   jsonResponse(false, null, 'Forbidden: cannot view other user profile', 403);
 }
@@ -19,7 +20,9 @@ if (!$userId) {
   jsonResponse(false, null, 'กรุณาระบุ userId', 403);
 }
 
-$db = pdo();
+$db = pdo(); // เชื่อมต่อฐานข้อมูล
+
+// ดึงข้อมูลโปรไฟล์ เพื่อน
 $stmt = $db->prepare("
   SELECT
     id,
@@ -29,7 +32,6 @@ $stmt = $db->prepare("
     friend_code,
     team,
     level,
-    device_token,
     created_at
   FROM users
   WHERE id = :id
@@ -41,6 +43,17 @@ $user = $stmt->fetch();
 if (!$user) {
   jsonResponse(false, null, 'ไม่พบผู้ใช้', 404);
 }
+
+// เช็ควสถานะเป็นเพื่อน
+$f1 = $db->prepare("
+  SELECT requester_id, status
+  FROM friendships
+  WHERE (requester_id=:me AND addressee_id=:target)
+    OR (requester_id=:target AND addressee_id=:me)
+  LIMIT 1;
+");
+$f1->execute([':me' => $authUserId, ':target' => $userId]);
+$status_friend = $f1->fetch();
 
 // (ออปชัน) สถิติเล็กน้อย เช่น จำนวนห้องที่เข้าร่วม/สร้าง
 $stats = [
@@ -96,4 +109,5 @@ jsonResponse(true, [
   'user'  => $user,
   'stats' => $stats,
   'rating_owner' => $ratingOwner,
+  'status_friend' => $status_friend,
 ], 'โหลดโปรไฟล์สำเร็จ');

@@ -10,11 +10,14 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { Friend, searchFriends, avatarOrFallback } from "../../lib/friend";
+import { Friend, searchFriends, avatarOrFallback, listMyFriends } from "../../lib/friend"; // ✅ เพิ่ม listMyFriends
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
+type Tab = "search" | "mine";
+
 export default function FriendsScreen() {
+  // ----- ค้นหา/ผลลัพธ์/เพจิ้ง -----
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Friend[]>([]);
   const [page, setPage] = useState(1);
@@ -23,29 +26,44 @@ export default function FriendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ----- แท็บ: search | mine -----
+  const [tab, setTab] = useState<Tab>("search");
+
   const router = useRouter();
 
-  // debounce คำค้น
+  // ----- debounce คำค้น -----
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const onChangeQ = (text: string) => {
     setQ(text);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      fetchFirst(text);
+      // ค้นหาใหม่เฉพาะในแท็บ "หาเพื่อน"
+      if (tab === "search") fetchFirst(text);
+      // ถ้าอยู่แท็บ "เพื่อนของฉัน" ให้กรองรายชื่อเพื่อนด้วยคีย์เวิร์ดเดิม
+      if (tab === "mine") fetchFirst(text);
     }, 400);
   };
 
+  // ----- ดึงข้อมูลตามหน้า + โหมด -----
   const fetchPage = useCallback(
-    async (pageNum: number, replace = false, keyword = q) => {
+    async (pageNum: number, replace = false, keyword = q, currentTab = tab) => {
       if (loading) return;
       setLoading(true);
       setError(null);
       try {
-        const res = await searchFriends({
-          q: keyword,
-          page: pageNum,
-          limit: 10,
-        });
+        let res: {
+          list: Friend[];
+          pagination: { page: number; has_more: boolean };
+        };
+
+        if (currentTab === "search") {
+          // โหมดค้นหาทุกคน
+          res = await searchFriends({ q: keyword, page: pageNum, limit: 10 });
+        } else {
+          // โหมดเพื่อนของฉัน (อาจกรองด้วยคีย์เวิร์ด)
+          res = await listMyFriends({ q: keyword, page: pageNum, limit: 10 });
+        }
+
         setItems((prev) => (replace ? res.list : [...prev, ...res.list]));
         setHasMore(res.pagination.has_more);
         setPage(res.pagination.page);
@@ -56,37 +74,47 @@ export default function FriendsScreen() {
         setLoading(false);
       }
     },
-    [loading, q]
+    [loading, q, tab]
   );
 
+  // ----- ดึงหน้าแรก -----
   const fetchFirst = useCallback(
-    async (keyword = q) => {
+    async (keyword = q, currentTab = tab) => {
       setItems([]);
-      await fetchPage(1, true, keyword);
+      await fetchPage(1, true, keyword, currentTab);
     },
-    [fetchPage, q]
+    [fetchPage, q, tab]
   );
 
+  // ----- โหลดรอบแรก -----
   useEffect(() => {
-    // โหลดรอบแรก
-    fetchFirst("");
+    fetchFirst("", "search");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ----- เปลี่ยนแท็บแล้วรีโหลด -----
+  useEffect(() => {
+    fetchFirst(q, tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
+  // ----- โหลดเพิ่มเมื่อสุดรายการ -----
   const onEndReached = () => {
     if (!loading && hasMore) {
       fetchPage(page + 1);
     }
   };
 
+  // ----- เคลียร์คำค้นแล้วรีโหลดตามแท็บปัจจุบัน -----
   const clearq = () => {
     setQ("");
-    fetchFirst("");
+    fetchFirst("", tab);
   };
 
+  // ----- รีเฟรชตามแท็บปัจจุบัน -----
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchFirst(q);
+    await fetchFirst(q, tab);
     setRefreshing(false);
   };
 
@@ -197,9 +225,7 @@ export default function FriendsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
       {/* แถบค้นหา */}
-      <View
-        style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12 }}
-      >
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
         <View
           style={{
             backgroundColor: "white",
@@ -214,7 +240,11 @@ export default function FriendsScreen() {
           }}
         >
           <TextInput
-            placeholder="ค้นหาเพื่อน (ชื่อ / Friend code)"
+            placeholder={
+              tab === "search"
+                ? "ค้นหาเพื่อน (ชื่อ / Friend code)"
+                : "ค้นหาในรายชื่อเพื่อนของฉัน"
+            }
             value={q}
             onChangeText={onChangeQ}
             autoCapitalize="none"
@@ -226,7 +256,7 @@ export default function FriendsScreen() {
               fontFamily: "KanitMedium",
             }}
             returnKeyType="search"
-            onSubmitEditing={() => fetchFirst(q)}
+            onSubmitEditing={() => fetchFirst(q, tab)}
           />
           {q ? (
             <TouchableOpacity onPress={clearq}>
@@ -234,6 +264,65 @@ export default function FriendsScreen() {
             </TouchableOpacity>
           ) : null}
         </View>
+
+        {/* ✅ แท็บใต้ช่องค้นหา */}
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 8,
+            marginTop: 12,
+            backgroundColor: "#F3F4F6",
+            padding: 4,
+            borderRadius: 10,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setTab("search")}
+            activeOpacity={0.8}
+            style={{
+              flex: 1,
+              backgroundColor: tab === "search" ? "#FFFFFF" : "transparent",
+              paddingVertical: 10,
+              borderRadius: 8,
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: tab === "search" ? "#E5E7EB" : "transparent",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "KanitSemiBold",
+                color: tab === "search" ? "#111827" : "#6B7280",
+              }}
+            >
+              หาเพื่อน
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setTab("mine")}
+            activeOpacity={0.8}
+            style={{
+              flex: 1,
+              backgroundColor: tab === "mine" ? "#FFFFFF" : "transparent",
+              paddingVertical: 10,
+              borderRadius: 8,
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: tab === "mine" ? "#E5E7EB" : "transparent",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "KanitSemiBold",
+                color: tab === "mine" ? "#111827" : "#6B7280",
+              }}
+            >
+              เพื่อนของฉัน
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         {error ? (
           <Text style={{ color: "#B91C1C", marginTop: 8 }}>⚠️ {error}</Text>
         ) : null}

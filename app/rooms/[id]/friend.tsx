@@ -16,6 +16,7 @@ import { getFriendProfile } from "../../../lib/user"; // ⬅️ API โปรไ
 import { useRefetchOnFocus } from "../../../hooks/useRefetchOnFocus";
 import { showSnack } from "../../../components/Snackbar";
 import { useLocalSearchParams } from "expo-router";
+import { AddFriend, AcceptFriend } from "../../../lib/friend";
 
 type FullUser = {
   id: number;
@@ -34,6 +35,11 @@ type RatingOwner = {
   count: number;
 };
 
+type StatusFriend = {
+  requester_id?: number;
+  status: string;
+};
+
 export default function Profile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = Number(id);
@@ -41,13 +47,21 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<FullUser | null>(null);
   const [rat, setRat] = useState<RatingOwner | null>(null);
+  const [statusFriend, setStatusFriend] = useState<StatusFriend | null>(null);
 
+  // ภายใน component เดิมของคุณ
+  const [acting, setActing] = useState(false); // กันกดซ้ำระหว่างยิง API
+
+  // โหลดข้อมูลเพื่อน
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const { user, rating_owner } = await getFriendProfile(userId);
+      const { user, rating_owner, status_friend } = await getFriendProfile(
+        userId
+      );
       setUser(user as FullUser);
       setRat(rating_owner as RatingOwner);
+      setStatusFriend(status_friend as StatusFriend);
     } catch (e) {
       Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ");
     } finally {
@@ -55,8 +69,46 @@ export default function Profile() {
     }
   }, [userId]);
 
+  // เพิ่มเพื่อน
+  const addfriend = async () => {
+    if (acting) return; // กันกดรัวๆ
+    try {
+      setActing(true);
+      const { message } = await AddFriend(userId);
+      showSnack({ text: message, variant: "success" });
+      await load(); // รีโหลดสถานะโปรไฟล์/เพื่อน
+    } catch (e: any) {
+      // แสดงข้อความจาก server เช่น "เป็นเพื่อนกันอยู่แล้ว", "อีกฝ่ายส่งคำขอมาแล้ว กรุณากดตอบรับ"
+      showSnack({
+        text: e?.message || "ส่งคำขอเป็นเพื่อนไม่สำเร็จ",
+        variant: "error",
+      });
+    } finally {
+      setActing(false);
+    }
+  };
+
+  // กด "รับเพื่อน"
+  const acceptFriend = async () => {
+    if (acting) return;
+    try {
+      setActing(true);
+      const { message } = await AcceptFriend(userId); // userId = โปรไฟล์ที่กำลังดู (เป็น requester)
+      showSnack({ text: message, variant: "success" });
+      await load(); // รีเฟรชสถานะโปรไฟล์
+    } catch (e: any) {
+      showSnack({
+        text: e?.message || "ตอบรับคำขอไม่สำเร็จ",
+        variant: "error",
+      });
+    } finally {
+      setActing(false);
+    }
+  };
+
   useRefetchOnFocus(load, [load]);
 
+  // Copy รหัสเพิ่มเพื่อน
   const onCopyFriendCode = async () => {
     if (!user?.friend_code) {
       showSnack({ text: "ยังไม่ได้ตั้ง Friend Code", variant: "error" });
@@ -71,6 +123,27 @@ export default function Profile() {
     Valor: "#EF4444",
     Instinct: "#e6ae21ff",
   };
+
+  const status_friend_text =
+    statusFriend?.status === "pending"
+      ? "รอรับเพื่อน"
+      : statusFriend?.status === "accepted"
+      ? "เป็นเพื่อนแล้ว"
+      : "เพิ่มเพื่อน";
+
+  const status_friend_color =
+    statusFriend?.status === "pending"
+      ? "#2563EB"
+      : statusFriend?.status === "accepted"
+      ? "#10B981"
+      : "#111827";
+
+  const status_friend_icon =
+    statusFriend?.status === "pending"
+      ? "ellipsis-horizontal-outline"
+      : statusFriend?.status === "accepted"
+      ? "checkmark"
+      : "person-add-outline";
 
   function formatFriendCode(v: string) {
     const digits = v.replace(/\D/g, "").slice(0, 12);
@@ -188,6 +261,33 @@ export default function Profile() {
 
         {/* ปุ่มการทำงาน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+
+          {/* ปุ่มคัดส่งคำขอเป็นเพื่อน */}
+          <TouchableOpacity
+            style={[
+              styles.outlineBtnAdd,
+              { backgroundColor: status_friend_color },
+            ]}
+            onPress={addfriend}
+            disabled={statusFriend?.status === "pending"}
+          >
+            {acting ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <>
+                <Ionicons
+                  name={status_friend_icon}
+                  size={16}
+                  color="#ffffffff"
+                />
+                <Text style={styles.outlineBtnAddText}>
+                  {status_friend_text}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+          
+          {/* ปุ่มคัดลอกรหัสเพิ่มเพื่อน */}
           <TouchableOpacity
             style={styles.outlineBtn}
             onPress={onCopyFriendCode}
@@ -302,6 +402,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
+
+  outlineBtnAdd: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+  },
+  outlineBtnAddText: { color: "#ffffffff", fontFamily: "KanitSemiBold" },
 
   primaryBtn: {
     marginTop: 10,

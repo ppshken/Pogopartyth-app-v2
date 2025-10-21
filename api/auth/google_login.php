@@ -121,6 +121,7 @@ try {
   $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
   $isNew = false;
+  $isSetup = false;
 
   if (!$user) {
     $ins = $db->prepare("

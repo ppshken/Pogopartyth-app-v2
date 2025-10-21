@@ -77,3 +77,32 @@ export function avatarOrFallback(username?: string | null, avatar?: string | nul
   const name = encodeURIComponent(username || "User");
   return `https://ui-avatars.com/api/?name=${name}&background=random`;
 }
+
+// ✅ ใหม่: ดึง "เพื่อนของฉัน" (พร้อมรองรับ q เพื่อกรองด้วยชื่อ/โค้ด)
+export async function listMyFriends(params: { q?: string; page: number; limit: number }) {
+  const res = await api.get("/api/friends/myfriend.php", { params });
+  if (!res.data?.success) throw new Error(res.data?.message || "list failed");
+  return res.data.data as { list: Friend[]; pagination: { page: number; has_more: boolean } };
+}
+
+/** ส่งคำขอเป็นเพื่อนไปหา targetId */
+export async function AddFriend(targetId: number): Promise<{ message: string }> {
+  const res = await api.post("/api/friends/add.php", { target_id: targetId });
+  // โครงตอบกลับที่คาดหวัง: { success: boolean, message?: string }
+  if (!res.data?.success) {
+    throw new Error(res.data?.message || "ส่งคำขอเป็นเพื่อนไม่สำเร็จ");
+  }
+  return { message: res.data?.message || "ส่งคำขอเป็นเพื่อนเรียบร้อยแล้ว" };
+}
+
+/** รับคำขอเป็นเพื่อน (อีกฝ่ายคือ requester) */
+export async function AcceptFriend(requesterId: number): Promise<{ message: string }> {
+  const res = await api.post("api/friends/respond.php", {
+    requester_id: requesterId,
+    action: "accept",
+  });
+  if (!res.data?.success) {
+    throw new Error(res.data?.message || "ตอบรับคำขอไม่สำเร็จ");
+  }
+  return { message: res.data?.message || "ตอบรับคำขอเป็นเพื่อนแล้ว" };
+}
