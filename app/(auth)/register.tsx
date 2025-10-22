@@ -15,12 +15,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { register as registerApi } from "../../lib/auth";
 import { showSnack } from "../../components/Snackbar";
-import { sendEmailOtp } from "../../lib/otp"; // ⬅️ มีไว้จะส่ง OTP ต่อได้ (ถ้ายังไม่มี คอมเมนต์บรรทัดนี้ทิ้งก่อนได้)
+import { sendEmailOtp } from "../../lib/otp"; // ถ้ายังไม่มี endpoint ให้คอมเมนต์บรรทัดนี้ทิ้งได้
 
-function formatFriendCode(v: string) {
-  const digits = v.replace(/\D/g, "").slice(0, 12);
-  return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
-}
+// ===== ให้เหมือนหน้า login =====
+const ACCENT = "#111827";
+const BORDER = "#E5E7EB";
+const CARD_BG = "#FFFFFF";
+const TEXT_MAIN = "#111827";
+const TEXT_SUB = "#6B7280";
+const TEXT_DIM = "#374151";
+const ERROR = "#DC2626";
 
 export default function Register() {
   // บัญชี
@@ -28,40 +32,20 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
 
-  // ผู้เล่น
-  const [trainerName, setTrainerName] = useState(""); // = username
-  const [friendCode, setFriendCode] = useState("");   // = friend_code (ส่งแบบไม่มีช่องว่าง)
-  const [level, setLevel] = useState("");
-
   // สถานะ
   const [loading, setLoading] = useState(false);
-  const [agreed, setAgreed] = useState(true); // กล่องยอมรับเงื่อนไข (ตั้ง true ไว้ก่อนก็ได้)
+  const [agreed, setAgreed] = useState(true);
+
   const router = useRouter();
 
   // ตรวจรูปแบบ
-  const emailOk = useMemo(() => /\S+@\S+\.\S+/.test(email.trim()), [email]);
-  const pwOk = useMemo(() => password.trim().length >= 6, [password]);
-  const nameOk = useMemo(() => trainerName.trim().length >= 2, [trainerName]);
-  const codeOk = useMemo(
-    () => friendCode.replace(/\s/g, "").length === 12,
-    [friendCode]
+  const emailOk = useMemo(
+    () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
+    [email]
   );
-  const levelOk = useMemo(() => {
-    const n = Number(level);
-    return Number.isInteger(n) && n >= 1 && n <= 50;
-  }, [level]);
+  const pwOk = useMemo(() => password.trim().length >= 8, [password]);
 
-  const canSubmit = emailOk && pwOk && nameOk && codeOk && levelOk && agreed && !loading;
-
-  // รับเฉพาะตัวเลข สูงสุด 2 หลัก และคงอยู่ในช่วง 1–50
-  const handleLevelChange = (t: string) => {
-    const digits = t.replace(/\D/g, "").slice(0, 2);
-    if (!digits) return setLevel("");
-    const n = parseInt(digits, 10);
-    if (isNaN(n) || n < 1) return setLevel("");
-    if (n > 50) return setLevel("50");
-    setLevel(String(n));
-  };
+  const canSubmit = emailOk && pwOk && agreed ;
 
   const onRegister = async () => {
     if (!canSubmit) return;
@@ -69,26 +53,24 @@ export default function Register() {
     try {
       const payload = {
         email: email.trim(),
-        username: trainerName.trim(),
         password: password.trim(),
-        friend_code: friendCode.replace(/\s/g, ""),
-        level: Number(level),
       };
-      const { user, token } = await registerApi(payload);
+      const { user } = await registerApi(payload);
 
-      // ส่ง OTP ไปอีเมลเพื่อยืนยัน (ถ้ามี lib/otp)
+      // (ออปชัน) ส่ง OTP
       try {
         await sendEmailOtp();
-        showSnack({ text: "สมัครสำเร็จ • ส่งรหัสยืนยันไปที่อีเมลแล้ว", variant: "success" });
-        // ไปหน้ากรอก OTP (ถ้าคุณใช้ไฟล์ EmailOtpVerifyScreen ตามที่ให้ไป)
+        showSnack({
+          text: "สมัครสำเร็จ • ส่งรหัสยืนยันไปที่อีเมลแล้ว",
+          variant: "success",
+        });
         router.replace({
           pathname: "/(auth)/EmailOtpVerifyScreen",
           params: { email: user?.email ?? email.trim() },
         });
       } catch {
-        // ถ้าไม่มี endpoint/ฟังก์ชัน ส่ง OTP ก็กลับไปหน้า Login ตามเดิม
         showSnack({ text: "สมัครสำเร็จ", variant: "success" });
-        router.replace("/(auth)/login");
+        router.replace("/(auth)/email_verify_otp");
       }
     } catch (e: any) {
       showSnack({ text: e?.message || "สมัครไม่สำเร็จ", variant: "error" });
@@ -98,143 +80,128 @@ export default function Register() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+    <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={80}
       >
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.centerContainer}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.centerContainer}
+        >
           <View style={styles.wrap}>
-
-            {/* บัญชี */}
+            {/* การ์ด: บัญชี */}
             <View style={styles.card}>
-              <Text style={styles.sectionTitle}>บัญชี</Text>
+              {/* Header / คำโปรย ให้ฟีลเดียวกับหน้า Login */}
+              <View style={{ marginBottom: 30 }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={styles.title}>สร้างบัญชีใหม่</Text>
+                </View>
+                <View style={styles.lineRow}>
+                  <Text style={styles.lineText}>
+                    ลงทะเบียนเพื่อเริ่มใช้งาน PogoPartyTH
+                  </Text>
+                </View>
+              </View>
 
               <Text style={styles.label}>อีเมล</Text>
               <View style={styles.inputRow}>
-                <Ionicons name="mail-outline" size={18} color={COLORS.mute} style={{ marginRight: 8 }} />
                 <TextInput
                   placeholder="your@email.com"
-                  placeholderTextColor={COLORS.placeholder}
+                  placeholderTextColor="#9CA3AF"
                   value={email}
                   onChangeText={setEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
-                  style={styles.input}
+                  style={[styles.input, { paddingVertical: 2 }]}
                   returnKeyType="next"
                 />
               </View>
-              {!emailOk && !!email && <Text style={styles.hintError}>รูปแบบอีเมลไม่ถูกต้อง</Text>}
+              {!emailOk && !!email && (
+                <Text style={styles.errorText}>รูปแบบอีเมลไม่ถูกต้อง</Text>
+              )}
 
               <Text style={[styles.label, { marginTop: 12 }]}>รหัสผ่าน</Text>
               <View style={styles.inputRow}>
-                <Ionicons name="lock-closed-outline" size={18} color={COLORS.mute} style={{ marginRight: 8 }} />
                 <TextInput
-                  placeholder="อย่างน้อย 6 ตัวอักษร"
-                  placeholderTextColor={COLORS.placeholder}
+                  placeholder="อย่างน้อย 8 ตัวอักษร"
+                  placeholderTextColor="#9CA3AF"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPw}
-                  style={styles.input}
+                  style={[styles.input, { paddingVertical: 2 }]}
                   returnKeyType="done"
                 />
-                <TouchableOpacity onPress={() => setShowPw((v) => !v)} hitSlop={12}>
-                  <Ionicons name={showPw ? "eye-off-outline" : "eye-outline"} size={18} color={COLORS.mute} />
+                <TouchableOpacity
+                  onPress={() => setShowPw((v) => !v)}
+                  hitSlop={12}
+                >
+                  <Ionicons
+                    name={showPw ? "eye-off-outline" : "eye-outline"}
+                    size={18}
+                    color={TEXT_SUB}
+                  />
                 </TouchableOpacity>
               </View>
-              {!pwOk && !!password && <Text style={styles.hintError}>รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร</Text>}
-            </View>
+              {!pwOk && !!password && (
+                <Text style={styles.errorText}>
+                  รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร
+                </Text>
+              )}
 
-            {/* ผู้เล่น */}
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>ข้อมูลผู้เล่น</Text>
-
-              <Text style={styles.label}>ชื่อตัวละคร</Text>
-              <View style={styles.inputRow}>
-                <Ionicons name="shield-outline" size={18} color={COLORS.mute} style={{ marginRight: 8 }} />
-                <TextInput
-                  placeholder="ชื่อในเกม"
-                  placeholderTextColor={COLORS.placeholder}
-                  value={trainerName}
-                  onChangeText={setTrainerName}
-                  style={styles.input}
-                  returnKeyType="next"
-                />
-              </View>
-              {!nameOk && !!trainerName && <Text style={styles.hintError}>อย่างน้อย 2 อักษร</Text>}
-
-              <Text style={[styles.label, { marginTop: 12 }]}>รหัสเพิ่มเพื่อน</Text>
-              <View style={styles.inputRow}>
-                <Ionicons name="key-outline" size={18} color={COLORS.mute} style={{ marginRight: 8 }} />
-                <TextInput
-                  placeholder="XXXX XXXX XXXX"
-                  placeholderTextColor={COLORS.placeholder}
-                  value={friendCode}
-                  onChangeText={(t) => setFriendCode(formatFriendCode(t))}
-                  keyboardType="number-pad"
-                  maxLength={14} // 12 ตัวเลข + 2 ช่องว่าง
-                  style={styles.input}
-                />
-              </View>
-              {!codeOk && !!friendCode && <Text style={styles.hintError}>ต้องมี 12 ตัวเลข</Text>}
-
-              <Text style={[styles.label, { marginTop: 12 }]}>เลเวล</Text>
-              <View style={styles.inputRow}>
-                <Ionicons name="bookmark-outline" size={18} color={COLORS.mute} style={{ marginRight: 8 }} />
-                <TextInput
-                  placeholder="1–50"
-                  placeholderTextColor={COLORS.placeholder}
-                  value={level}
-                  onChangeText={handleLevelChange}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                  style={styles.input}
-                />
-              </View>
-              {!levelOk && !!level && <Text style={styles.hintError}>กรอก 1–50</Text>}
-            </View>
-
-            {/* ยอมรับเงื่อนไข */}
-            <TouchableOpacity
-              onPress={() => setAgreed((v) => !v)}
-              style={styles.agreeRow}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
-                {agreed ? <Ionicons name="checkmark" size={14} color="#fff" /> : null}
-              </View>
-              <Text style={styles.agreeText}>
-                ฉันยอมรับ <Text style={styles.link}>ข้อตกลงการใช้งาน</Text> และ{" "}
-                <Text style={styles.link}>นโยบายความเป็นส่วนตัว</Text>
-              </Text>
-            </TouchableOpacity>
-
-            {/* ปุ่มสมัคร */}
-            <TouchableOpacity
-              onPress={onRegister}
-              disabled={!canSubmit}
-              activeOpacity={0.9}
-              style={[styles.primaryBtn, styles.btnPrimary]}
-            >
-              <View style={styles.primaryBtnInner}>
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <>
-                    <Ionicons name="person-add-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
-                    <Text style={styles.primaryBtnText}>สมัครสมาชิก</Text>
-                  </>
-                )}
-              </View>
-            </TouchableOpacity>
-
-            {/* ลิงก์ไปหน้า Login */}
-            <View style={styles.bottomRow}>
-              <Text style={{ color: COLORS.sub }}>มีบัญชีอยู่แล้ว?</Text>
-              <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                <Text style={styles.link}>เข้าสู่ระบบ</Text>
+              {/* ยอมรับเงื่อนไข */}
+              <TouchableOpacity
+                onPress={() => setAgreed((v) => !v)}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 18,
+                  gap: 10,
+                  paddingHorizontal: 2,
+                }}
+                activeOpacity={0.7}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    agreed && { backgroundColor: ACCENT, borderColor: ACCENT },
+                  ]}
+                >
+                  {agreed ? (
+                    <Ionicons name="checkmark" size={14} color="#fff" />
+                  ) : null}
+                </View>
+                <Text style={styles.agreeText}>
+                  ฉันยอมรับ <Text style={styles.link}>ข้อตกลงการใช้งาน</Text>{" "}
+                  และ <Text style={styles.link}>นโยบายความเป็นส่วนตัว</Text>
+                </Text>
               </TouchableOpacity>
+
+              {/* ปุ่มสมัคร */}
+              <TouchableOpacity
+                onPress={onRegister}
+                activeOpacity={0.9}
+                style={[styles.primaryBtn, !canSubmit && { opacity: 0.6 }]}
+                disabled={!canSubmit}
+              >
+                <View style={styles.primaryBtnInner}>
+                  {loading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.primaryBtnText}>สมัครสมาชิก</Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+
+              {/* ลิงก์ไปหน้า Login */}
+              <View style={styles.bottomRow}>
+                <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>
+                  มีบัญชีอยู่แล้ว?
+                </Text>
+                <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
+                  <Text style={styles.link}>เข้าสู่ระบบ</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -243,151 +210,115 @@ export default function Register() {
   );
 }
 
-/* ---- สไตล์โทนมินิมอลหรู ---- */
-const COLORS = {
-  bg: "#F6F7F9",
-  card: "#FFFFFF",
-  text: "#0F172A",
-  sub: "#6B7280",
-  border: "#E5E7EB",
-  mute: "#9CA3AF",
-  placeholder: "#9CA3AF",
-  primary: "#111827",
-};
-
 const styles = StyleSheet.create({
   centerContainer: {
     flexGrow: 1,
     padding: 16,
     alignItems: "center",
   },
-  wrap: {
-    width: "100%",
-    maxWidth: 520,
-    gap: 12,
-  },
-
-  hero: {
-    backgroundColor: COLORS.card,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 16,
-    alignItems: "flex-start",
-    gap: 8,
-    shadowColor: "rgba(16,24,40,0.06)",
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 1,
-  },
-  heroIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    backgroundColor: "#F3F4F6",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  // เดิม fontWeight: "900"
-  title: { fontSize: 20, color: COLORS.text, fontFamily: "KanitBold" },
-  subtitle: { color: COLORS.sub, fontFamily: "KanitRegular" },
+  wrap: { width: "100%", maxWidth: 420 },
 
   card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 18,
+    backgroundColor: CARD_BG,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: BORDER,
     padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
-  // เดิม fontWeight: "900"
+
+  title: {
+    flex: 0,
+    fontSize: 24,
+    fontFamily: "KanitSemiBold",
+    color: TEXT_MAIN,
+    marginRight: 8,
+    letterSpacing: 0.3,
+  },
+  lineRow: { flexDirection: "row", alignItems: "center", marginTop: 6, gap: 6 },
+  lineText: { color: TEXT_DIM, fontSize: 14, fontFamily: "KanitRegular" },
+
   sectionTitle: {
     fontSize: 18,
-    color: COLORS.text,
+    color: TEXT_MAIN,
     marginBottom: 12,
     fontFamily: "KanitBold",
   },
-  // เดิม fontWeight: "700"
-  label: { color: COLORS.text, marginBottom: 6, fontFamily: "KanitSemiBold" },
+  label: { color: TEXT_MAIN, fontFamily: "KanitSemiBold", marginBottom: 6 },
 
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: "#FAFAFA",
+    borderColor: BORDER,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  // ให้ default เป็น Regular (จะซ้อนกับ TextInput.defaultProps อยู่แล้ว)
-  input: { flex: 1, color: COLORS.text, fontFamily: "KanitRegular" },
-
-  // เดิม fontWeight: "700"
-  hintError: {
-    color: "#DC2626",
-    fontSize: 12,
+  input: {
+    flex: 1,
+    color: TEXT_MAIN,
+    fontSize: 15,
+    fontFamily: "KanitRegular",
+  },
+  errorText: {
+    color: ERROR,
     marginTop: 6,
-    fontFamily: "KanitSemiBold",
+    fontSize: 12,
+    fontFamily: "KanitRegular",
   },
 
-  agreeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 2,
-  },
   checkbox: {
     width: 18,
     height: 18,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: BORDER,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
   },
-  checkboxChecked: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+  agreeText: {
+    color: TEXT_SUB,
+    flex: 1,
+    lineHeight: 18,
+    fontFamily: "KanitRegular",
   },
-  // ข้อความยาว อ่านง่าย → ใช้ Regular
-  agreeText: { color: COLORS.sub, flex: 1, lineHeight: 18, fontFamily: "KanitRegular" },
 
   primaryBtn: {
+    marginTop: 16,
     borderRadius: 12,
     overflow: "hidden",
+    backgroundColor: ACCENT,
   },
-  btnPrimary: { backgroundColor: COLORS.primary },
-  btnDisabled: { backgroundColor: "#CBD5E1" },
   primaryBtnInner: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
   },
-  // เดิม fontWeight: "900"
   primaryBtnText: {
     color: "#fff",
+    fontFamily: "KanitSemiBold",
     fontSize: 16,
     letterSpacing: 0.2,
-    fontFamily: "KanitBold",
   },
 
   bottomRow: {
+    marginTop: 14,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
-  // เดิม fontWeight: "900"
   link: {
-    color: COLORS.primary,
+    color: ACCENT,
     textDecorationLine: "underline",
-    marginLeft: 4,
-    fontFamily: "KanitBold",
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
   },
 });
-

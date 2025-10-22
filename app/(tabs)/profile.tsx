@@ -185,8 +185,8 @@ export default function Profile() {
               marginTop: 8,
             }}
           >
-            <View style={[styles.badgeDark, {backgroundColor: teamColors [user.team ?? ""] ?? "#E5E7EB"}]}>
-              <Ionicons name="calendar-outline" size={14} color="#ffffff" />
+            <View style={[styles.badgeDark]}>
+              <Ionicons name="calendar-outline" size={14} color="#000000ff" />
               <Text style={styles.badgeDarkText}>
                 {" เข้าร่วมเมื่อ "}
                 {user?.created_at ? user.created_at : "—"}
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     alignSelf: "flex-start",
   },
-  badgeDarkText: { fontSize: 14, fontFamily: "KanitMedium", color: "#ffffffff" },
+  badgeDarkText: { fontSize: 14, fontFamily: "KanitMedium", color: "#000000ff" },
 
   badgeMuted: {
     flexDirection: "row",

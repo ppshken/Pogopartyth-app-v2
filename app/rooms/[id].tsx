@@ -730,11 +730,7 @@ export default function RoomDetail() {
               disabled={!allAdded}
             >
               {copied ? (
-                <Ionicons
-                  name="checkmark"
-                  size={18}
-                  color="#2fcc5eff"
-                />
+                <Ionicons name="checkmark" size={18} color="#2fcc5eff" />
               ) : (
                 <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               )}
@@ -818,18 +814,15 @@ export default function RoomDetail() {
                   key={m.user_id}
                   style={[styles.memberItem, iAmThisMember && styles.meItem]}
                   disabled={iAmThisMember} // กันกรณี user_id ว่าง (ไม่ควรเกิด)
-                  onPress={() =>
-                    router.push({
-                      pathname: "/rooms/[id]/friend",
-                      params: { id: Number(m.user_id) }, // ต้องแมพกับ [id]
-                    })
-                  }
+                  onPress={() => router.push(`/friends/${m.user_id}`)}
                 >
                   {m.avatar ? (
                     <Image source={{ uri: m.avatar }} style={styles.avatar} />
                   ) : (
                     <View style={styles.avatarEmpty}>
-                      <Text style={{ color: "#fff", fontFamily: "KanitSemiBold" }}>
+                      <Text
+                        style={{ color: "#fff", fontFamily: "KanitSemiBold" }}
+                      >
                         {m.username ? m.username.charAt(0).toUpperCase() : "?"}
                       </Text>
                     </View>
@@ -879,7 +872,13 @@ export default function RoomDetail() {
                       </View>
                     </View>
 
-                    <Text style={{ fontSize: 12, color: "#6B7280", fontFamily: "KanitMedium" }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: "#6B7280",
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
                       {isOwnerRow ? "เจ้าของห้อง" : "สมาชิก"} •{" "}
                       {new Date(m.joined_at).toLocaleTimeString("th-TH", {
                         hour: "2-digit",
@@ -955,9 +954,7 @@ export default function RoomDetail() {
 
           {/* ปุ่มเชิญเพื่อน */}
           <TouchableOpacity
-            onPress={() =>
-              setOnInvitedFriend(true)
-            }
+            onPress={() => setOnInvitedFriend(true)}
             style={styles.outlineBtn}
           >
             <Ionicons name="people-outline" size={16} color="#ffffffff" />
@@ -1214,7 +1211,10 @@ export default function RoomDetail() {
                       <Text
                         style={[
                           styles.reasonLabel,
-                          selected && { color: "#111827", fontFamily: "KanitSemiBold" },
+                          selected && {
+                            color: "#111827",
+                            fontFamily: "KanitSemiBold",
+                          },
                         ]}
                       >
                         {rc.reasoncancel}
@@ -1232,7 +1232,10 @@ export default function RoomDetail() {
                   placeholder="โปรดระบุเหตุผล"
                   placeholderTextColor="#9CA3AF"
                   multiline
-                  style={[styles.textArea, { marginTop: 4, fontFamily: "KanitMedium" }]}
+                  style={[
+                    styles.textArea,
+                    { marginTop: 4, fontFamily: "KanitMedium" },
+                  ]}
                 />
               )}
 
@@ -1536,7 +1539,10 @@ export default function RoomDetail() {
                       <Text
                         style={[
                           styles.reasonLabel,
-                          selected && { color: "#111827", fontFamily: "KanitSemiBold" },
+                          selected && {
+                            color: "#111827",
+                            fontFamily: "KanitSemiBold",
+                          },
                         ]}
                       >
                         {r.reasonfail}
@@ -1554,7 +1560,10 @@ export default function RoomDetail() {
                   placeholder="โปรดระบุเหตุผล"
                   placeholderTextColor="#9CA3AF"
                   multiline
-                  style={[styles.textArea, { marginTop: 4, fontFamily: "KanitMedium" }]}
+                  style={[
+                    styles.textArea,
+                    { marginTop: 4, fontFamily: "KanitMedium" },
+                  ]}
                 />
               )}
 
@@ -1602,7 +1611,14 @@ export default function RoomDetail() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>เข้าร่วมห้องบอส</Text>
-            <Text style={{ color: "#374151", textAlign: "center", fontSize: 14, fontFamily: "KanitMedium" }}>
+            <Text
+              style={{
+                color: "#374151",
+                textAlign: "center",
+                fontSize: 14,
+                fontFamily: "KanitMedium",
+              }}
+            >
               กรุณาเพิ่มเพื่อนหัวห้องด้วย Friend Code
             </Text>
             <Text
@@ -1753,7 +1769,12 @@ const styles = StyleSheet.create({
   badgeText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 12 },
 
   lineRow: { flexDirection: "row", alignItems: "center", marginTop: 6 },
-  lineText: { color: "#374151", fontSize: 14, marginLeft: 6, fontFamily: "KanitMedium" },
+  lineText: {
+    color: "#374151",
+    fontSize: 14,
+    marginLeft: 6,
+    fontFamily: "KanitMedium",
+  },
 
   noteBox: {
     backgroundColor: "#F3F4F6",
@@ -1792,7 +1813,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 6,
   },
-  friendText: { color: "#374151", fontSize: 14, alignItems: "center", fontFamily: "KanitMedium" },
+  friendText: {
+    color: "#374151",
+    fontSize: 14,
+    alignItems: "center",
+    fontFamily: "KanitMedium",
+  },
   friendCodeText: {
     color: "#374151",
     marginLeft: 6,

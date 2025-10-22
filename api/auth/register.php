@@ -20,18 +20,14 @@ $friend   = trim($input['friend_code'] ?? '');
 $level   =  ($input['level'] ?? '');
 
 // 1) Validate เบื้องต้น
-if ($email === '' || $username === '' || $password === '') {
+if ($email === '' || $password === '') {
   jsonResponse(false, null, 'กรอก email, username, password ให้ครบ', 422);
 }
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   jsonResponse(false, null, 'รูปแบบอีเมลไม่ถูกต้อง', 422);
 }
-// username: a-z,0-9,._-, 3–20 ตัว
-if (!preg_match('/^[a-z0-9._-]{3,20}$/i', $username)) {
-  jsonResponse(false, null, 'username ต้องเป็น a-z,0-9,._- และยาว 3–20 ตัว', 422);
-}
-if (strlen($password) < 6) {
-  jsonResponse(false, null, 'รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร', 422);
+if (strlen($password) < 8) {
+  jsonResponse(false, null, 'รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร', 422);
 }
 
 $db = pdo();
@@ -48,7 +44,7 @@ function mb_first_upper(string $s, string $enc = 'UTF-8'): string {
     return mb_strtoupper(mb_substr($s, 0, 1, $enc), $enc);
 }
 
-$avatar_result = mb_first_upper($username);
+$avatar_result = mb_first_upper($email);
 $avatar_result_image = "https://ui-avatars.com/api/?name=" . urlencode($avatar_result) . "&background=random&size=256&bold=true";
 
 // 3) สร้างบัญชี

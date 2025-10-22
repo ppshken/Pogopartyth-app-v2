@@ -10,7 +10,12 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { Friend, searchFriends, avatarOrFallback, listMyFriends } from "../../lib/friend"; // ✅ เพิ่ม listMyFriends
+import {
+  Friend,
+  searchFriends,
+  avatarOrFallback,
+  listMyFriends,
+} from "../../lib/friend"; // ✅ เพิ่ม listMyFriends
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -127,12 +132,7 @@ export default function FriendsScreen() {
     return (
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() =>
-          router.push({
-            pathname: "/rooms/[id]/friend",
-            params: { id: Number(item.id) }, // ต้องแมพกับ [id]
-          })
-        }
+        onPress={() => router.push(`/friends/${item.id}`)}
         style={{
           flexDirection: "row",
           paddingHorizontal: 12,

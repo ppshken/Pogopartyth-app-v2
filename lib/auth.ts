@@ -29,11 +29,7 @@ export async function login(payload: {
 /** สมัครสมาชิก */
 export async function register(payload: {
   email: string;
-  username: string;
   password: string;
-  avatar?: string;
-  friend_code?: string;
-  level?: number;
 }) {
   const { data } = await api.post("/api/auth/register.php", payload, {
     validateStatus: () => true,
@@ -57,6 +53,7 @@ export type LoginResult = {
   is_new: boolean;  // true = ผู้ใช้ใหม่ ต้องไปตั้งโปรไฟล์
 };
 
+/** Login Google */
 export async function loginWithGoogleIdToken(idToken: string): Promise<LoginResult> {
   const { data } = await api.post("/api/auth/google_login.php", { id_token: idToken });
   if (!data?.success) throw new Error(data?.message || "Login failed");

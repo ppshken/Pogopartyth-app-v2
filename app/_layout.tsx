@@ -30,6 +30,31 @@ export default function Layout() {
     })();
   }, []);
 
+  // ✅ รองรับกรณีผู้ใช้ "แตะ" การแจ้งเตือน (ตอนแอป foreground/background)
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((res) => {
+      const data = res.notification.request.content.data as {
+        url?: string;
+      };
+      navigateByUrl(data?.url);
+    });
+    return () => sub.remove();
+  }, []);
+
+  // ✅ รองรับกรณี "เปิดแอปจากปิดสนิท" ด้วยการแตะแจ้งเตือน (initial response)
+  useEffect(() => {
+    (async () => {
+      const last = await Notifications.getLastNotificationResponseAsync();
+      const data = last?.notification.request.content.data as
+        | { url?: string }
+        | undefined;
+      if (data?.url) {
+        // หน่วงสั้นๆ ให้ navigation พร้อม (บางครั้งแอปยังบูตไม่ครบ)
+        setTimeout(() => navigateByUrl(data.url), 0);
+      }
+    })();
+  }, []);
+
   // ✅ ฟังก์ชันช่วย: รับ url แล้วนำทางให้รองรับทั้งลิงก์เต็ม (pogopartyth://...) และพาธภายใน (/rooms/123)
   const navigateByUrl = (url?: string) => {
     if (!url) return;
@@ -40,31 +65,10 @@ export default function Layout() {
       const path = `/${u.host}${u.pathname}`; // host จะกลายเป็น 'rooms', pathname เป็น '/123'
       router.push(path);
     } catch {
-      // กรณีส่งมาเป็น path ตรงๆ อยู่แล้ว เช่น "/rooms/123"
+      // กรณีส่งมาเป็น path ตรงๆ เช่น "/rooms/123"
       router.push(url);
     }
   };
-
-  // ✅ รองรับกรณีผู้ใช้ "แตะ" การแจ้งเตือน (ตอนแอป foreground/background)
-  useEffect(() => {
-    const sub = Notifications.addNotificationResponseReceivedListener((res) => {
-      const data = res.notification.request.content.data as { url?: string };
-      navigateByUrl(data?.url);
-    });
-    return () => sub.remove();
-  }, []);
-
-  // ✅ รองรับกรณี "เปิดแอปจากปิดสนิท" ด้วยการแตะแจ้งเตือน (initial response)
-  useEffect(() => {
-    (async () => {
-      const last = await Notifications.getLastNotificationResponseAsync();
-      const data = last?.notification.request.content.data as { url?: string } | undefined;
-      if (data?.url) {
-        // หน่วงสั้นๆ ให้ navigation พร้อม (บางครั้งแอปยังบูตไม่ครบ)
-        setTimeout(() => navigateByUrl(data.url), 0);
-      }
-    })();
-  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -84,16 +88,20 @@ export default function Layout() {
             options={{ title: "สมัครสมาชิก", headerShown: true }}
           />
           <Stack.Screen
+            name="(auth)/email_verify_otp"
+            options={{ title: "ลืมรหัสผ่าน", headerShown: false,  headerBackVisible: false}}
+          />
+          <Stack.Screen
+            name="(auth)/forget_password"
+            options={{ title: "ลืมรหัสผ่าน", headerShown: true }}
+          />
+          <Stack.Screen
             name="rooms/[id]"
             options={{ title: "ห้องบอส", headerShown: true }}
           />
           <Stack.Screen
             name="rooms/[id]/chat"
             options={{ title: "แชท", headerShown: true }}
-          />
-          <Stack.Screen
-            name="rooms/[id]/friend"
-            options={{ title: "โปรไฟล์", headerShown: true }}
           />
           <Stack.Screen
             name="settings/profile-edit"
@@ -106,6 +114,10 @@ export default function Layout() {
           <Stack.Screen
             name="settings/setting-app"
             options={{ title: "ตั้งค่าแอป", headerShown: true }}
+          />
+          <Stack.Screen
+            name="friends/[id]"
+            options={{ title: "โปรไฟล์เพื่อน", headerShown: true }}
           />
         </Stack>
         <SnackHost />

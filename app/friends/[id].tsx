@@ -9,14 +9,15 @@ import {
   RefreshControl,
   Alert,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { getFriendProfile } from "../../../lib/user"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
-import { useRefetchOnFocus } from "../../../hooks/useRefetchOnFocus";
-import { showSnack } from "../../../components/Snackbar";
+import { getFriendProfile } from "../../lib/user"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
+import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
+import { showSnack } from "../../components/Snackbar";
 import { useLocalSearchParams } from "expo-router";
-import { AddFriend, AcceptFriend } from "../../../lib/friend";
+import { AddFriend, AcceptFriend } from "../../lib/friend";
 
 type FullUser = {
   id: number;
@@ -49,6 +50,10 @@ export default function Profile() {
   const [rat, setRat] = useState<RatingOwner | null>(null);
   const [statusFriend, setStatusFriend] = useState<StatusFriend | null>(null);
 
+  const [is_me_addressee, setIs_me_addressee] = useState(false);
+
+  const [onAccepted, setOnAccepted] = useState(false);
+
   // ภายใน component เดิมของคุณ
   const [acting, setActing] = useState(false); // กันกดซ้ำระหว่างยิง API
 
@@ -56,12 +61,12 @@ export default function Profile() {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const { user, rating_owner, status_friend } = await getFriendProfile(
-        userId
-      );
+      const { user, rating_owner, status_friend, is_me_addressee } =
+        await getFriendProfile(userId);
       setUser(user as FullUser);
       setRat(rating_owner as RatingOwner);
       setStatusFriend(status_friend as StatusFriend);
+      setIs_me_addressee(is_me_addressee);
     } catch (e) {
       Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ");
     } finally {
@@ -94,6 +99,7 @@ export default function Profile() {
     try {
       setActing(true);
       const { message } = await AcceptFriend(userId); // userId = โปรไฟล์ที่กำลังดู (เป็น requester)
+      setOnAccepted(false);
       showSnack({ text: message, variant: "success" });
       await load(); // รีเฟรชสถานะโปรไฟล์
     } catch (e: any) {
@@ -103,6 +109,7 @@ export default function Profile() {
       });
     } finally {
       setActing(false);
+      setOnAccepted(false);
     }
   };
 
@@ -126,7 +133,7 @@ export default function Profile() {
 
   const status_friend_text =
     statusFriend?.status === "pending"
-      ? "รอรับเพื่อน"
+      ? "ส่งคำขอแล้ว"
       : statusFriend?.status === "accepted"
       ? "เป็นเพื่อนแล้ว"
       : "เพิ่มเพื่อน";
@@ -261,32 +268,52 @@ export default function Profile() {
 
         {/* ปุ่มการทำงาน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+          {/* ปุ่มจัดการเพื่อน*/}
+          {is_me_addressee && statusFriend?.status === "pending" ? (
+            <TouchableOpacity
+              style={[styles.outlineBtnAdd, { backgroundColor: "#ffc107" }]}
+              onPress={() => {
+                setOnAccepted(true);
+              }}
+            >
+              {acting ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark" size={16} color="#ffffffff" />
+                  <Text style={styles.outlineBtnAddText}>รับเพื่อน</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[
+                styles.outlineBtnAdd,
+                { backgroundColor: status_friend_color },
+              ]}
+              onPress={addfriend}
+              disabled={
+                statusFriend?.status === "pending" ||
+                statusFriend?.status === "accepted"
+              }
+            >
+              {acting ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <>
+                  <Ionicons
+                    name={status_friend_icon}
+                    size={16}
+                    color="#ffffffff"
+                  />
+                  <Text style={styles.outlineBtnAddText}>
+                    {status_friend_text}
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
+          )}
 
-          {/* ปุ่มคัดส่งคำขอเป็นเพื่อน */}
-          <TouchableOpacity
-            style={[
-              styles.outlineBtnAdd,
-              { backgroundColor: status_friend_color },
-            ]}
-            onPress={addfriend}
-            disabled={statusFriend?.status === "accepted"}
-          >
-            {acting ? (
-              <ActivityIndicator color="#ffffff" size="small" />
-            ) : (
-              <>
-                <Ionicons
-                  name={status_friend_icon}
-                  size={16}
-                  color="#ffffffff"
-                />
-                <Text style={styles.outlineBtnAddText}>
-                  {status_friend_text}
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-          
           {/* ปุ่มคัดลอกรหัสเพิ่มเพื่อน */}
           <TouchableOpacity
             style={styles.outlineBtn}
@@ -297,6 +324,37 @@ export default function Profile() {
           </TouchableOpacity>
         </View>
       </View>
+      {/* Modal: ยืนยันการรับเพื่อน */}
+      <Modal
+        visible={onAccepted}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnAccepted(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>ต้องการรับเพื่อน ?</Text>
+            <TouchableOpacity
+              onPress={acceptFriend}
+              style={[styles.modalBtn, { backgroundColor: "#ffc107" }]}
+            >
+              {acting ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.modalBtnText}>ยืนยัน</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setOnAccepted(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -447,5 +505,45 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     gap: 8,
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 420,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontFamily: "KanitSemiBold",
+    color: "#111827",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  modalBtn: {
+    marginTop: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+  },
+  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold" },
+  modalCancel: {
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
 });

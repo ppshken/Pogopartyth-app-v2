@@ -96,7 +96,10 @@ export default function Login() {
 
   // ===== EMAIL/PASSWORD LOGIN =====
   const onLogin = async () => {
-    if (!canSubmit) return;
+    if (!canSubmit) {
+    showSnack({ text: "กรุณาระบุข้อมูล", variant: "error" });
+    return;
+    }
     setLoading(true);
     try {
       const { user, token } = await login({
@@ -176,37 +179,22 @@ export default function Login() {
           contentContainerStyle={styles.centerContainer}
         >
           <View style={styles.wrap}>
-            {/* Header card */}
-            <View style={styles.headerCard}>
-              <View style={styles.headerIcon}>
-                <Image
-                  source={require("../../assets/pogopartyth.png")}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 12,
-                    alignSelf: "center",
-                  }}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={styles.title}>PogoPartyTH</Text>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>v1</Text>
+            {/* Card Login */}
+            <View style={styles.card}>
+              <View style={{flexDirection: "row", marginBottom: 30, alignItems: "center"}}>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={styles.title}>PogopartyTH</Text>
+                  </View>
+                  <View style={styles.lineRow}>
+                    <Text style={styles.lineText}>
+                      ยินดีต้อนรับกลับ! โปรดลงชื่อเข้าใช้เพื่อดำเนินการต่อ
+                    </Text>
                   </View>
                 </View>
-                <View style={styles.lineRow}>
-                  <Ionicons name="flash-outline" size={16} color={TEXT_DIM} />
-                  <Text style={styles.lineText}>
-                    เข้าร่วมเรดได้ไว ใช้งานง่าย
-                  </Text>
-                </View>
               </View>
-            </View>
 
-            {/* Form */}
-            <View style={styles.card}>
+              {/* ระบุ email */}
               <Text style={styles.label}>อีเมล</Text>
               <View style={styles.inputRow}>
                 <TextInput
@@ -217,13 +205,14 @@ export default function Login() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   returnKeyType="next"
-                  style={[styles.input,{ paddingVertical: 2 }]} // แก้ padding แนวตั้ง
+                  style={[styles.input, { paddingVertical: 2 }]} // แก้ padding แนวตั้ง
                 />
               </View>
               {!!emailError && (
                 <Text style={styles.errorText}>{emailError}</Text>
               )}
 
+              {/* ระบุ password */}
               <Text style={[styles.label, { marginTop: 12 }]}>รหัสผ่าน</Text>
               <View style={styles.inputRow}>
                 <TextInput
@@ -232,7 +221,7 @@ export default function Login() {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPw}
-                  style={[styles.input,{ paddingVertical: 2 }]}
+                  style={[styles.input, { paddingVertical: 2 }]}
                   returnKeyType="done"
                   onSubmitEditing={onLogin}
                 />
@@ -245,6 +234,16 @@ export default function Login() {
                     size={18}
                     color={TEXT_SUB}
                   />
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{ marginTop: 10, marginRight: 8, alignSelf: "flex-end" }}
+              >
+                <TouchableOpacity
+                  onPress={() => router.push("/(auth)/forget_password")}
+                >
+                  <Text style={styles.link}>ลืมรหัสผ่าน ?</Text>
                 </TouchableOpacity>
               </View>
 
@@ -275,7 +274,12 @@ export default function Login() {
               >
                 <View style={{ flex: 1, height: 1, backgroundColor: BORDER }} />
                 <Text
-                  style={{ marginHorizontal: 8, color: TEXT_SUB, fontSize: 12, fontFamily: "KanitRegular" }}
+                  style={{
+                    marginHorizontal: 8,
+                    color: TEXT_SUB,
+                    fontSize: 12,
+                    fontFamily: "KanitRegular",
+                  }}
                 >
                   หรือ
                 </Text>
@@ -309,7 +313,9 @@ export default function Login() {
               </TouchableOpacity>
 
               <View style={styles.bottomRow}>
-                <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>ยังไม่มีบัญชี?</Text>
+                <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>
+                  ยังไม่มีบัญชี?
+                </Text>
                 <TouchableOpacity
                   onPress={() => router.push("/(auth)/register")}
                 >
@@ -389,7 +395,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 0,
-    fontSize: 24,
+    fontSize: 30,
     fontFamily: "KanitMedium",
     color: TEXT_MAIN,
     marginRight: 8,
@@ -404,18 +410,18 @@ const styles = StyleSheet.create({
   },
   badgeText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 12 },
   lineRow: { flexDirection: "row", alignItems: "center", marginTop: 6, gap: 6 },
-  lineText: { color: TEXT_DIM, fontSize: 14, fontFamily: "KanitRegular" },
+  lineText: { color: TEXT_DIM, fontSize: 16, fontFamily: "KanitRegular" },
   card: {
     backgroundColor: CARD_BG,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: BORDER,
     padding: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.06,
-    shadowRadius: 20,
-    elevation: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   label: { color: TEXT_MAIN, fontFamily: "KanitSemiBold", marginBottom: 6 },
   inputRow: {
@@ -427,8 +433,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  input: { flex: 1, color: TEXT_MAIN, fontSize: 15, fontFamily: "KanitRegular" },
-  errorText: { color: ERROR, marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" },
+  input: {
+    flex: 1,
+    color: TEXT_MAIN,
+    fontSize: 15,
+    fontFamily: "KanitRegular",
+  },
+  errorText: {
+    color: ERROR,
+    marginTop: 6,
+    fontSize: 12,
+    fontFamily: "KanitRegular",
+  },
   primaryBtn: {
     marginTop: 16,
     borderRadius: 12,
@@ -473,5 +489,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  link: { color: ACCENT, textDecorationLine: "underline", fontFamily: "KanitSemiBold", fontSize: 14 },
+  link: {
+    color: ACCENT,
+    textDecorationLine: "underline",
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
+  },
 });

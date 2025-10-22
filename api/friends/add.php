@@ -132,7 +132,7 @@ function notifyFriendRequest(PDO $db, int $fromUserId, int $toUserId): void
       u_to.device_token AS expo_token
     FROM users u_from
     JOIN users u_to ON u_to.id = :toId
-    WHERE u_from.id = :fromId
+    WHERE u_from.id = :fromId AND u_to.noti_status = 'on'
     LIMIT 1
   ");
   $q->execute([':fromId' => $fromUserId, ':toId' => $toUserId]);
@@ -150,7 +150,7 @@ function notifyFriendRequest(PDO $db, int $fromUserId, int $toUserId): void
   $data = [
     'type'      => 'friend_request',
     'from_id'   => $fromUserId,
-    'deeplink'  => 'pogopartyth://friends/requests'
+    'url'      => 'pogopartyth://friends/'.$fromUserId
   ];
 
   // ส่ง Expo Push (ถ้ามี token)
