@@ -269,7 +269,7 @@ export default function Profile() {
               { backgroundColor: status_friend_color },
             ]}
             onPress={addfriend}
-            disabled={statusFriend?.status === "pending"}
+            disabled={statusFriend?.status === "accepted"}
           >
             {acting ? (
               <ActivityIndicator color="#ffffff" size="small" />

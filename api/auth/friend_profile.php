@@ -46,14 +46,19 @@ if (!$user) {
 
 // เช็ควสถานะเป็นเพื่อน
 $f1 = $db->prepare("
-  SELECT requester_id, status
+  SELECT requester_id, addressee_id, status
   FROM friendships
   WHERE (requester_id=:me AND addressee_id=:target)
-    OR (requester_id=:target AND addressee_id=:me)
+     OR (requester_id=:target AND addressee_id=:me)
   LIMIT 1;
 ");
 $f1->execute([':me' => $authUserId, ':target' => $userId]);
-$status_friend = $f1->fetch();
+$status_friend = $f1->fetch(PDO::FETCH_ASSOC);
+
+$isMeAddressee = false;
+if ($status_friend && (int)$status_friend['addressee_id'] === $authUserId) {
+  $isMeAddressee = true;
+}
 
 // (ออปชัน) สถิติเล็กน้อย เช่น จำนวนห้องที่เข้าร่วม/สร้าง
 $stats = [
@@ -106,8 +111,9 @@ try {
 }
 
 jsonResponse(true, [
-  'user'  => $user,
-  'stats' => $stats,
-  'rating_owner' => $ratingOwner,
-  'status_friend' => $status_friend,
+  'user'           => $user,
+  'stats'          => $stats,
+  'rating_owner'   => $ratingOwner,
+  'status_friend'  => $status_friend,
+  'is_me_addressee'=> $isMeAddressee
 ], 'โหลดโปรไฟล์สำเร็จ');
