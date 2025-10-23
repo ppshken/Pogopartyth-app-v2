@@ -140,7 +140,7 @@ export default function Profile() {
 
   const status_friend_color =
     statusFriend?.status === "pending"
-      ? "#2563EB"
+      ? "#697184ff"
       : statusFriend?.status === "accepted"
       ? "#10B981"
       : "#111827";
@@ -271,7 +271,7 @@ export default function Profile() {
           {/* ปุ่มจัดการเพื่อน*/}
           {is_me_addressee && statusFriend?.status === "pending" ? (
             <TouchableOpacity
-              style={[styles.outlineBtnAdd, { backgroundColor: "#ffc107" }]}
+              style={[styles.outlineBtnAdd, { backgroundColor: "#3B82F6" }]}
               onPress={() => {
                 setOnAccepted(true);
               }}
@@ -281,7 +281,7 @@ export default function Profile() {
               ) : (
                 <>
                   <Ionicons name="checkmark" size={16} color="#ffffffff" />
-                  <Text style={styles.outlineBtnAddText}>รับเพื่อน</Text>
+                  <Text style={styles.outlineBtnAddText}>ยืนยันรับเพื่อน</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -336,7 +336,7 @@ export default function Profile() {
             <Text style={styles.modalTitle}>ต้องการรับเพื่อน ?</Text>
             <TouchableOpacity
               onPress={acceptFriend}
-              style={[styles.modalBtn, { backgroundColor: "#ffc107" }]}
+              style={[styles.modalBtn, { backgroundColor: "#3B82F6" }]}
             >
               {acting ? (
                 <ActivityIndicator size="small" color="#ffffff" />
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: "#fff",
   },
-  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
+  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold", fontSize: 14 },
 
   outlineBtnAdd: {
     flex: 1,
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  outlineBtnAddText: { color: "#ffffffff", fontFamily: "KanitSemiBold" },
+  outlineBtnAddText: { color: "#ffffffff", fontFamily: "KanitSemiBold", fontSize: 14 },
 
   primaryBtn: {
     marginTop: 10,
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold" },
+  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 14 },
   modalCancel: {
     backgroundColor: "#F3F4F6",
     borderWidth: 1,

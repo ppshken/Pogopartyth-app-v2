@@ -27,6 +27,7 @@ export async function updateProfile(payload: {
   friend_code?: string;
   team?: string;
   level?: number;
+  setup_status?: string;
 }) {
   const { data } = await api.post("/api/auth/update_profile.php", payload, {
     validateStatus: () => true,

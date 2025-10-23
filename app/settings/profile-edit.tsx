@@ -19,6 +19,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { getProfile, updateProfile, updateAvatar } from "../../lib/user";
 import { showSnack } from "../../components/Snackbar"; // ✅ แก้ path
+import { teams } from "@/hooks/team";
 
 type FullUser = {
   id: number;
@@ -30,24 +31,6 @@ type FullUser = {
   level?: number | null;
   created_at?: string | null;
 };
-
-const teams = [
-  {
-    team: "Valor",
-    image:
-      "https://static.wikia.nocookie.net/pokemongo/images/2/22/Team_Valor.png/revision/latest?cb=20160717150715",
-  },
-  {
-    team: "Mystic",
-    image:
-      "https://static.wikia.nocookie.net/pokemongo/images/f/f4/Team_Mystic.png/revision/latest?cb=20160717150716",
-  },
-  {
-    team: "Instinct",
-    image:
-      "https://static.wikia.nocookie.net/pokemongo/images/d/d4/Team_Instinct.png/revision/latest?cb=20200803123751",
-  },
-];
 
 export default function ProfileEdit() {
   const router = useRouter();

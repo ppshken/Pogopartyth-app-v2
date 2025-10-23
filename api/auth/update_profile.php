@@ -22,6 +22,8 @@ try {
   $team        = array_key_exists('team', $in) ? trim((string)$in['team']) : null;
   $level_raw   = array_key_exists('level', $in) ? $in['level'] : null;
 
+  $setup_status   = isset($in['setup_status']) ? trim((string)$in['setup_status']) : null;
+
   $set = [];
   $params = [':id' => $userId];
 
@@ -38,6 +40,11 @@ try {
   if ($friend_code !== null) {
     $set[] = 'friend_code = :friend_code';
     $params[':friend_code'] = $friend_code;
+  }
+
+  if ($setup_status !== null) {
+    $set[] = 'setup_status = :setup_status';
+    $params[':setup_status'] = $setup_status;
   }
 
   if ($password !== null) {

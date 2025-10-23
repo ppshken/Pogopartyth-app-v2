@@ -240,11 +240,7 @@ export default function FriendsScreen() {
           }}
         >
           <TextInput
-            placeholder={
-              tab === "search"
-                ? "ค้นหาเพื่อน (ชื่อ / Friend code)"
-                : "ค้นหาในรายชื่อเพื่อนของฉัน"
-            }
+            placeholder="ค้นหาเพื่อน (ชื่อ / Friend code)"
             value={q}
             onChangeText={onChangeQ}
             autoCapitalize="none"

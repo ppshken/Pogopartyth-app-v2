@@ -1,4 +1,9 @@
-import React, { useCallback, useEffect, useState, useLayoutEffect } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useLayoutEffect,
+} from "react";
 import {
   View,
   Text,
@@ -137,7 +142,7 @@ export default function Profile() {
     Valor: "#EF4444",
     Instinct: "#F59E0B",
   };
-  
+
   if (!user) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -171,9 +176,16 @@ export default function Profile() {
           <Text style={styles.name} numberOfLines={1}>
             {user?.username || "ไม่ระบุชื่อ"}
           </Text>
-          <Text style={styles.email} numberOfLines={1}>
-            {user?.email || "-"}
-          </Text>
+          
+          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+            <Image
+              source={require("assets/g-logo.png")}
+              style={{ width: 18, height: 18, marginRight: 8 }}
+            />
+            <Text style={styles.email} numberOfLines={1}>
+              {user?.email || "-"}
+            </Text>
+          </View>
 
           {/* Chips / quick actions */}
           <View
@@ -233,9 +245,10 @@ export default function Profile() {
           <Text style={styles.rowText}>คะแนนรีวิวที่ได้รับ</Text>
           <View style={{ flex: 1 }} />
           <Text style={styles.rowValue}>
-            <Ionicons name="star" size={14} color="#FBBF24" />
-            {" "}
-            {rat?.avg ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)` : "ยังไม่มีรีวิว"}
+            <Ionicons name="star" size={14} color="#FBBF24" />{" "}
+            {rat?.avg
+              ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)`
+              : "ยังไม่มีรีวิว"}
           </Text>
         </View>
 
@@ -244,7 +257,16 @@ export default function Profile() {
           <Ionicons name="cube-outline" size={18} color="#374151" />
           <Text style={styles.rowText}>ทีม</Text>
           <View style={{ flex: 1 }} />
-          <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: teamColors [user.team ?? ""] ?? "#E5E7EB", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: teamColors[user.team ?? ""] ?? "#E5E7EB",
+              paddingHorizontal: 8,
+              paddingVertical: 2,
+              borderRadius: 4,
+            }}
+          >
             <Text style={[styles.rowValue, { color: "#ffffffff" }]}>
               {user?.team || "-"}
             </Text>
@@ -277,19 +299,43 @@ export default function Profile() {
         <View style={styles.cardSection}>
           <View style={styles.card_stats_detail}>
             <Ionicons name="paw-outline" size={24} />
-            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
               จำนวนห้องที่สร้างทั้งหมด
             </Text>
-            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
               {stats?.rooms_owned}
             </Text>
           </View>
           <View style={styles.card_stats_detail}>
             <Ionicons name="invert-mode-outline" size={24} />
-            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
               จำนวนห้องที่เข้าร่วมทั้งหมด
             </Text>
-            <Text style={{ fontSize: 14, fontFamily: "KanitSemiBold", color: "#111827" }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
               {stats?.rooms_joined}
             </Text>
           </View>
@@ -412,7 +458,11 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     alignSelf: "flex-start",
   },
-  badgeDarkText: { fontSize: 14, fontFamily: "KanitMedium", color: "#000000ff" },
+  badgeDarkText: {
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+    color: "#000000ff",
+  },
 
   badgeMuted: {
     flexDirection: "row",
@@ -425,7 +475,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
-  badgeMutedText: { color: "#111827", fontSize: 12, fontFamily: "KanitSemiBold" },
+  badgeMutedText: {
+    color: "#111827",
+    fontSize: 12,
+    fontFamily: "KanitSemiBold",
+  },
 
   cardTitle: {
     fontSize: 16,
@@ -435,7 +489,12 @@ const styles = StyleSheet.create({
   },
 
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },
-  rowText: { marginLeft: 8, color: "#374151", fontSize: 14, fontFamily: "KanitRegular" },
+  rowText: {
+    marginLeft: 8,
+    color: "#374151",
+    fontSize: 14,
+    fontFamily: "KanitRegular",
+  },
   rowValue: { color: "#111827", fontFamily: "KanitSemiBold" },
 
   outlineBtn: {
@@ -461,7 +520,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  primaryBtnText: { color: "#fff", marginLeft: 6, fontFamily: "KanitBold" },
+  primaryBtnText: { color: "#fff", marginLeft: 6, fontFamily: "KanitSemiBold" },
 
   card_stats: {
     backgroundColor: "#fff",
@@ -508,4 +567,3 @@ const styles = StyleSheet.create({
     fontFamily: "KanitRegular",
   },
 });
-

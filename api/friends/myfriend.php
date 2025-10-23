@@ -10,33 +10,38 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 $me = authGuard();
 
-$q     = trim((string)($_GET['q'] ?? ''));
-$page  = max(1, (int)($_GET['page'] ?? 1));
-$limit = max(1, min(50, (int)($_GET['limit'] ?? 10)));
+$q      = trim((string)($_GET['q'] ?? ''));
+$page   = max(1, (int)($_GET['page'] ?? 1));
+$limit  = max(1, min(50, (int)($_GET['limit'] ?? 10)));
 $offset = ($page - 1) * $limit;
 
 $db = pdo();
 
-// รายชื่อเพื่อน = ทุกแถวที่ status='accepted' ที่เกี่ยวกับฉัน
-// จากนั้น join users เพื่อดึงข้อมูลโปรไฟล์
 $params = [':me' => $me];
 $filter = '';
 
 if ($q !== '') {
-  // กรองด้วย username หรือ friend_code (ตามที่คุณเก็บ)
-  $filter = " AND (u.username LIKE :q OR u.friend_code LIKE :qexact) ";
-  $params[':q'] = $q . '%';
+  // กรอง username เริ่มด้วย q และ friend_code ตรงบางส่วน (ตัดเว้นวรรค)
+  $filter = " AND (u.username LIKE :q OR REPLACE(u.friend_code, ' ', '') LIKE :qexact) ";
+  $params[':q']      = $q . '%';
   $params[':qexact'] = '%' . preg_replace('/\s+/', '', $q) . '%';
 }
 
+/**
+ * รายชื่อเพื่อน:
+ * - ต้องเป็นความสัมพันธ์ที่เกี่ยวกับฉัน (requester|addressee มี :me)
+ * - สถานะ 'accepted'
+ * - ฝั่ง "อีกคน" (ไม่ใช่ฉัน) ต้อง setup_status = 'yes'
+ */
 $sql = "
-  SELECT u.id, u.username, u.avatar, u.team, u.level,
-         -- (ออปชัน) rating เฉลี่ยของเจ้าของห้อง
-         CAST(ru.avg_rating AS DECIMAL(10,2)) AS rating_owner,
-         -- (ออปชัน) ปิดบัง friend code บางส่วน
-         CASE WHEN u.friend_code IS NOT NULL AND u.friend_code <> ''
-              THEN CONCAT(SUBSTRING(u.friend_code,1,4), '-****-****')
-              ELSE NULL END AS friend_code_masked
+  SELECT
+    u.id, u.username, u.avatar, u.team, u.level,
+    CAST(ru.avg_rating AS DECIMAL(10,2)) AS rating_owner,
+    CASE
+      WHEN u.friend_code IS NOT NULL AND u.friend_code <> ''
+      THEN CONCAT(SUBSTRING(REPLACE(u.friend_code, ' ', ''),1,4), '-****-****')
+      ELSE NULL
+    END AS friend_code_masked
   FROM friendships f
   JOIN users u
     ON u.id = CASE WHEN f.requester_id = :me THEN f.addressee_id ELSE f.requester_id END
@@ -49,21 +54,31 @@ $sql = "
   ) ru ON ru.owner_id = u.id
   WHERE (f.requester_id = :me OR f.addressee_id = :me)
     AND f.status = 'accepted'
+    AND u.setup_status = 'yes'
     {$filter}
   ORDER BY u.username
   LIMIT {$limit} OFFSET {$offset}
 ";
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
-$list = $stmt->fetchAll();
+$list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$countStmt = $db->prepare("
+/**
+ * นับรวมทั้งหมดสำหรับ pagination:
+ * - ใช้เงื่อนไขเดียวกับหน้ารายการ (รวม filter และ setup_status = 'yes')
+ */
+$countSql = "
   SELECT COUNT(*)
   FROM friendships f
+  JOIN users u
+    ON u.id = CASE WHEN f.requester_id = :me THEN f.addressee_id ELSE f.requester_id END
   WHERE (f.requester_id = :me OR f.addressee_id = :me)
     AND f.status = 'accepted'
-");
-$countStmt->execute([':me' => $me]);
+    AND u.setup_status = 'yes'
+    {$filter}
+";
+$countStmt = $db->prepare($countSql);
+$countStmt->execute($params);
 $total = (int)$countStmt->fetchColumn();
 
 jsonResponse(true, [
@@ -71,5 +86,6 @@ jsonResponse(true, [
   'pagination' => [
     'page' => $page,
     'has_more' => ($offset + count($list)) < $total,
+    'total' => $total,
   ]
 ], 'โหลดรายการเพื่อนสำเร็จ');

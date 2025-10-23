@@ -31,7 +31,7 @@ try {
   // $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
   // ---- where / params ----
-  $where   = ['u.id <> :me AND u.role = "member"'];
+  $where   = ['u.id <> :me AND u.role = "member" AND u.setup_status = "yes"'];
   $params  = [':me' => $authUserId];
 
   if ($q !== '') {

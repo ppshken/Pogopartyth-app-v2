@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { getProfile, updateProfile } from "../../lib/user";
 import { showSnack } from "../../components/Snackbar";
+import { teams } from "@/hooks/team";
 
 type FullUser = {
   id: number;
@@ -30,23 +31,8 @@ type FullUser = {
   created_at?: string | null;
 };
 
-const teams = [
-  {
-    team: "Valor",
-    image:
-      "https://static.wikia.nocookie.net/pokemongo/images/2/22/Team_Valor.png/revision/latest?cb=20160717150715",
-  },
-  {
-    team: "Mystic",
-    image:
-      "https://static.wikia.nocookie.net/pokemongo/images/f/f4/Team_Mystic.png/revision/latest?cb=20160717150716",
-  },
-  {
-    team: "Instinct",
-    image:
-      "https://static.wikia.nocookie.net/pokemongo/images/d/d4/Team_Instinct.png/revision/latest?cb=20200803123751",
-  },
-];
+const ACCENT = "#111827";
+const BORDER = "#E5E7EB";
 
 export default function ProfileEdit() {
   const router = useRouter();
@@ -134,6 +120,7 @@ export default function ProfileEdit() {
         friend_code: fcDigits,
         team: team || "",
         level: levelNum,
+        setup_status: "yes",
       });
       showSnack({ text: "ตั้งค่าโปรไฟล์เรียบร้อย", variant: "success" });
       router.replace("/(tabs)/room_raid");
@@ -161,8 +148,11 @@ export default function ProfileEdit() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
         {/* การ์ดรูปโปรไฟล์ */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>รูปโปรไฟล์</Text>
-          <View style={{ alignItems: "center", marginTop: 8 }}>
+          <Text style={styles.cardTitle}>ตั้งค่าข้อมูลผู้ใช้งานใหม่</Text>
+          <Text style={styles.subtitle}>
+            กรอกข้อมูลโปรไฟล์ของคุณจาก Pokemon Go
+          </Text>
+          <View style={{ alignItems: "center", marginTop: 12 }}>
             {avatar ? (
               <Image source={{ uri: avatar }} style={styles.avatar} />
             ) : (
@@ -174,14 +164,14 @@ export default function ProfileEdit() {
                 />
               </View>
             )}
-            <Text style={{fontFamily: "KanitMedium", fontSize: 16}}>{email}</Text>
+            <Text style={{ fontFamily: "KanitMedium", fontSize: 16 }}>
+              {email}
+            </Text>
           </View>
         </View>
 
         {/* การ์ดข้อมูลผู้ใช้ */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>ข้อมูลผู้ใช้</Text>
-
           <Text style={styles.label}>รหัสผ่าน</Text>
           <View>
             <TextInput
@@ -259,7 +249,12 @@ export default function ProfileEdit() {
                   style={{ height: 20, width: 20 }}
                 />
               )}
-              <Text style={{ color: team ? "#111827" : "#9CA3AF", fontFamily: "KanitMedium" }}>
+              <Text
+                style={{
+                  color: team ? "#111827" : "#9CA3AF",
+                  fontFamily: "KanitMedium",
+                }}
+              >
                 {team || "เลือกทีม"}
               </Text>
             </View>
@@ -284,11 +279,16 @@ export default function ProfileEdit() {
               onPressOut={() => setTeamopen(false)}
             >
               <View style={styles.modalContent}>
-                <Text style={{fontSize: 18, fontFamily: "KanitSemiBold"}}>เลือกทีม</Text>
+                <Text style={{ fontSize: 18, fontFamily: "KanitSemiBold" }}>
+                  เลือกทีม
+                </Text>
                 {teams.map((t) => (
                   <TouchableOpacity
                     key={t.team}
-                    style={[styles.modalItem, team === t.team && { backgroundColor: "#e5ebf7ff" }]}
+                    style={[
+                      styles.modalItem,
+                      team === t.team && { backgroundColor: "#e5ebf7ff" },
+                    ]}
                     onPress={() => {
                       setTeam(t.team);
                       setTeamImage(t.image);
@@ -306,7 +306,9 @@ export default function ProfileEdit() {
                         source={{ uri: t.image }}
                         style={{ height: 40, width: 40 }}
                       />
-                      <Text style={{ fontSize: 16, fontFamily: "KanitMedium" }}>{t.team}</Text>
+                      <Text style={{ fontSize: 16, fontFamily: "KanitMedium" }}>
+                        {t.team}
+                      </Text>
                       {team === t.team && (
                         <Ionicons
                           name="checkmark"
@@ -314,7 +316,7 @@ export default function ProfileEdit() {
                           color="#2563EB"
                           style={{ marginLeft: "auto" }}
                         />
-                      )}                     
+                      )}
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -335,26 +337,30 @@ export default function ProfileEdit() {
           {!levelOk && level.length > 0 && (
             <Text style={styles.errorText}>กรอก 1–80</Text>
           )}
-        </View>
 
-        {/* ปุ่มบันทึก */}
-        <TouchableOpacity
-          style={[
-            styles.primaryBtnsave,
-            { backgroundColor: canSubmit ? "#10B981" : "#A7F3D0" },
-          ]}
-          onPress={onSave}
-          disabled={!canSubmit || saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <Ionicons name="save-outline" size={18} color="#fff" />
+          <TouchableOpacity
+            style={[styles.primaryBtnsave, !canSubmit && { opacity: 0.6 }]}
+            onPress={onSave}
+            disabled={!canSubmit || saving}
+          >
+            {saving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
               <Text style={styles.primaryBtnText}>บันทึก</Text>
-            </>
-          )}
-        </TouchableOpacity>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.primaryBtnCancel}
+            onPress={() => {
+              router.replace("(auth)/login");
+            }}
+          >
+            <Text style={[styles.primaryBtnText, { color: ACCENT }]}>
+              ยกเลิก
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -369,8 +375,19 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
   },
-  cardTitle: { fontSize: 16, fontFamily: "KanitSemiBold", color: "#111827" },
-
+  cardTitle: {
+    fontSize: 22,
+    fontFamily: "KanitSemiBold",
+    color: "#111827",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontFamily: "KanitRegular",
+    color: "#6B7280",
+    marginBottom: 16,
+    lineHeight: 20,
+  },
   avatar: {
     width: 96,
     height: 96,
@@ -407,7 +424,12 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: "#DC2626",
   },
-  errorText: { color: "#DC2626", marginTop: 6, fontSize: 12, fontFamily: "KanitMedium" },
+  errorText: {
+    color: "#DC2626",
+    marginTop: 6,
+    fontSize: 12,
+    fontFamily: "KanitMedium",
+  },
 
   outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
 
@@ -423,15 +445,21 @@ const styles = StyleSheet.create({
     borderColor: "#111827",
   },
   primaryBtnsave: {
-    marginTop: 8,
+    marginTop: 30,
     padding: 12,
     borderRadius: 12,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
+    backgroundColor: ACCENT,
   },
-  primaryBtnText: { color: "#fff", fontFamily: "KanitSemiBold", marginLeft: 6 },
+  primaryBtnText: {
+    color: "#fff",
+    fontFamily: "KanitSemiBold",
+    marginLeft: 6,
+    fontSize: 16,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -452,5 +480,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     paddingLeft: 12,
+  },
+  primaryBtnCancel: {
+    marginTop: 14,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: BORDER,
   },
 });

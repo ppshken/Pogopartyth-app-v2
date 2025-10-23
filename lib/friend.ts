@@ -96,9 +96,9 @@ export async function AddFriend(targetId: number): Promise<{ message: string }> 
 }
 
 /** รับคำขอเป็นเพื่อน (อีกฝ่ายคือ requester) */
-export async function AcceptFriend(requesterId: number): Promise<{ message: string }> {
-  const res = await api.post("api/friends/respond.php", {
-    requester_id: requesterId,
+export async function AcceptFriend(requester_id: number): Promise<{ message: string }> {
+  const res = await api.post("/api/friends/respond.php", {
+    requester_id: requester_id,
     action: "accept",
   });
   if (!res.data?.success) {

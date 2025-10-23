@@ -141,8 +141,9 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $isNew = true;
+    
   }
-
+    $isSetup = false;
   // --- ออก token ของระบบคุณ ---
   if (!function_exists('issueYourJWT')) {
     // กันพังขณะทดสอบ: ถ้าไม่มีฟังก์ชันนี้ ใช้โทเคน HMAC ชั่วคราว
@@ -158,8 +159,10 @@ try {
       'id'       => (int)$user['id'],
       'email'    => $email,
       'avatar'   => $user['avatar'] ?? null,
+      'is_setup' => $user['setup_status'] ?? null,
     ],
     'is_new' => $isNew,
+    'is_setup' => $user['setup_status'],
   ]);
 
 } catch (Throwable $e) {

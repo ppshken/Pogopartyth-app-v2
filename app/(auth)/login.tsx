@@ -97,8 +97,8 @@ export default function Login() {
   // ===== EMAIL/PASSWORD LOGIN =====
   const onLogin = async () => {
     if (!canSubmit) {
-    showSnack({ text: "กรุณาระบุข้อมูล", variant: "error" });
-    return;
+      showSnack({ text: "กรุณาระบุข้อมูล", variant: "error" });
+      return;
     }
     setLoading(true);
     try {
@@ -156,11 +156,13 @@ export default function Login() {
       if (!json?.success)
         throw new Error(json?.message || "Google login failed");
 
-      const { token, user: appUser, is_new } = json.data || {};
+      const { token, user: appUser } = json.data || {};
       if (!token || !appUser) throw new Error("Invalid login payload");
 
+      const isSetup = json.data?.is_setup === "yes";
       await setAuth(appUser, token);
-      router.replace(is_new ? "/settings/profile-setup" : "/room_raid");
+      const tosetup = !isSetup;
+      router.replace(tosetup ? "/settings/profile-setup" : "/room_raid");
     } catch (e: any) {
       Alert.alert("Google Sign-In", e?.message || "เกิดข้อผิดพลาด");
     } finally {
@@ -181,7 +183,13 @@ export default function Login() {
           <View style={styles.wrap}>
             {/* Card Login */}
             <View style={styles.card}>
-              <View style={{flexDirection: "row", marginBottom: 30, alignItems: "center"}}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 30,
+                  alignItems: "center",
+                }}
+              >
                 <View style={{ flex: 1 }}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Text style={styles.title}>PogopartyTH</Text>
@@ -299,9 +307,7 @@ export default function Login() {
                   ) : (
                     <>
                       <Image
-                        source={{
-                          uri: "https://developers.google.com/identity/images/g-logo.png",
-                        }}
+                        source={require("assets/g-logo.png")}
                         style={{ width: 18, height: 18, marginRight: 8 }}
                       />
                       <Text style={styles.googleBtnText}>
