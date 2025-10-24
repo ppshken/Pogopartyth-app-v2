@@ -196,7 +196,7 @@ export default function Login() {
                   </View>
                   <View style={styles.lineRow}>
                     <Text style={styles.lineText}>
-                      ยินดีต้อนรับกลับ! โปรดลงชื่อเข้าใช้เพื่อดำเนินการต่อ
+                      ยินดีต้อนรับเข้าสู่ระบบหาเพื่อนตีบอสระยะไกล
                     </Text>
                   </View>
                 </View>

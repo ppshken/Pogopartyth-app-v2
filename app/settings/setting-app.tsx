@@ -110,6 +110,7 @@ export default function SettingApp() {
   // ส่งรายงานปัญหา
   const onSubmit = async () => {
     const trimmed = reason.trim();
+
     if (trimmed.length < 5) {
       Alert.alert("กรุณากรอกรายละเอียด", "กรุณาใส่ข้อความอย่างน้อย 5 ตัวอักษร");
       return;
@@ -121,22 +122,42 @@ export default function SettingApp() {
 
     try {
       setLoading(true);
+
       const res = await createReport({
         report_type: "other",
         target_id: 0,
         reason: trimmed,
       });
 
-      if (res.success) {
+      // เคสคูลดาวน์ (429 จาก backend)
+      if (res.statusCode === 429) {
+        const waitSec = res.data?.cooldown_sec ?? null;
+        const hint =
+          waitSec != null
+            ? `คุณเพิ่งส่งรายงานไปแล้ว โปรดลองใหม่ใน ${waitSec} วินาที`
+            : res.message || "คุณส่งถี่เกินไป โปรดลองใหม่อีกครั้งภายหลัง";
+
         showSnack({
-          text: "ส่งรายงานสำเร็จ ขอบคุณสำหรับความคิดเห็น!",
-          variant: "success",
+          text: hint,
+          variant: "warning",
+          duration: 4000,
         });
-        setReason("");
-        router.back();
-      } else {
-        Alert.alert("ไม่สำเร็จ", res.message || "ลองใหม่อีกครั้ง");
+        return;
       }
+
+      // error อื่น ๆ (422, 500 etc.)
+      if (!res.success) {
+        Alert.alert("ไม่สำเร็จ", res.message || "ลองใหม่อีกครั้ง");
+        return;
+      }
+
+      // สำเร็จ
+      showSnack({
+        text: "ส่งรายงานสำเร็จ ขอบคุณสำหรับความคิดเห็น!",
+        variant: "success",
+      });
+      setReason("");
+      router.back();
     } catch (e: any) {
       Alert.alert("เกิดข้อผิดพลาด", e?.message || "ลองใหม่อีกครั้ง");
     } finally {
@@ -226,7 +247,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   label: { fontSize: 16, fontFamily: "KanitSemiBold", color: "#111827" },
-  desc: { color: "#6B7280", marginTop: 2, fontSize: 14, fontFamily: "KanitMedium" },
+  desc: {
+    color: "#6B7280",
+    marginTop: 2,
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+  },
   reportBtn: {
     backgroundColor: "#2563EB",
     paddingVertical: 12,
@@ -236,7 +262,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   reportBtnText: { color: "#fff", fontWeight: "800" },
-  note: { color: "#6B7280", marginTop: 12, fontSize: 14, fontFamily: "KanitMedium" },
+  note: {
+    color: "#6B7280",
+    marginTop: 12,
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+  },
   input: {
     backgroundColor: "#fff",
     borderRadius: 12,

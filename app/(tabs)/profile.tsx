@@ -48,8 +48,8 @@ type RatingOwner = {
 
 export default function Profile() {
   const navigation = useNavigation();
-
   const router = useRouter();
+  
   const authUser = useAuth((s) => s.user) as any; // user จาก store (อาจยังไม่มี field เสริม)
   const logout = useAuth((s) => s.clear);
 

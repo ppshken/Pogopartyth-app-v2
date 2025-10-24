@@ -19,6 +19,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  FlatList,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
@@ -39,7 +40,7 @@ import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
 import ShareRoom from "../../components/ShareRoom";
-import { Friend, searchFriends, avatarOrFallback } from "../../lib/friend";
+import { Friend, getFriendAvailable } from "../../lib/friend";
 
 type Member = {
   user_id: number;
@@ -99,6 +100,18 @@ type RoomPayload = {
     review_pending_count?: number;
   };
 };
+
+type FriendAvailable = {
+  id: number;
+  username: string;
+  avatar?: string | null;
+  team?: string | null;
+  level?: number | null;
+  friend_code?: string | null;
+  rating_owner?: string | null;
+};
+
+const FALLBACK = "";
 
 const PokemonGoIcon =
   "https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk"; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
@@ -188,7 +201,32 @@ export default function RoomDetail() {
 
   // เปิด Modal เชิญเพื่อน
   const [onInvitedFriend, setOnInvitedFriend] = useState(false);
+  const [loadfriend, setLoadfriend] = useState(false);
   const [friendsData, setFriendsData] = useState<Friend[]>([]);
+  const [q, setQ] = useState(""); // Add search query state
+
+  // โหลดรายชื่อเพื่อน เพื่อ เชิญเพื่อน
+  const loadFriends = useCallback(async () => {
+    setLoadfriend(true);
+    try {
+      const items = await getFriendAvailable({ q, room_id: roomId });
+      setFriendsData(items);
+      console.log("loaded friends:", items);
+    } catch (e: any) {
+      showSnack({
+        text: `ผิดพลาด${
+          e?.message ? ` : ${e.message}` : "โหลดรายชื่อเพื่อนไม่สำเร็จ"
+        }`,
+        variant: "error",
+      });
+    } finally {
+      setLoadfriend(false);
+    }
+  }, [q, roomId]);
+
+  useEffect(() => {
+    loadFriends();
+  }, [loadFriends]);
 
   //เปิด modal เข้าร่วมห้อง
   const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
@@ -953,13 +991,18 @@ export default function RoomDetail() {
           )}
 
           {/* ปุ่มเชิญเพื่อน */}
-          <TouchableOpacity
-            onPress={() => setOnInvitedFriend(true)}
-            style={styles.outlineBtn}
-          >
-            <Ionicons name="people-outline" size={16} color="#ffffffff" />
-            <Text style={styles.outlineBtnText}>เชิญเพื่อน</Text>
-          </TouchableOpacity>
+          {isOwner && (
+            <TouchableOpacity
+              onPress={async () => {
+                loadFriends();
+                setOnInvitedFriend(true);
+              }}
+              style={styles.outlineBtn}
+            >
+              <Ionicons name="people-outline" size={16} color="#ffffffff" />
+              <Text style={styles.outlineBtnText}>เชิญเพื่อน</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* How to วิธีการใช้งาน */}
@@ -1148,8 +1191,8 @@ export default function RoomDetail() {
               }}
               style={[styles.modalBtn, { backgroundColor: "#d0444bff" }]}
             >
-              <Ionicons name="close-circle-outline" size={18} color="#fff" />
-              <Text style={styles.modalBtnText}>ยกเลิก</Text>
+              <Ionicons name="close-outline" size={18} color="#fff" />
+              <Text style={styles.modalBtnText}>ยกเลิกห้อง</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setCanceledRoom(false)}
@@ -1706,11 +1749,12 @@ export default function RoomDetail() {
       <Modal
         visible={onInvitedFriend}
         transparent
-        animationType="fade"
+        animationType="slide"
         onRequestClose={() => setOnInvitedFriend(false)}
       >
         <View style={styles.modalBackdrop}>
           <View style={styles.modalSheet}>
+            {/* header bar */}
             <View
               style={{
                 flexDirection: "row",
@@ -1720,7 +1764,7 @@ export default function RoomDetail() {
               }}
             >
               <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
-                จำนวนสมาชิก
+                เชิญเพื่อน
               </Text>
               <TouchableOpacity
                 onPress={() => setOnInvitedFriend(false)}
@@ -1729,6 +1773,102 @@ export default function RoomDetail() {
                 <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
+
+            {/* search bar */}
+            <View style={styles.searchWrap}>
+              <Ionicons name="search-outline" size={18} color="#6B7280" />
+              <TextInput
+                placeholder="ค้นหาชื่อบอส"
+                placeholderTextColor="#9CA3AF"
+                value={q}
+                onChangeText={setQ}
+                onSubmitEditing={loadFriends}
+                style={[styles.searchInput, { fontFamily: "KanitRegular" }]}
+              />
+              <TouchableOpacity onPress={loadFriends}>
+                <Text style={styles.link}>ค้นหา</Text>
+              </TouchableOpacity>
+            </View>
+
+            {loadfriend ? (
+              <View style={{ padding: 16, alignItems: "center" }}>
+                <ActivityIndicator />
+                <Text style={{ marginTop: 8, color: "#6B7280" }}>
+                  กำลังโหลด...
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={friendsData}
+                keyExtractor={(x) => String(x.username) + x.avatar}
+                renderItem={({ item }) => {
+                  return (
+                    <View style={styles.itemRow}>
+                      <Image
+                        source={{ uri: item.avatar || FALLBACK }}
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 10,
+                          marginRight: 12,
+                          backgroundColor: "#F3F4F6",
+                        }}
+                      />
+                      <View style={{ flex: 1 }}>
+                        <Text
+                          style={{
+                            fontFamily: "KanitSemiBold",
+                            color: "#111827",
+                          }}
+                        >
+                          {item.username}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "KanitMedium",
+                            color: "#111827",
+                          }}
+                        >
+                          Level {item.level}
+                        </Text>
+                      </View>
+
+                      <View>
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "#2563EB",
+                            padding: 6,
+                            borderRadius: 6,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontFamily: "KanitSemiBold",
+                              color: "#ffffffff",
+                            }}
+                          >
+                            เชิญเข้าร่วม
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  );
+                }}
+                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                ListEmptyComponent={
+                  <Text
+                    style={{
+                      color: "#9CA3AF",
+                      textAlign: "center",
+                      marginTop: 8,
+                      fontFamily: "KanitRegular",
+                    }}
+                  >
+                    ไม่พบข้อมูลเพื่อนคุณ
+                  </Text>
+                }
+              />
+            )}
           </View>
         </View>
       </Modal>
@@ -2012,6 +2152,7 @@ const styles = StyleSheet.create({
     padding: 16,
     maxHeight: "80%",
     paddingBottom: 30,
+    height: 800,
   },
   iconBtn: {
     marginLeft: "auto",
@@ -2021,5 +2162,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#F3F4F6",
+  },
+
+  searchWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 10,
+  },
+  searchInput: { flex: 1, color: "#111827" },
+  link: { color: "#2563EB", fontFamily: "KanitMedium" },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
   },
 });

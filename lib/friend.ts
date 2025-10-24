@@ -95,7 +95,7 @@ export async function AddFriend(targetId: number): Promise<{ message: string }> 
   return { message: res.data?.message || "ส่งคำขอเป็นเพื่อนเรียบร้อยแล้ว" };
 }
 
-/** รับคำขอเป็นเพื่อน (อีกฝ่ายคือ requester) */
+/** ตอบรับคำขอเป็นเพื่อน (อีกฝ่ายคือ requester) */
 export async function AcceptFriend(requester_id: number): Promise<{ message: string }> {
   const res = await api.post("/api/friends/respond.php", {
     requester_id: requester_id,
@@ -105,4 +105,61 @@ export async function AcceptFriend(requester_id: number): Promise<{ message: str
     throw new Error(res.data?.message || "ตอบรับคำขอไม่สำเร็จ");
   }
   return { message: res.data?.message || "ตอบรับคำขอเป็นเพื่อนแล้ว" };
+}
+
+/** ปฏิเสธคำขอเป็นเพื่อน */
+export async function DeclineFriend(requester_id: number): Promise<{ message: string }> {
+  const res = await api.post("/api/friends/respond.php", {
+    requester_id: requester_id,
+    action: "decline",
+  });
+  if (!res.data?.success) {
+    throw new Error(res.data?.message || "ตอบรับคำขอไม่สำเร็จ");
+  }
+  return { message: res.data?.message || "ตอบรับคำขอเป็นเพื่อนแล้ว" };
+}
+
+// ✅ ดึง "คำขอเป็นเพื่อนที่ส่งมาหาเรา" (สถานะ pending)
+export async function GetPendingFriends(params: { q?: string; page: number; limit: number }) {
+  const res = await api.get("/api/friends/request_friend.php", { params });
+  if (!res.data?.success) throw new Error(res.data?.message || "get pending friends failed");
+  return res.data.data as {
+    list: {
+      request_id: number;
+      requester_id: number;
+      username: string;
+      avatar?: string | null;
+      team?: string | null;
+      level?: number | null;
+      friend_code?: string | null;
+      created_at?: string;
+      status?: string;
+    }[];
+    pagination: {
+      page: number;
+      has_more: boolean;
+      total?: number;
+    };
+  };
+}
+
+// ดึงเพื่อนที่เชิญเข้าห้องนี้ได้ (ยังไม่อยู่ในห้อง)
+export async function getFriendAvailable(params?: {
+  room_id: number;
+  q?: string;
+}) {
+  const { room_id, q } = params ?? {};
+  if (!room_id) {
+    throw new Error("room_id is required");
+  }
+  const res = await api.get("/api/friends/available_for_room.php", {
+    params: { room_id, q },
+    validateStatus: () => true, // อย่าปล่อย axios throw เอง (เผื่อ 422/429/etc.)
+  });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || "โหลดรายชื่อเพื่อนไม่สำเร็จ");
+  }
+  // เซิร์ฟเวอร์ส่งกลับใน data.list ไม่ใช่ data.items
+  return (json.data?.list ?? []) as Friend[];
 }

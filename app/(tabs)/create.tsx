@@ -123,6 +123,7 @@ export default function CreateRoom() {
   }, [q, boss]);
 
   useRefetchOnFocus(loadBosses, [loadBosses]);
+
   useEffect(() => {
     loadBosses();
   }, [loadBosses]);

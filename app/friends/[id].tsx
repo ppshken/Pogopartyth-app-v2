@@ -1,4 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useLayoutEffect,
+} from "react";
 import {
   View,
   Text,
@@ -10,14 +15,19 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { getFriendProfile } from "../../lib/user"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { showSnack } from "../../components/Snackbar";
+import { useRouter, useNavigation } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import { AddFriend, AcceptFriend } from "../../lib/friend";
+import { createReport } from "../../lib/reports";
 
 type FullUser = {
   id: number;
@@ -42,6 +52,9 @@ type StatusFriend = {
 };
 
 export default function Profile() {
+  const navigation = useNavigation();
+  const router = useRouter();
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = Number(id);
 
@@ -50,12 +63,35 @@ export default function Profile() {
   const [rat, setRat] = useState<RatingOwner | null>(null);
   const [statusFriend, setStatusFriend] = useState<StatusFriend | null>(null);
 
+  const [reason, setReason] = useState("");
+
   const [is_me_addressee, setIs_me_addressee] = useState(false);
 
   const [onAccepted, setOnAccepted] = useState(false);
+  const [onReport, setOnReport] = useState(false);
 
   // ภายใน component เดิมของคุณ
   const [acting, setActing] = useState(false); // กันกดซ้ำระหว่างยิง API
+
+  // ตั้งปุ่ม help icon ที่มุมขวาบน
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => setOnReport(true)}
+          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+          accessibilityRole="button"
+          accessibilityLabel="รายงานผู้ใช้งาน"
+        >
+          <Ionicons
+            name="information-circle-outline"
+            size={22}
+            color="#111827"
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   // โหลดข้อมูลเพื่อน
   const load = useCallback(async () => {
@@ -110,6 +146,64 @@ export default function Profile() {
     } finally {
       setActing(false);
       setOnAccepted(false);
+    }
+  };
+
+  // ส่งรายงานปัญหา
+  const onSubmit = async () => {
+    const trimmed = reason.trim();
+
+    if (trimmed.length < 5) {
+      Alert.alert("กรุณากรอกรายละเอียด", "กรุณาใส่ข้อความอย่างน้อย 5 ตัวอักษร");
+      return;
+    }
+    if (trimmed.length > 2000) {
+      Alert.alert("ข้อความยาวเกินไป", "กรุณาลดข้อความให้ไม่เกิน 2000 ตัวอักษร");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await createReport({
+        report_type: "user",
+        target_id: userId,
+        reason: trimmed,
+      });
+
+      // เคสคูลดาวน์ (429 จาก backend)
+      if (res.statusCode === 429) {
+        const waitSec = res.data?.cooldown_sec ?? null;
+        const hint =
+          waitSec != null
+            ? `คุณเพิ่งส่งรายงานไปแล้ว โปรดลองใหม่ใน ${waitSec} วินาที`
+            : res.message || "คุณส่งถี่เกินไป โปรดลองใหม่อีกครั้งภายหลัง";
+
+        showSnack({
+          text: hint,
+          variant: "warning",
+          duration: 4000,
+        });
+        return;
+      }
+
+      // error อื่น ๆ (422, 500 etc.)
+      if (!res.success) {
+        Alert.alert("ไม่สำเร็จ", res.message || "ลองใหม่อีกครั้ง");
+        return;
+      }
+
+      // สำเร็จ
+      showSnack({
+        text: "ส่งรายงานสำเร็จ ขอบคุณสำหรับความคิดเห็น!",
+        variant: "success",
+      });
+      setReason("");
+      router.back();
+    } catch (e: any) {
+      Alert.alert("เกิดข้อผิดพลาด", e?.message || "ลองใหม่อีกครั้ง");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -324,6 +418,7 @@ export default function Profile() {
           </TouchableOpacity>
         </View>
       </View>
+
       {/* Modal: ยืนยันการรับเพื่อน */}
       <Modal
         visible={onAccepted}
@@ -353,6 +448,69 @@ export default function Profile() {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </Modal>
+
+      {/* Modal: ยืนยันการรับเพื่อน */}
+      <Modal
+        visible={onReport}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnReport(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <View style={styles.modalCard}>
+              <Text style={styles.title}>รายงานผู้ใช้งาน</Text>
+              <Text style={styles.desc}>
+                กรุณาอธิบายปัญหาหรือความคิดเห็นของคุณให้ละเอียด
+                เพื่อให้ทีมงานตรวจสอบและปรับปรุงระบบได้ตรงจุด
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                placeholder="พิมพ์รายละเอียดที่นี่..."
+                multiline
+                value={reason}
+                onChangeText={setReason}
+                maxLength={2000}
+                editable={!loading}
+              />
+
+              <Text style={styles.note}>
+                หมายเหตุ: การรายงานนี้จะถูกเก็บไว้ในระบบเพื่อการตรวจสอบ
+                ไม่สามารถแก้ไขภายหลังได้
+              </Text>
+
+              <TouchableOpacity
+                style={[styles.submitBtn, loading && { opacity: 0.6 }]}
+                onPress={onSubmit}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.submitText}>ส่งรายงาน</Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setOnReport(false)}
+                style={[styles.modalBtn, styles.modalCancel]}
+              >
+                <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                  ยกเลิก
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </ScrollView>
@@ -459,7 +617,11 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: "#fff",
   },
-  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold", fontSize: 14 },
+  outlineBtnText: {
+    color: "#111827",
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
+  },
 
   outlineBtnAdd: {
     flex: 1,
@@ -470,7 +632,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  outlineBtnAddText: { color: "#ffffffff", fontFamily: "KanitSemiBold", fontSize: 14 },
+  outlineBtnAddText: {
+    color: "#ffffffff",
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
+  },
 
   primaryBtn: {
     marginTop: 10,
@@ -545,5 +711,50 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F4F6",
     borderWidth: 1,
     borderColor: "#E5E7EB",
+  },
+
+  title: {
+    fontSize: 20,
+    fontFamily: "KanitSemiBold",
+    color: "#111827",
+    marginBottom: 16,
+    alignSelf: "center",
+  },
+  desc: {
+    color: "#6B7280",
+    marginTop: 2,
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 15,
+    textAlignVertical: "top",
+    minHeight: 150,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    marginTop: 8,
+    fontFamily: "KanitMedium",
+  },
+  note: {
+    color: "#6B7280",
+    marginTop: 12,
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+  },
+  submitBtn: {
+    backgroundColor: "#2563EB",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+  },
+  submitText: {
+    color: "#fff",
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
   },
 });
