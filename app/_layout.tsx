@@ -120,6 +120,10 @@ export default function Layout() {
             name="friends/[id]"
             options={{ title: "โปรไฟล์เพื่อน", headerShown: true }}
           />
+          <Stack.Screen
+            name="friends/[id]/chat"
+            options={{ title: "แชท", headerShown: true }}
+          />
         </Stack>
         <SnackHost />
       </SafeAreaProvider>

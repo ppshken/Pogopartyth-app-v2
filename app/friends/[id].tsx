@@ -110,6 +110,10 @@ export default function Profile() {
     }
   }, [userId]);
 
+  useEffect(() => {
+    load();
+  }, [load]);
+
   // เพิ่มเพื่อน
   const addfriend = async () => {
     if (acting) return; // กันกดรัวๆ
@@ -207,8 +211,6 @@ export default function Profile() {
     }
   };
 
-  useRefetchOnFocus(load, [load]);
-
   // Copy รหัสเพิ่มเพื่อน
   const onCopyFriendCode = async () => {
     if (!user?.friend_code) {
@@ -217,6 +219,19 @@ export default function Profile() {
     }
     await Clipboard.setStringAsync(user.friend_code);
     showSnack({ text: "คัดลอก Friend Code เรียบร้อย", variant: "info" });
+  };
+
+  // เปิดแชท
+  const openChat = async () => {
+    router.push({
+      pathname: `/friends/${user?.id}/chat`,
+      params: {
+        thread_id: String(userId),
+        other_user_id: String(user?.id),
+        other_username: user?.username,
+        other_avatar: user?.avatar,
+      },
+    });
   };
 
   const teamColors: Record<string, string> = {
@@ -304,10 +319,7 @@ export default function Profile() {
             ) : null}
 
             {/* ปุ่มแชท */}
-            <TouchableOpacity
-              style={styles.outlinechatBtn}
-              onPress={onCopyFriendCode}
-            >
+            <TouchableOpacity style={styles.outlinechatBtn} onPress={openChat}>
               <Ionicons
                 name="chatbubble-ellipses-outline"
                 size={14}
@@ -645,7 +657,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     backgroundColor: "#111827",
-    marginTop: 8
+    marginTop: 8,
   },
   outlinechatBtnText: {
     color: "#ffffffff",

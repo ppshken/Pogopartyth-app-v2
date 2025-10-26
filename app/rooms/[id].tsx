@@ -633,7 +633,7 @@ export default function RoomDetail() {
   const allAdded =
     nonOwnerMembers.length > 0 &&
     nonOwnerMembers.every((m) => friendAdded[m.user_id]);
-  const joinFull = data.room.max_members === members.length; // เข้าห้องเต็ม
+  const joinFull = data.room.max_members === members.length && !isMember; // เข้าห้องเต็ม
 
   // สี/ข้อความสถานะ
   const statusBg =
