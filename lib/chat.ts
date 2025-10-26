@@ -11,13 +11,13 @@ export type ChatMessage = {
 };
 
 export async function getMessages(room_id: number, since_id?: number, limit = 50) {
-  const { data } = await api.get("/api/chat/messages.php", { params: { room_id, since_id, limit } });
+  const { data } = await api.get("/api/chat/raid/messages.php", { params: { room_id, since_id, limit } });
   if (!data.success) throw new Error(data.message || "Get messages failed");
   return data.data as { items: ChatMessage[]; next_since_id: number; server_time: string; count: number; };
 }
 
 export async function sendMessage(room_id: number, message: string) {
-  const { data } = await api.post("/api/chat/send.php", { room_id, message });
+  const { data } = await api.post("/api/chat/raid/send.php", { room_id, message });
   if (!data.success) throw new Error(data.message || "Send message failed");
   return data.data.message as ChatMessage;
 }

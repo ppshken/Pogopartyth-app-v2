@@ -243,7 +243,7 @@ export default function Profile() {
     statusFriend?.status === "pending"
       ? "ellipsis-horizontal-outline"
       : statusFriend?.status === "accepted"
-      ? "checkmark"
+      ? "shield-checkmark-outline"
       : "person-add-outline";
 
   function formatFriendCode(v: string) {
@@ -302,6 +302,19 @@ export default function Profile() {
                 </Text>
               </View>
             ) : null}
+
+            {/* ปุ่มแชท */}
+            <TouchableOpacity
+              style={styles.outlinechatBtn}
+              onPress={onCopyFriendCode}
+            >
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={14}
+                color="#ffffffff"
+              />
+              <Text style={styles.outlinechatBtnText}>แชท</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -478,6 +491,7 @@ export default function Profile() {
               <TextInput
                 style={styles.input}
                 placeholder="พิมพ์รายละเอียดที่นี่..."
+                placeholderTextColor="#9CA3AF"
                 multiline
                 value={reason}
                 onChangeText={setReason}
@@ -619,6 +633,22 @@ const styles = StyleSheet.create({
   },
   outlineBtnText: {
     color: "#111827",
+    fontFamily: "KanitSemiBold",
+    fontSize: 14,
+  },
+  outlinechatBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#111827",
+    marginTop: 8
+  },
+  outlinechatBtnText: {
+    color: "#ffffffff",
     fontFamily: "KanitSemiBold",
     fontSize: 14,
   },

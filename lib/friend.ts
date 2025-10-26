@@ -14,6 +14,7 @@ export type Friend = {
   friend_code_masked?: string | null;
   team?: string | null;
   level?: number;
+  device_token: string;
   rating_owner?: number | null;
   relation?: FriendRelation;
 };

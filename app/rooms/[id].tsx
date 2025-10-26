@@ -20,6 +20,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
@@ -99,16 +100,6 @@ type RoomPayload = {
     review_done_count?: number;
     review_pending_count?: number;
   };
-};
-
-type FriendAvailable = {
-  id: number;
-  username: string;
-  avatar?: string | null;
-  team?: string | null;
-  level?: number | null;
-  friend_code?: string | null;
-  rating_owner?: string | null;
 };
 
 const FALLBACK = "";
@@ -204,29 +195,8 @@ export default function RoomDetail() {
   const [loadfriend, setLoadfriend] = useState(false);
   const [friendsData, setFriendsData] = useState<Friend[]>([]);
   const [q, setQ] = useState(""); // Add search query state
-
-  // โหลดรายชื่อเพื่อน เพื่อ เชิญเพื่อน
-  const loadFriends = useCallback(async () => {
-    setLoadfriend(true);
-    try {
-      const items = await getFriendAvailable({ q, room_id: roomId });
-      setFriendsData(items);
-      console.log("loaded friends:", items);
-    } catch (e: any) {
-      showSnack({
-        text: `ผิดพลาด${
-          e?.message ? ` : ${e.message}` : "โหลดรายชื่อเพื่อนไม่สำเร็จ"
-        }`,
-        variant: "error",
-      });
-    } finally {
-      setLoadfriend(false);
-    }
-  }, [q, roomId]);
-
-  useEffect(() => {
-    loadFriends();
-  }, [loadFriends]);
+  const [invitedMap, setInvitedMap] = useState<Record<number, boolean>>({});
+  const [loadingMap, setLoadingMap] = useState<Record<number, boolean>>({});
 
   //เปิด modal เข้าร่วมห้อง
   const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
@@ -289,6 +259,74 @@ export default function RoomDetail() {
     const t = setInterval(() => load(), 3000);
     return () => clearInterval(t);
   }, [load]);
+
+  // โหลดรายชื่อเพื่อน เพื่อ เชิญเพื่อน
+  const loadFriends = useCallback(async () => {
+    setOnInvitedFriend(true);
+    setLoadfriend(true);
+    try {
+      const items = await getFriendAvailable({ q, room_id: roomId });
+      setFriendsData(items);
+      console.log("loaded friends:", items);
+    } catch (e: any) {
+      showSnack({
+        text: `ผิดพลาด${
+          e?.message ? ` : ${e.message}` : "โหลดรายชื่อเพื่อนไม่สำเร็จ"
+        }`,
+        variant: "error",
+      });
+    } finally {
+      setLoadfriend(false);
+    }
+  }, [q, roomId]);
+
+  useEffect(() => {
+    if (!isMember) return;
+    loadFriends();
+  }, [loadFriends]);
+
+  // เชิญเพื่อน ส่ง Push Notification
+  const invited_friend = useCallback(
+    async (friend: any, data: RoomPayload) => {
+      try {
+        if (!friend.device_token) return;
+        setLoadingMap((prev) => ({ ...prev, [friend.id]: true }));
+        const message = {
+          to: friend.device_token,
+          sound: "default",
+          title: `เพื่อนของคุณ ${data?.room?.owner?.username} ทำการเชิญคุณเข้าร่วมห้อง ${data?.room?.boss}`,
+          body: `เข้าร่วมห้องบอสเลยตอนนี้`,
+          data: {
+            type: "invite_room",
+            room_id: roomId,
+            url: `pogopartyth://rooms/${roomId}`,
+          },
+        };
+        const res = await fetch("https://exp.host/--/api/v2/push/send", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Accept-encoding": "gzip, deflate",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(message),
+        });
+
+        setInvitedMap((prev) => ({
+          ...prev,
+          [friend.id]: true, // <-- ใช้ friend.id เป็น key (ต้องแน่ใจว่ามี id)
+        }));
+
+        console.log("loaded friends:", res);
+        console.log("token", friend.device_token);
+      } catch (err: any) {
+        Alert.alert("เชิญเพื่อนไม่สำเร็จ", err?.message || "ลองใหม่อีกครั้ง");
+      } finally {
+        setLoadingMap((prev) => ({ ...prev, [friend.id]: false }));
+      }
+    },
+    [roomId, invitedMap, loadingMap]
+  );
 
   // เคาน์ดาวน์: ต้องเรียกทุกครั้ง (ใส่ fallback เมื่อ data ยังไม่มา)
   const startForCountdown =
@@ -595,6 +633,7 @@ export default function RoomDetail() {
   const allAdded =
     nonOwnerMembers.length > 0 &&
     nonOwnerMembers.every((m) => friendAdded[m.user_id]);
+  const joinFull = data.room.max_members === members.length; // เข้าห้องเต็ม
 
   // สี/ข้อความสถานะ
   const statusBg =
@@ -768,7 +807,7 @@ export default function RoomDetail() {
               disabled={!allAdded}
             >
               {copied ? (
-                <Ionicons name="checkmark" size={18} color="#2fcc5eff" />
+                <Ionicons name="checkmark" size={18} color="#ffffffff" />
               ) : (
                 <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               )}
@@ -844,13 +883,29 @@ export default function RoomDetail() {
                   : m.team === "Mystic"
                   ? "#3b82f6ff"
                   : m.team === "Instinct"
-                  ? "#facc15ff"
+                  ? "#ffc107"
+                  : "#9CA3AF";
+
+              const teamBackGroundColor =
+                m.team === "Valor"
+                  ? "#ffededff"
+                  : m.team === "Mystic"
+                  ? "#edf4ffff"
+                  : m.team === "Instinct"
+                  ? "#fffbefff"
                   : "#9CA3AF";
 
               return (
                 <TouchableOpacity
                   key={m.user_id}
-                  style={[styles.memberItem, iAmThisMember && styles.meItem]}
+                  style={[
+                    styles.memberItem,
+                    iAmThisMember && {
+                      backgroundColor: teamBackGroundColor, // ฟ้าอ่อน
+                      borderColor: teamColor,
+                      borderWidth: 1,
+                    },
+                  ]}
                   disabled={iAmThisMember} // กันกรณี user_id ว่าง (ไม่ควรเกิด)
                   onPress={() => router.push(`/friends/${m.user_id}`)}
                 >
@@ -991,14 +1046,8 @@ export default function RoomDetail() {
           )}
 
           {/* ปุ่มเชิญเพื่อน */}
-          {isOwner && (
-            <TouchableOpacity
-              onPress={async () => {
-                loadFriends();
-                setOnInvitedFriend(true);
-              }}
-              style={styles.outlineBtn}
-            >
+          {isMember && !joinFull && (
+            <TouchableOpacity onPress={loadFriends} style={styles.outlineBtn}>
               <Ionicons name="people-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>เชิญเพื่อน</Text>
             </TouchableOpacity>
@@ -1140,6 +1189,7 @@ export default function RoomDetail() {
             disabled={
               loading ||
               expired ||
+              joinFull ||
               room.status === "canceled" ||
               room.status === "closed"
             }
@@ -1149,9 +1199,10 @@ export default function RoomDetail() {
                 backgroundColor: isMember ? "#EF4444" : "#10B981",
                 opacity:
                   expired ||
+                  joinFull ||
                   room.status === "canceled" ||
                   room.status === "closed"
-                    ? 0.7
+                    ? 0.5
                     : 1,
               },
             ]}
@@ -1778,16 +1829,18 @@ export default function RoomDetail() {
             <View style={styles.searchWrap}>
               <Ionicons name="search-outline" size={18} color="#6B7280" />
               <TextInput
-                placeholder="ค้นหาชื่อบอส"
+                placeholder="ค้นหาชื่อเพื่อนของคุณ"
                 placeholderTextColor="#9CA3AF"
                 value={q}
                 onChangeText={setQ}
                 onSubmitEditing={loadFriends}
                 style={[styles.searchInput, { fontFamily: "KanitRegular" }]}
               />
-              <TouchableOpacity onPress={loadFriends}>
-                <Text style={styles.link}>ค้นหา</Text>
-              </TouchableOpacity>
+              {q ? (
+                <TouchableOpacity onPress={() => setQ("")}>
+                  <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+                </TouchableOpacity>
+              ) : null}
             </View>
 
             {loadfriend ? (
@@ -1800,10 +1853,18 @@ export default function RoomDetail() {
             ) : (
               <FlatList
                 data={friendsData}
-                keyExtractor={(x) => String(x.username) + x.avatar}
+                keyExtractor={(x) => String(x.id)}
                 renderItem={({ item }) => {
+                  const invited = !!invitedMap[item.id]; // เช็คจาก invitedMap
+                  const loading = !!loadingMap[item.id];
                   return (
-                    <View style={styles.itemRow}>
+                    <TouchableOpacity
+                      style={styles.itemRow}
+                      onPress={() => {
+                        setOnInvitedFriend(false);
+                        router.push(`/friends/${item.id}`);
+                      }}
+                    >
                       <Image
                         source={{ uri: item.avatar || FALLBACK }}
                         style={{
@@ -1833,25 +1894,41 @@ export default function RoomDetail() {
                         </Text>
                       </View>
 
-                      <View>
-                        <TouchableOpacity
-                          style={{
-                            backgroundColor: "#2563EB",
-                            padding: 6,
-                            borderRadius: 6,
-                          }}
-                        >
-                          <Text
+                      {item.device_token && (
+                        <View>
+                          <TouchableOpacity
                             style={{
-                              fontFamily: "KanitSemiBold",
-                              color: "#ffffffff",
+                              backgroundColor: "#2563EB",
+                              paddingVertical: 6,
+                              paddingHorizontal: 6,
+                              borderRadius: 6,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              opacity: invited || loading ? 0.3 : 1,
+                              minWidth: 100,
+                              justifyContent: "center",
                             }}
+                            onPress={() => {
+                              invited_friend(item, data);
+                            }}
+                            disabled={invited}
                           >
-                            เชิญเข้าร่วม
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
+                            {loading ? (
+                              <ActivityIndicator color="#fff" size="small" />
+                            ) : (
+                              <Text
+                                style={{
+                                  fontFamily: "KanitMedium",
+                                  color: "#ffffffff",
+                                }}
+                              >
+                                {invited ? "เชิญแล้ว" : "เชิญเข้าร่วม"}
+                              </Text>
+                            )}
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </TouchableOpacity>
                   );
                 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}

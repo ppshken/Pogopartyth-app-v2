@@ -37,10 +37,8 @@ if ($q !== '') {
   // ตรงนี้เราจะค้น username และ friend_code (ตัดเว้นวรรค)
   $filter = " AND (
       u.username LIKE :q
-      OR REPLACE(u.friend_code,' ','') LIKE :qclean
     )";
-  $params[':q'] = $q . '%';
-  $params[':qclean'] = '%' . preg_replace('/\s+/', '', $q) . '%';
+  $params[':q'] = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $q) . '%';
 }
 
 /**
@@ -68,6 +66,7 @@ $sql = "
     u.team,
     u.level,
     u.friend_code,
+    u.device_token,
     CAST(ru.avg_rating AS DECIMAL(10,2)) AS rating_owner
   FROM friendships f
   JOIN users u

@@ -26,6 +26,7 @@ export default function TabsLayout() {
           };
           return <Ionicons name={map[route.name] as any} size={size} color={color} />;
         },
+        animation: "none"
       })}
     >
       <Tabs.Screen name="room_raid" options={{ title: "ห้องบอส" }} />

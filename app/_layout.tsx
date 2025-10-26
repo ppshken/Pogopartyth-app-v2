@@ -80,6 +80,7 @@ export default function Layout() {
             headerBackTitle: "กลับ",
             headerBackTitleStyle: { fontSize: 16, fontFamily: "KanitSemiBold" },
             headerTitleStyle: { fontSize: 16, fontFamily: "KanitSemiBold" },
+            animation: "ios_from_right",
           }}
         >
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />

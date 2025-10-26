@@ -141,6 +141,7 @@ export default function ChatScreen() {
             value={text}
             onChangeText={setText}
             placeholder="พิมพ์ข้อความ..."
+            placeholderTextColor="#c5c5c5ff"
             style={{
               flex: 1,
               borderWidth: 1,

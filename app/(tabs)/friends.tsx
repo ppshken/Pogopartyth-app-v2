@@ -37,6 +37,8 @@ export default function FriendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [countMyfriend, setCountMyfriend] = useState(null);
+
   // ----- แท็บ: search | mine -----
   const [tab, setTab] = useState<Tab>("search");
 
@@ -287,6 +289,7 @@ export default function FriendsScreen() {
           <Ionicons name="search-outline" size={18} color="#6B7280" />
           <TextInput
             placeholder="ค้นหาเพื่อน (ชื่อ / Friend code)"
+            placeholderTextColor="#9CA3AF"
             value={q}
             onChangeText={onChangeQ}
             autoCapitalize="none"
@@ -316,6 +319,7 @@ export default function FriendsScreen() {
             backgroundColor: "#F3F4F6",
             padding: 4,
             borderRadius: 10,
+            marginBottom: 4
           }}
         >
           <TouchableOpacity
@@ -368,6 +372,8 @@ export default function FriendsScreen() {
         {error ? (
           <Text style={{ color: "#B91C1C", marginTop: 8 }}>⚠️ {error}</Text>
         ) : null}
+
+        <Text style={{fontFamily: "KanitMedium", left: 6}}>จำนวนทั้งหมด ({items.length})</Text>
       </View>
 
       <FlatList

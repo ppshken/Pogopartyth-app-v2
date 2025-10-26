@@ -197,6 +197,7 @@ export default function SettingApp() {
       <TextInput
         style={styles.input}
         placeholder="พิมพ์รายละเอียดที่นี่..."
+        placeholderTextColor="#9CA3AF"
         multiline
         value={reason}
         onChangeText={setReason}
