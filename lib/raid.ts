@@ -2,13 +2,13 @@ import { api } from "./api";
 
 export async function listRooms(params: any) {
   const { data } = await api.get("/api/raid/list.php", {
-  params: {
-    status: "active",
-    exclude_expired: 1, // คงไว้เพื่อซ่อนห้องหมดเวลา
-    exclude_mine: 1,    // ✅ ใหม่: ไม่เอาห้องที่ตัวเองสร้าง
-    page: 1,
-    limit: 50,
-  },
+    params: {
+      status: "active",
+      exclude_expired: 1, // คงไว้เพื่อซ่อนห้องหมดเวลา
+      exclude_mine: 1,    // ✅ ใหม่: ไม่เอาห้องที่ตัวเองสร้าง
+      page: 1,
+      limit: 50,
+    },
     validateStatus: () => true,
   });
   if (!data?.success) throw new Error(data?.message || "List rooms failed");
@@ -61,7 +61,7 @@ export async function updateStatus(
   room_id: number,
   status: "active" | "closed" | "canceled" | "invited" // ✅ เพิ่ม invited
 ) {
-  const { data } = await api.post("/api/raid/update_status.php", { room_id, status }, { validateStatus:()=>true });
+  const { data } = await api.post("/api/raid/update_status.php", { room_id, status }, { validateStatus: () => true });
   if (!data?.success) throw new Error(data?.message || "Update status failed");
   return data.data;
 }
@@ -70,14 +70,14 @@ export async function kickMember(
   room_id: number,
   user_id: number, // ✅ เพิ่ม invited
 ) {
-  const { data } = await api.post("/api/raid/kick_member.php", { room_id, user_id }, { validateStatus:()=>true });
+  const { data } = await api.post("/api/raid/kick_member.php", { room_id, user_id }, { validateStatus: () => true });
   if (!data?.success) throw new Error(data?.message || "Kick Member failed");
   return data.data;
 }
 
 
 export async function reviewRoom(room_id: number, rating: number, comment?: string) {
-  const { data } = await api.post("/api/raid/review.php", { room_id, rating, comment }, { validateStatus:()=>true });
+  const { data } = await api.post("/api/raid/review.php", { room_id, rating, comment }, { validateStatus: () => true });
   if (!data?.success) throw new Error(data?.message || "Review failed");
   return data.data;
 }
@@ -106,5 +106,27 @@ export async function CancelRoom(payload: { room_id: number; reason?: string }) 
     validateStatus: () => true,
   });
   if (!data?.success) throw new Error(data?.message || "Cancel room failed");
+  return data.data;
+}
+
+export async function RoomLog(payload: 
+  { 
+  room_id: number; 
+  type?: string; 
+  description?: string; 
+  }) {
+  const { data } = await api.post("/api/raid/log/create.php", payload, {
+    validateStatus: () => true,
+  });
+  if (!data?.success) throw new Error(data?.message || "Created Log room failed");
+  return data.data;
+}
+
+export async function getRoomLog(room_id: number) {
+  const { data } = await api.get("/api/raid/log/list.php", {
+    params: { room_id },
+    validateStatus: () => true,
+  });
+  if (!data?.success) throw new Error(data?.message || "Get RoomLog failed");
   return data.data;
 }

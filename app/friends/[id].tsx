@@ -22,7 +22,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { getFriendProfile } from "../../lib/user"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
-import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { showSnack } from "../../components/Snackbar";
 import { useRouter, useNavigation } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
@@ -54,6 +53,7 @@ type StatusFriend = {
 export default function Profile() {
   const navigation = useNavigation();
   const router = useRouter();
+  const nav = useNavigation();
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = Number(id);
@@ -110,9 +110,13 @@ export default function Profile() {
     }
   }, [userId]);
 
+  // โหลดครั้งแรก + ตั้งชื่อหัวห้อง = ชื่อโปรไฟล์
   useEffect(() => {
     load();
-  }, [load]);
+    nav.setOptions?.({
+      title: user?.username || "โปรไฟล์",
+    });
+  }, [load, nav, user?.username]);
 
   // เพิ่มเพื่อน
   const addfriend = async () => {
@@ -400,7 +404,7 @@ export default function Profile() {
               ) : (
                 <>
                   <Ionicons name="checkmark" size={16} color="#ffffffff" />
-                  <Text style={styles.outlineBtnAddText}>ยืนยันรับเพื่อน</Text>
+                  <Text style={styles.outlineBtnAddText}>ยืนยัน</Text>
                 </>
               )}
             </TouchableOpacity>

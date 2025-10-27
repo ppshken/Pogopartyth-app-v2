@@ -35,12 +35,14 @@ import {
   reviewRoom,
   kickMember,
   CancelRoom,
+  RoomLog,
 } from "../../lib/raid";
 import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
 import ShareRoom from "../../components/ShareRoom";
+import RoomLogComponent from "@/components/RoomLog";
 import { Friend, getFriendAvailable } from "../../lib/friend";
 
 type Member = {
@@ -384,6 +386,12 @@ export default function RoomDetail() {
       }
       setLoading(true);
       await joinRoom(room.id);
+      const payload = {
+        room_id: room.id,
+        type: "join",
+        description: "เข้าร่วมห้อง",
+      };
+      await RoomLog(payload);
       await load();
       setJoinModal(true);
       showSnack({ text: "เข้าห้องแล้ว", variant: "success" });
@@ -401,6 +409,12 @@ export default function RoomDetail() {
       setLoadingExit(true);
       if (isMember && !isOwner) await leaveRoom(room.id);
       else if (!isMember) await joinRoom(room.id);
+      const payload = {
+        room_id: room.id,
+        type: "leave",
+        description: "ออกจากห้อง",
+      };
+      await RoomLog(payload);
       showSnack({ text: "ออกจากห้องแล้ว", variant: "success" });
       setExitRoom(false);
       await load();
@@ -535,6 +549,12 @@ export default function RoomDetail() {
     try {
       setLoading(true);
       await updateStatus(room.id, "invited");
+      const payload = {
+        room_id: room.id,
+        type: "invite",
+        description: "เชิญในเกมแล้ว",
+      };
+      await RoomLog(payload);
       showSnack({ text: "ได้ส่งเชิญไปยังสมาชิกเรียบร้อย", variant: "success" });
       await load();
     } catch (e: any) {
@@ -562,6 +582,12 @@ export default function RoomDetail() {
     try {
       setLoadingSaveReview(true);
       await reviewRoom(room.id, rating, "Raid success");
+      const payload = {
+        room_id: room.id,
+        type: "review",
+        description: `ทำการรีวิวแล้ว ตีบอสสำเร็จ ${rating} ดาว`,
+      };
+      await RoomLog(payload);
       setForseReview(false);
       setRatingModal(false);
       showSnack({ text: "บันทึกรีวิวเรียบร้อย", variant: "success" });
@@ -601,6 +627,12 @@ export default function RoomDetail() {
       setLoadingSaveReview(true);
       // จะ setFailReason(reasonText) ด้วยก็ได้ ถ้าต้องเก็บ state นี้ไว้ใช้อย่างอื่น
       await reviewRoom(room.id, 1, `FAILED: ${reasonText}`);
+      const payload = {
+        room_id: room.id,
+        type: "review",
+        description: `ทำการรีวิวแล้ว ตีบอสไม่สำเร็จ : ${reasonText}`,
+      };
+      await RoomLog(payload);
       setForseReview(false);
       setFailureModal(false);
       showSnack({ text: "บันทึกเหตุผลเรียบร้อย", variant: "success" });
@@ -1078,6 +1110,8 @@ export default function RoomDetail() {
             6. ตีเสร็จ → รีวิว สำเร็จ/ไม่สำเร็จ
           </Text>
         </View>
+
+        <RoomLogComponent room={room} />
       </ScrollView>
 
       {/* แถบปุ่มคงที่ด้านล่าง */}
@@ -1904,7 +1938,7 @@ export default function RoomDetail() {
                               borderRadius: 6,
                               flexDirection: "row",
                               alignItems: "center",
-                              opacity: invited || loading ? 0.3 : 1,
+                              opacity: invited || loading ? 0.5 : 1,
                               minWidth: 100,
                               justifyContent: "center",
                             }}
