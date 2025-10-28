@@ -90,7 +90,11 @@ export default function Layout() {
           />
           <Stack.Screen
             name="(auth)/email_verify_otp"
-            options={{ title: "ลืมรหัสผ่าน", headerShown: false,  headerBackVisible: false}}
+            options={{
+              title: "ลืมรหัสผ่าน",
+              headerShown: false,
+              headerBackVisible: false,
+            }}
           />
           <Stack.Screen
             name="(auth)/forget_password"

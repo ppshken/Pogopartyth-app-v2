@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { createRoom } from "../../lib/raid";
+import { createRoom, RoomLog } from "../../lib/raid";
 import { getActiveRaidBosses } from "../../lib/raidBoss"; // << ใช้ API ที่สร้างไว้
 import { TierStars } from "../../components/TierStars";
 import { showSnack } from "../../components/Snackbar";
@@ -185,6 +185,12 @@ export default function CreateRoom() {
         note: note.trim() || undefined,
       };
       const room = await createRoom(payload);
+      const payloadLog = {
+        room_id: room.id,
+        type: "create",
+        description: "สร้างห้อง",
+      };
+      await RoomLog(payloadLog);
       showSnack({ text: "สร้างห้องสำเร็จ", variant: "success" });
       router.push(`/rooms/${room.id}`);
     } catch (e: any) {
@@ -230,7 +236,9 @@ export default function CreateRoom() {
                   }}
                 />
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "#111827", fontFamily: "KanitSemiBold" }}>
+                  <Text
+                    style={{ color: "#111827", fontFamily: "KanitSemiBold" }}
+                  >
                     {boss?.pokemon_name || "เลือกบอสจากรายการ"}
                   </Text>
                   {!!boss && (
@@ -274,11 +282,25 @@ export default function CreateRoom() {
               <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
             </TouchableOpacity>
             {isPast && (
-              <Text style={{ color: "#EF4444", marginTop: 8, fontSize: 12, fontFamily: "KanitMedium" }}>
+              <Text
+                style={{
+                  color: "#EF4444",
+                  marginTop: 8,
+                  fontSize: 12,
+                  fontFamily: "KanitMedium",
+                }}
+              >
                 เวลาต้องอยู่ในอนาคต
               </Text>
             )}
-            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" }}>
+            <Text
+              style={{
+                color: "#6B7280",
+                marginTop: 6,
+                fontSize: 12,
+                fontFamily: "KanitRegular",
+              }}
+            >
               เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออก รอบละ 5 นาที
             </Text>
           </View>
@@ -295,7 +317,14 @@ export default function CreateRoom() {
               </Text>
               <Ionicons name="chevron-down-sharp" size={20} color="#111827" />
             </TouchableOpacity>
-            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" }}>
+            <Text
+              style={{
+                color: "#6B7280",
+                marginTop: 6,
+                fontSize: 12,
+                fontFamily: "KanitRegular",
+              }}
+            >
               เลือกสมาชิกได้สูงสุด 2–20 คน
             </Text>
           </View>
@@ -309,10 +338,17 @@ export default function CreateRoom() {
               onChangeText={setNote}
               multiline
               maxLength={100}
-              style={[styles.textarea, {fontFamily: "KanitRegular"}]}
+              style={[styles.textarea, { fontFamily: "KanitRegular" }]}
               placeholderTextColor="#9CA3AF"
             />
-            <Text style={{ color: "#6B7280", marginTop: 6, fontSize: 12, fontFamily: "KanitRegular" }}>
+            <Text
+              style={{
+                color: "#6B7280",
+                marginTop: 6,
+                fontSize: 12,
+                fontFamily: "KanitRegular",
+              }}
+            >
               สามารถใส่ได้ไม่เกิน 100 ตัวอักษร
             </Text>
           </View>
@@ -429,7 +465,12 @@ export default function CreateRoom() {
                         }}
                       />
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
+                        <Text
+                          style={{
+                            fontFamily: "KanitSemiBold",
+                            color: "#111827",
+                          }}
+                        >
                           {item.pokemon_name}
                         </Text>
                         <Text style={{ color: "#6B7280", fontSize: 12 }}>
@@ -481,7 +522,9 @@ export default function CreateRoom() {
                 marginBottom: 16,
               }}
             >
-              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>เลือกเวลา</Text>
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
+                เลือกเวลา
+              </Text>
               <TouchableOpacity
                 onPress={() => setTimeOpen(false)}
                 style={styles.iconBtn}
@@ -512,7 +555,9 @@ export default function CreateRoom() {
                       selected && { backgroundColor: "#e5ebf7ff" },
                     ]}
                   >
-                    <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
+                    <Text
+                      style={{ fontFamily: "KanitSemiBold", color: "#111827" }}
+                    >
                       {item.label}
                     </Text>
                     {selected ? (
@@ -560,21 +605,27 @@ export default function CreateRoom() {
               renderItem={({ item }) => {
                 const selected = item === max;
                 return (
-                <TouchableOpacity
-                  onPress={() => {
-                    setMax(item);
-                    setPeopleOpen(false);
-                  }}
-                  style={[styles.listItem, selected && { backgroundColor: "#e5ebf7ff" }]}
-                >
-                  <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
-                    {item} คน
-                  </Text>
-                  {item === max ? (
-                    <Ionicons name="checkmark" size={20} color="#2563EB" />
-                  ) : null}
-                </TouchableOpacity>
-              )}}
+                  <TouchableOpacity
+                    onPress={() => {
+                      setMax(item);
+                      setPeopleOpen(false);
+                    }}
+                    style={[
+                      styles.listItem,
+                      selected && { backgroundColor: "#e5ebf7ff" },
+                    ]}
+                  >
+                    <Text
+                      style={{ fontFamily: "KanitSemiBold", color: "#111827" }}
+                    >
+                      {item} คน
+                    </Text>
+                    {item === max ? (
+                      <Ionicons name="checkmark" size={20} color="#2563EB" />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              }}
               ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
             />
           </View>
@@ -641,7 +692,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
-  label: { fontSize: 14, color: "#111827", marginBottom: 8, fontFamily: "KanitSemiBold" },
+  label: {
+    fontSize: 14,
+    color: "#111827",
+    marginBottom: 8,
+    fontFamily: "KanitSemiBold",
+  },
   dropdown: {
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -772,7 +828,13 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  bulletText: { flex: 1, color: "#374151", fontSize: 14, lineHeight: 20, fontFamily: "KanitRegular" },
+  bulletText: {
+    flex: 1,
+    color: "#374151",
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "KanitRegular",
+  },
 
   modalPrimaryBtn: {
     marginTop: 12,

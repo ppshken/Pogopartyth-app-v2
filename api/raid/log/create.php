@@ -32,7 +32,7 @@ if (mb_strlen($type) > 50) {
 }
 
 // (ทางเลือก) จำกัดค่า type ที่อนุญาต
-$allowedTypes = ['join', 'leave', 'invite', 'review'];
+$allowedTypes = ['join', 'leave', 'invite', 'review', 'create', 'cancel'];
 if (!in_array($type, $allowedTypes, true)) {
   // ถ้าอยากปล่อยอิสระ ให้คอมเมนต์บรรทัดนี้
   jsonResponse(false, null, 'type ไม่อยู่ในรูปแบบที่อนุญาต', 422);

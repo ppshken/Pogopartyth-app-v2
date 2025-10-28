@@ -31,6 +31,7 @@ $stmt = $db->prepare("
     level,
     device_token,
     noti_status,
+    setup_status,
     created_at
   FROM users
   WHERE id = :id

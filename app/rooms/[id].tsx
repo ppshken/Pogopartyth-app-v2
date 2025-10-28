@@ -36,13 +36,14 @@ import {
   kickMember,
   CancelRoom,
   RoomLog,
+  getRoomLog,
 } from "../../lib/raid";
 import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
 import ShareRoom from "../../components/ShareRoom";
-import RoomLogComponent from "@/components/RoomLog";
+import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { Friend, getFriendAvailable } from "../../lib/friend";
 
 type Member = {
@@ -102,6 +103,17 @@ type RoomPayload = {
     review_done_count?: number;
     review_pending_count?: number;
   };
+};
+
+type RoomLogList = {
+  id: number;
+  room_id: number;
+  user_id: number;
+  type: string;
+  description: string;
+  created_at: string;
+  username: string;
+  avatar?: string | null;
 };
 
 const FALLBACK = "";
@@ -181,6 +193,7 @@ export default function RoomDetail() {
   const router = useRouter();
 
   const [data, setData] = useState<RoomPayload | null>(null);
+  const [log, setLog] = useState<RoomLogList[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [loadingKick, setLoadingKick] = useState(false);
@@ -231,23 +244,35 @@ export default function RoomDetail() {
 
   // โหลดข้อมูลห้อง
   const load = useCallback(async () => {
-    const res = await getRoom(roomId);
-    setData(res as RoomPayload);
+    try {
+      const res = await getRoom(roomId);
+      const logdata = await getRoomLog(roomId);
+      setData(res as RoomPayload);
+      setLog(Array.isArray(logdata?.list) ? logdata.list : []);
+      console.log(logdata);
 
-    // โหลด ready-status ของเพื่อนเฉพาะตอนเราเป็นสมาชิก
-    if (res?.you?.is_member) {
-      try {
-        const st = await getFriendReadyStatus(roomId);
-        const map: Record<number, boolean> = {};
-        (st.members as Member[]).forEach((m) => {
-          if (m.role !== "owner") map[m.user_id] = !!m.friend_ready;
-        });
-        setFriendAdded(map);
-      } catch {
-        // เงียบไว้ได้
+      // โหลด ready-status ของเพื่อนเฉพาะตอนเราเป็นสมาชิก
+      if (res?.you?.is_member) {
+        try {
+          const st = await getFriendReadyStatus(roomId);
+          const map: Record<number, boolean> = {};
+          (st.members as Member[]).forEach((m) => {
+            if (m.role !== "owner") map[m.user_id] = !!m.friend_ready;
+          });
+          setFriendAdded(map);
+        } catch {
+          // เงียบไว้ได้
+        }
+      } else {
+        setFriendAdded({});
       }
-    } else {
-      setFriendAdded({});
+    } catch (e: any) {
+      showSnack({
+        text: `ผิดพลาด${
+          e?.message ? ` : ${e.message}` : "โหลดข้อมูลไม่สำเร็จ"
+        }`,
+        variant: "error",
+      });
     }
   }, [roomId]);
 
@@ -256,9 +281,9 @@ export default function RoomDetail() {
     load();
   }, [load]);
 
-  // โพลลิ่งทุก 3 วินาที (รีเฟรชหน้าจออัตโนมัติ)
+  // โพลลิ่งทุก 10 วินาที (รีเฟรชหน้าจออัตโนมัติ)
   useEffect(() => {
-    const t = setInterval(() => load(), 3000);
+    const t = setInterval(() => load(), 10000);
     return () => clearInterval(t);
   }, [load]);
 
@@ -313,6 +338,13 @@ export default function RoomDetail() {
           },
           body: JSON.stringify(message),
         });
+        const payload = {
+          room_id: roomId,
+          type: "invite",
+          description: "ทำการเชิญเพื่อนเข้าร่วมห้อง",
+        };
+        await RoomLog(payload);
+        await load();
 
         setInvitedMap((prev) => ({
           ...prev,
@@ -327,7 +359,7 @@ export default function RoomDetail() {
         setLoadingMap((prev) => ({ ...prev, [friend.id]: false }));
       }
     },
-    [roomId, invitedMap, loadingMap]
+    [roomId]
   );
 
   // เคาน์ดาวน์: ต้องเรียกทุกครั้ง (ใส่ fallback เมื่อ data ยังไม่มา)
@@ -500,6 +532,12 @@ export default function RoomDetail() {
           : selectedCancel?.reasoncancel || "",
       };
       await CancelRoom(payload);
+      const payloadLog = {
+        room_id: room.id,
+        type: "cancel",
+        description: "ยกเลิกห้อง",
+      };
+      await RoomLog(payloadLog);
       showSnack({ text: "ยกเลิกห้องแล้วเรียบร้อย", variant: "success" });
       router.back();
     } catch (e: any) {
@@ -1111,7 +1149,74 @@ export default function RoomDetail() {
           </Text>
         </View>
 
-        <RoomLogComponent room={room} />
+        {/* Log */}
+        {isMember && (
+          <View style={styles.section}>
+            <View style={styles.lineRow}>
+              <Text style={styles.sectionTitle}>ประวัติ ({log.length})</Text>
+            </View>
+            {log.length > 0 ? (
+              log.map((item) => {
+                return (
+                  <View
+                    key={item.id}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                      marginBottom: 8,
+                      borderBottomWidth: 1,
+                      borderColor: "#f0f0f0ff",
+                      paddingBottom: 8,
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => router.push(`/friends/${item.user_id}`)}
+                      disabled={item.user_id === you.user_id}
+                    >
+                      <Image
+                        source={{ uri: item.avatar ?? FALLBACK }}
+                        style={styles.avatar}
+                      />
+                    </TouchableOpacity>
+                    <View>
+                      <Text style={{ fontFamily: "KanitSemiBold" }}>
+                        {item.username}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 8,
+                        }}
+                      >
+                        <Text
+                          style={{ fontFamily: "KanitRegular", fontSize: 13 }}
+                        >
+                          {item.description}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "KanitRegular",
+                            color: "#949494ff",
+                            fontSize: 12,
+                          }}
+                        >
+                          - {minutesAgoTH(item.created_at)}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })
+            ) : (
+              <Text style={{ fontFamily: "KanitRegular", fontSize: 13 }}>
+                ไม่มีข้อมูลการบันทึก
+              </Text>
+            )}
+          </View>
+        )}
       </ScrollView>
 
       {/* แถบปุ่มคงที่ด้านล่าง */}
@@ -1892,23 +1997,24 @@ export default function RoomDetail() {
                   const invited = !!invitedMap[item.id]; // เช็คจาก invitedMap
                   const loading = !!loadingMap[item.id];
                   return (
-                    <TouchableOpacity
-                      style={styles.itemRow}
-                      onPress={() => {
-                        setOnInvitedFriend(false);
-                        router.push(`/friends/${item.id}`);
-                      }}
-                    >
-                      <Image
-                        source={{ uri: item.avatar || FALLBACK }}
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 10,
-                          marginRight: 12,
-                          backgroundColor: "#F3F4F6",
+                    <View style={styles.itemRow}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setOnInvitedFriend(false);
+                          router.push(`/friends/${item.id}`);
                         }}
-                      />
+                      >
+                        <Image
+                          source={{ uri: item.avatar || FALLBACK }}
+                          style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 10,
+                            marginRight: 12,
+                            backgroundColor: "#F3F4F6",
+                          }}
+                        />
+                      </TouchableOpacity>
                       <View style={{ flex: 1 }}>
                         <Text
                           style={{
@@ -1962,7 +2068,7 @@ export default function RoomDetail() {
                           </TouchableOpacity>
                         </View>
                       )}
-                    </TouchableOpacity>
+                    </View>
                   );
                 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}

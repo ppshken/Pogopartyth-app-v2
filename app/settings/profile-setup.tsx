@@ -19,6 +19,7 @@ import { useRouter } from "expo-router";
 import { getProfile, updateProfile } from "../../lib/user";
 import { showSnack } from "../../components/Snackbar";
 import { teams } from "@/hooks/team";
+import { useAuth } from "../../store/authStore";
 
 type FullUser = {
   id: number;
@@ -36,6 +37,8 @@ const BORDER = "#E5E7EB";
 
 export default function ProfileEdit() {
   const router = useRouter();
+
+  const logout = useAuth((s) => s.clear);
 
   // Y/N
   const [loading, setLoading] = useState(true);
@@ -352,7 +355,8 @@ export default function ProfileEdit() {
 
           <TouchableOpacity
             style={styles.primaryBtnCancel}
-            onPress={() => {
+            onPress={async () => {
+              await logout();
               router.replace("(auth)/login");
             }}
           >
