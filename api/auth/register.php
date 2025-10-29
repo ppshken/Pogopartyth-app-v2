@@ -13,28 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input    = getJsonInput();
 $email    = trim($input['email']    ?? '');
-$username = trim($input['username'] ?? '');
-$password = (string)($input['password'] ?? '');
-$avatar   = trim($input['avatar']   ?? '');
-$friend   = trim($input['friend_code'] ?? '');
-$level   =  ($input['level'] ?? '');
 
 // 1) Validate เบื้องต้น
-if ($email === '' || $password === '') {
+if (!$email) {
   jsonResponse(false, null, 'กรอก email, username, password ให้ครบ', 422);
 }
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   jsonResponse(false, null, 'รูปแบบอีเมลไม่ถูกต้อง', 422);
 }
-if (strlen($password) < 8) {
-  jsonResponse(false, null, 'รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร', 422);
-}
 
 $db = pdo();
 
 // 2) ตรวจซ้ำ email/username
-$check = $db->prepare("SELECT 1 FROM users WHERE email = :email OR username = :username LIMIT 1");
-$check->execute([':email' => $email, ':username' => $username]);
+$check = $db->prepare("SELECT 1 FROM users WHERE email = :email LIMIT 1");
+$check->execute([':email' => $email]);
 if ($check->fetch()) {
   jsonResponse(false, null, 'อีเมลหรือชื่อผู้ใช้ถูกใช้งานแล้ว', 409);
 }
@@ -49,15 +41,13 @@ $avatar_result_image = "https://ui-avatars.com/api/?name=" . urlencode($avatar_r
 
 // 3) สร้างบัญชี
 try {
-  $hash = password_hash($password, PASSWORD_DEFAULT);
   $stmt = $db->prepare("
-    INSERT INTO users (email, username, password_hash, avatar, friend_code, level, created_at)
-    VALUES (:email, :username, :hash, :avatar, :friend, :level, :created_at)
+    INSERT INTO users (email, username, avatar, friend_code, level, created_at)
+    VALUES (:email, :username, :avatar, :friend, :level, :created_at)
   ");
   $stmt->execute([
     ':email'     => $email,
     ':username'  => $username,
-    ':hash'      => $hash,
     ':avatar'    => $avatar_result_image ?: null,
     ':friend'    => $friend ?: null,
     ':level'     => $level,

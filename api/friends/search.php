@@ -42,6 +42,12 @@ try {
 
   $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
+  // นับจำนวนรวมทั้งหมดในระบบ
+  $countAll = "SELECT COUNT(*) FROM users WHERE role <> 'admin'";
+  $stmt = $pdo->prepare($countAll);
+  $stmt->execute();
+  $user_all = (int)$stmt->fetchColumn();
+
   // ---- นับรวม ----
   $sqlCount = "SELECT COUNT(*) FROM users u $whereSql";
   $stmt = $pdo->prepare($sqlCount);
@@ -120,6 +126,7 @@ try {
       'total_pages' => $totalPages,
       'has_more'    => $hasMore,
       'next_page'   => $hasMore ? $page + 1 : null,
+      'user_all'    => $user_all,
     ]
   ], 'ค้นหาเพื่อนสำเร็จ');
 

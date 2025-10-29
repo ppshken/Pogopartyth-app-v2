@@ -16,6 +16,23 @@ function parseServerDate(input: InputDate): number {
 
 export function minutesAgoTH(input: InputDate): string {
   const ts = parseServerDate(input);
-  const minutes = Math.max(0, Math.floor((Date.now() - ts) / 60000));
-  return minutes === 0 ? "เมื่อสักครู่" : `${minutes} นาทีที่แล้ว`;
+  const diffMs = Date.now() - ts;
+  if (!Number.isFinite(ts) || diffMs < 0) return "เมื่อสักครู่";
+
+  const minutes = Math.floor(diffMs / 60000);
+
+  if (minutes <= 0) return "เมื่อสักครู่";
+  if (minutes < 60) return `${minutes} นาทีที่แล้ว`;
+
+  const hours = Math.floor(minutes / 60);
+
+  // ถ้าต้องการแสดงเฉพาะชั่วโมง (ไม่รวมเศษนาที)
+  return `${hours} ชั่วโมงที่แล้ว`;
+
+  // ถ้าอยากแสดงชั่วโมง + นาที (เช่น "2 ชั่วโมง 15 นาทีที่แล้ว")
+  // ปลดคอมเมนต์ด้านล่างแทนบรรทัด return ข้างบน
+  // const remMin = minutes % 60;
+  // return remMin === 0
+  //   ? `${hours} ชั่วโมงที่แล้ว`
+  //   : `${hours} ชั่วโมง ${remMin} นาทีที่แล้ว`;
 }

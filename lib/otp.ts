@@ -34,9 +34,14 @@ export async function verifyEmailOtp(email: string, otp: string) {
   }
 }
 
-/** (ออปชัน) หน้าสมัครเรียกใช้ฟังก์ชันนี้ตอนสมัครเสร็จ */
-export async function sendEmailOtp() {
-  const res = await api.post("/auth/send_email_otp.php");
-  if (!res?.data?.success) throw new Error(res?.data?.message || "ส่ง OTP ไม่สำเร็จ");
-  return res.data;
+/** สมัครสมาชิก */
+export async function sendEmailOtp(payload: {
+  user_id: number;
+  type: string;
+}) {
+  const { data } = await api.post("/api/auth/otp/send_otp.php", payload, {
+    validateStatus: () => true,
+  });
+  if (!data.success) throw new Error(data.message || "Register failed");
+  return data.data;
 }

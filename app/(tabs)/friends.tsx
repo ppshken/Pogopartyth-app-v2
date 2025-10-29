@@ -37,7 +37,7 @@ export default function FriendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [countMyfriend, setCountMyfriend] = useState(null);
+  const [user_all, setUser_all] = useState<number | null>(null);
 
   // ----- แท็บ: search | mine -----
   const [tab, setTab] = useState<Tab>("search");
@@ -104,7 +104,7 @@ export default function FriendsScreen() {
       try {
         let res: {
           list: Friend[];
-          pagination: { page: number; has_more: boolean };
+          pagination: { page: number; has_more: boolean; user_all: number; };
         };
 
         if (currentTab === "search") {
@@ -118,6 +118,7 @@ export default function FriendsScreen() {
         setItems((prev) => (replace ? res.list : [...prev, ...res.list]));
         setHasMore(res.pagination.has_more);
         setPage(res.pagination.page);
+        setUser_all(res.pagination.user_all);
       } catch (e: any) {
         setError(e?.message || "โหลดไม่สำเร็จ");
         if (replace) setItems([]);
@@ -373,7 +374,7 @@ export default function FriendsScreen() {
           <Text style={{ color: "#B91C1C", marginTop: 8 }}>⚠️ {error}</Text>
         ) : null}
 
-        <Text style={{fontFamily: "KanitMedium", left: 6}}>จำนวนทั้งหมด ({items.length})</Text>
+        <Text style={{fontFamily: "KanitMedium", left: 6}}>จำนวนทั้งหมด ({user_all})</Text>
       </View>
 
       <FlatList

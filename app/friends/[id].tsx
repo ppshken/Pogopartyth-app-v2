@@ -113,10 +113,7 @@ export default function Profile() {
   // โหลดครั้งแรก + ตั้งชื่อหัวห้อง = ชื่อโปรไฟล์
   useEffect(() => {
     load();
-    nav.setOptions?.({
-      title: user?.username || "โปรไฟล์",
-    });
-  }, [load, nav, user?.username]);
+  }, [load]);
 
   // เพิ่มเพื่อน
   const addfriend = async () => {

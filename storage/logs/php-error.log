@@ -628,3 +628,66 @@ Stack trace:
   "email": "puwanatz.30334@gmail.com",
   "email_verifi
 [2025-10-28T17:42:59+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T13:08:38+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T13:08:38+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T13:08:38+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T14:37:53+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T14:37:54+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T14:37:54+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T15:51:58+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T15:51:59+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T15:51:59+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T16:41:28+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T16:41:29+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T16:41:29+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T16:48:44+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T16:48:45+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T16:48:45+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T16:48:48+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T16:48:48+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T16:48:48+07:00] google_login: issueYourJWT() not found, fallback to makeToken()
+[2025-10-29T17:13:07+07:00] google_login: RAW BODY={"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MjY4NjM1MTIyODYtdG1hdmo1
+[2025-10-29T17:13:08+07:00] google_login: GOOGLE RAW={
+  "iss": "https://accounts.google.com",
+  "azp": "926863512286-tmavj5behf6g3j8bhggp11ajitiovlh9.apps.googleusercontent.com",
+  "aud": "926863512286-q7nio8ioecntg5o54kpjla06qq03eejo.apps.googleusercontent.com",
+  "sub": "114268298522993309775",
+  "email": "puwanatz.30334@gmail.com",
+  "email_verifi
+[2025-10-29T17:13:08+07:00] google_login: issueYourJWT() not found, fallback to makeToken()

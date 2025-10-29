@@ -26,6 +26,7 @@ export type Pagination = {
   total_pages: number;
   has_more: boolean;
   next_page: number | null;
+  user_all: number;
 };
 
 export type FriendSearchPayload = {
@@ -83,7 +84,7 @@ export function avatarOrFallback(username?: string | null, avatar?: string | nul
 export async function listMyFriends(params: { q?: string; page: number; limit: number }) {
   const res = await api.get("/api/friends/myfriend.php", { params });
   if (!res.data?.success) throw new Error(res.data?.message || "list failed");
-  return res.data.data as { list: Friend[]; pagination: { page: number; has_more: boolean } };
+  return res.data.data as { list: Friend[]; pagination: { page: number; has_more: boolean; user_all: number; } };
 }
 
 /** ส่งคำขอเป็นเพื่อนไปหา targetId */

@@ -81,11 +81,25 @@ $countStmt = $db->prepare($countSql);
 $countStmt->execute($params);
 $total = (int)$countStmt->fetchColumn();
 
+$countAll = "
+  SELECT COUNT(*)
+  FROM friendships f
+  JOIN users u
+    ON u.id = CASE WHEN f.requester_id = :me THEN f.addressee_id ELSE f.requester_id END
+  WHERE (f.requester_id = :me OR f.addressee_id = :me)
+    AND f.status = 'accepted'
+    AND u.setup_status = 'yes'
+";
+$countAllStmt = $db->prepare($countAll);
+$countAllStmt->execute($params);
+$user_all = (int)$countAllStmt->fetchColumn();
+
 jsonResponse(true, [
   'list' => $list,
   'pagination' => [
     'page' => $page,
     'has_more' => ($offset + count($list)) < $total,
     'total' => $total,
+    'user_all' => $user_all,
   ]
 ], 'โหลดรายการเพื่อนสำเร็จ');

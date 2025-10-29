@@ -1,4 +1,3 @@
-// app/(auth)/register.tsx
 import React, { useMemo, useState } from "react";
 import {
   View,
@@ -10,12 +9,13 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Alert, // เพิ่ม Alert สำหรับการจัดการข้อผิดพลาดเบื้องต้น
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { register as registerApi } from "../../lib/auth";
-import { showSnack } from "../../components/Snackbar";
-import { sendEmailOtp } from "../../lib/otp"; // ถ้ายังไม่มี endpoint ให้คอมเมนต์บรรทัดนี้ทิ้งได้
+import { register } from "../../lib/auth"; // สมมติว่ามี lib/auth.ts
+import { showSnack } from "../../components/Snackbar"; // สมมติว่ามี Snackbar
+import { sendEmailOtp } from "../../lib/otp"; // สมมติว่ามี lib/otp.ts
 
 // ===== ให้เหมือนหน้า login =====
 const ACCENT = "#111827";
@@ -26,11 +26,16 @@ const TEXT_SUB = "#6B7280";
 const TEXT_DIM = "#374151";
 const ERROR = "#DC2626";
 
+// Type สำหรับ User ที่ได้จากการ Register (ตามที่คุณใช้ user?.id)
+type User = {
+  id: string; // เปลี่ยนเป็น string เนื่องจาก user id มักเป็น UUID/string
+  email: string;
+  success: boolean;
+};
+
 export default function Register() {
   // บัญชี
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPw, setShowPw] = useState(false);
 
   // สถานะ
   const [loading, setLoading] = useState(false);
@@ -43,37 +48,57 @@ export default function Register() {
     () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
     [email]
   );
-  const pwOk = useMemo(() => password.trim().length >= 8, [password]);
 
-  const canSubmit = emailOk && pwOk && agreed ;
+  const canSubmit = emailOk && agreed && !loading; // เพิ่ม !loading
 
   const onRegister = async () => {
     if (!canSubmit) return;
     setLoading(true);
+    
+    // ตรวจสอบความถูกต้องของ UI อีกครั้งก่อนส่ง
+    if (!emailOk) {
+        showSnack({ text: "รูปแบบอีเมลไม่ถูกต้อง", variant: "error" });
+        setLoading(false);
+        return;
+    }
+
     try {
       const payload = {
         email: email.trim(),
-        password: password.trim(),
       };
-      const { user } = await registerApi(payload);
+      
+      // 1. ลงทะเบียนผู้ใช้ใหม่ (User Status: pending verification)
+      const { user } = await register(payload); // สมมติว่า register คืนค่า user object
 
-      // (ออปชัน) ส่ง OTP
-      try {
-        await sendEmailOtp();
-        showSnack({
-          text: "สมัครสำเร็จ • ส่งรหัสยืนยันไปที่อีเมลแล้ว",
-          variant: "success",
-        });
-        router.replace({
-          pathname: "/(auth)/EmailOtpVerifyScreen",
-          params: { email: user?.email ?? email.trim() },
-        });
-      } catch {
-        showSnack({ text: "สมัครสำเร็จ", variant: "success" });
-        router.replace("/(auth)/email_verify_otp");
+      // 2. ส่งคำร้องขอ OTP ไปยัง Backend
+      const payloadOtp = {
+        user_id: user.id, // ใช้ ID ที่ได้จาก API
+        email: user.email, // ส่งอีเมลไปยืนยันกับ Backend
+        type: "register",
+      };
+      
+      const otpResponse = await sendEmailOtp(payloadOtp);
+
+      if (otpResponse.user_id) {
+          showSnack({
+              text: "สมัครสำเร็จ • ส่งรหัสยืนยันไปที่อีเมลแล้ว",
+              variant: "success",
+          });
+          
+          // 3. เปลี่ยนเส้นทางไปยังหน้ายืนยัน OTP
+          router.replace({
+              pathname: "/(auth)/email_verify_otp",
+              params: { email: user.email }, // ส่งอีเมลไปยังหน้า Verify
+          });
+      } else {
+           // กรณี Backend สร้าง user ได้ แต่ส่งเมลไม่สำเร็จ
+          showSnack({ text: otpResponse.user_id || "ส่งรหัสยืนยันไม่สำเร็จ กรุณาลองใหม่", variant: "error" });
       }
+
     } catch (e: any) {
-      showSnack({ text: e?.message || "สมัครไม่สำเร็จ", variant: "error" });
+      console.error(e);
+      // ข้อผิดพลาดจากการลงทะเบียนหรือส่ง OTP
+      showSnack({ text: e?.message || "การสมัครสมาชิกไม่สำเร็จ", variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -114,39 +139,11 @@ export default function Register() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   style={[styles.input, { paddingVertical: 2 }]}
-                  returnKeyType="next"
+                  returnKeyType="done"
                 />
               </View>
               {!emailOk && !!email && (
                 <Text style={styles.errorText}>รูปแบบอีเมลไม่ถูกต้อง</Text>
-              )}
-
-              <Text style={[styles.label, { marginTop: 12 }]}>รหัสผ่าน</Text>
-              <View style={styles.inputRow}>
-                <TextInput
-                  placeholder="อย่างน้อย 8 ตัวอักษร"
-                  placeholderTextColor="#9CA3AF"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPw}
-                  style={[styles.input, { paddingVertical: 2 }]}
-                  returnKeyType="done"
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPw((v) => !v)}
-                  hitSlop={12}
-                >
-                  <Ionicons
-                    name={showPw ? "eye-off-outline" : "eye-outline"}
-                    size={18}
-                    color={TEXT_SUB}
-                  />
-                </TouchableOpacity>
-              </View>
-              {!pwOk && !!password && (
-                <Text style={styles.errorText}>
-                  รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร
-                </Text>
               )}
 
               {/* ยอมรับเงื่อนไข */}

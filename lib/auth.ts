@@ -29,7 +29,6 @@ export async function login(payload: {
 /** สมัครสมาชิก */
 export async function register(payload: {
   email: string;
-  password: string;
 }) {
   const { data } = await api.post("/api/auth/register.php", payload, {
     validateStatus: () => true,

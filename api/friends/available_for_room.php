@@ -22,7 +22,7 @@ if ($roomId <= 0) {
 
 $q      = trim((string)($_GET['q'] ?? ''));
 $page   = max(1, (int)($_GET['page'] ?? 1));
-$limit  = max(1, min(50, (int)($_GET['limit'] ?? 10)));
+$limit  = max(1, min(50, (int)($_GET['limit'] ?? 100)));
 $offset = ($page - 1) * $limit;
 
 // ===== เตรียม param พื้นฐาน =====
