@@ -15,7 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { register } from "../../lib/auth"; // สมมติว่ามี lib/auth.ts
 import { showSnack } from "../../components/Snackbar"; // สมมติว่ามี Snackbar
-import { sendEmailOtp } from "../../lib/otp"; // สมมติว่ามี lib/otp.ts
 
 // ===== ให้เหมือนหน้า login =====
 const ACCENT = "#111827";
@@ -28,9 +27,13 @@ const ERROR = "#DC2626";
 
 // Type สำหรับ User ที่ได้จากการ Register (ตามที่คุณใช้ user?.id)
 type User = {
-  id: string; // เปลี่ยนเป็น string เนื่องจาก user id มักเป็น UUID/string
+  id: number;
   email: string;
-  success: boolean;
+  username: string;
+  avatar: string | null;
+  friend_code: string | null;
+  level: number;
+  created_at: string | null;
 };
 
 export default function Register() {
@@ -43,6 +46,8 @@ export default function Register() {
 
   const router = useRouter();
 
+  const [user, setUser] = useState<User | null>(null);
+
   // ตรวจรูปแบบ
   const emailOk = useMemo(
     () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
@@ -54,51 +59,27 @@ export default function Register() {
   const onRegister = async () => {
     if (!canSubmit) return;
     setLoading(true);
-    
+
     // ตรวจสอบความถูกต้องของ UI อีกครั้งก่อนส่ง
     if (!emailOk) {
-        showSnack({ text: "รูปแบบอีเมลไม่ถูกต้อง", variant: "error" });
-        setLoading(false);
-        return;
+      showSnack({ text: "รูปแบบอีเมลไม่ถูกต้อง", variant: "error" });
+      setLoading(false);
+      return;
     }
 
     try {
       const payload = {
         email: email.trim(),
       };
-      
-      // 1. ลงทะเบียนผู้ใช้ใหม่ (User Status: pending verification)
-      const { user } = await register(payload); // สมมติว่า register คืนค่า user object
-
-      // 2. ส่งคำร้องขอ OTP ไปยัง Backend
-      const payloadOtp = {
-        user_id: user.id, // ใช้ ID ที่ได้จาก API
-        email: user.email, // ส่งอีเมลไปยืนยันกับ Backend
-        type: "register",
-      };
-      
-      const otpResponse = await sendEmailOtp(payloadOtp);
-
-      if (otpResponse.user_id) {
-          showSnack({
-              text: "สมัครสำเร็จ • ส่งรหัสยืนยันไปที่อีเมลแล้ว",
-              variant: "success",
-          });
-          
-          // 3. เปลี่ยนเส้นทางไปยังหน้ายืนยัน OTP
-          router.replace({
-              pathname: "/(auth)/email_verify_otp",
-              params: { email: user.email }, // ส่งอีเมลไปยังหน้า Verify
-          });
-      } else {
-           // กรณี Backend สร้าง user ได้ แต่ส่งเมลไม่สำเร็จ
-          showSnack({ text: otpResponse.user_id || "ส่งรหัสยืนยันไม่สำเร็จ กรุณาลองใหม่", variant: "error" });
-      }
-
+      const user = await register(payload);
+      setUser(user.user);
+      console.log("user", user);
+      router.replace({ pathname: "/(auth)/email_verify_otp", params: { email: email } });
     } catch (e: any) {
-      console.error(e);
-      // ข้อผิดพลาดจากการลงทะเบียนหรือส่ง OTP
-      showSnack({ text: e?.message || "การสมัครสมาชิกไม่สำเร็จ", variant: "error" });
+      showSnack({
+        text: e?.message || "การสมัครสมาชิกไม่สำเร็จ",
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }

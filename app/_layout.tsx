@@ -26,7 +26,11 @@ export default function Layout() {
   useEffect(() => {
     (async () => {
       const token = await AsyncStorage.getItem("token");
-      if (token) api.defaults.headers.common.Authorization = `Bearer ${token}`;
+      if (token) {
+        api.defaults.headers.common.Authorization = `Bearer ${token}`;
+      } else {
+        router.replace("/(auth)/login");
+      }
     })();
   }, []);
 
