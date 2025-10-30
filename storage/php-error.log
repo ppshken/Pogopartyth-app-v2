@@ -16820,3 +16820,52 @@ Stack trace:
 [29-Oct-2025 17:33:59 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 65
 [29-Oct-2025 17:33:59 Asia/Bangkok] PHP Warning:  Undefined variable $friend in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 66
 [29-Oct-2025 17:33:59 Asia/Bangkok] PHP Warning:  Undefined variable $level in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 67
+[30-Oct-2025 11:15:33 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:15:33 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:15:43 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:15:43 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:15:53 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:15:53 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:03 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:03 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:13 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:13 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:23 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:23 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:33 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:33 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:43 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:43 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:53 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:16:53 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 11:22:29 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Class "PHPMailer\PHPMailer\PHPMailer" not found in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php:68
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php on line 68
+[30-Oct-2025 11:25:28 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Class "PHPMailer\PHPMailer\PHPMailer" not found in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php:68
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php on line 68
+[30-Oct-2025 11:25:30 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Class "PHPMailer\PHPMailer\PHPMailer" not found in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php:68
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php on line 68
+[30-Oct-2025 11:25:31 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Class "PHPMailer\PHPMailer\PHPMailer" not found in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php:68
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php on line 68
+[30-Oct-2025 11:25:32 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Class "PHPMailer\PHPMailer\PHPMailer" not found in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php:68
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php on line 68
+[30-Oct-2025 11:25:33 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Class "PHPMailer\PHPMailer\PHPMailer" not found in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php:68
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\send_otp.php on line 68
+[30-Oct-2025 11:30:57 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 11:31:41 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 11:31:56 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 11:33:47 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 11:34:57 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 11:35:07 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 11:35:20 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
