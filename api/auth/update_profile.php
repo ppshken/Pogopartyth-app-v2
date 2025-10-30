@@ -21,6 +21,7 @@ try {
   $friend_code = array_key_exists('friend_code', $in) ? trim((string)$in['friend_code']) : null;
   $team        = array_key_exists('team', $in) ? trim((string)$in['team']) : null;
   $level_raw   = array_key_exists('level', $in) ? $in['level'] : null;
+  $device_token   = array_key_exists('device_token', $in) ? $in['device_token'] : null;
 
   $setup_status   = isset($in['setup_status']) ? trim((string)$in['setup_status']) : null;
 
@@ -51,6 +52,11 @@ try {
   $hash = password_hash($password, PASSWORD_DEFAULT);
     $set[] = 'password_hash = :password';
     $params[':password'] = $hash;
+  }
+
+  if ($device_token !== null) {
+    $set[] = 'device_token = :device_token';
+    $params[':device_token'] = $device_token;
   }
 
   // team

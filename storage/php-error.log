@@ -16869,3 +16869,635 @@ Stack trace:
 [30-Oct-2025 11:34:57 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
 [30-Oct-2025 11:35:07 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
 [30-Oct-2025 11:35:20 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 11:40:10 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 12:00:02 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:02 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:12 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:12 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:00:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:35 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:35 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:04:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:05:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:06:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:07:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:08:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:09:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:10:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:11:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:06 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:26 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:36 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:46 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:12:56 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:16 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:13:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:14:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:15:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:16:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:17:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:18:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:19:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:20:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:21:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:22:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:23:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:24:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:25:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:26:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:38 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:48 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:27:58 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:08 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:18 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:28 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:28:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:29:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:30:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:31:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:32:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:33:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:34:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:29 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:39 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:49 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:35:59 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:09 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:19 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:36:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:37:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:38:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:39:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:40:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:41:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:42:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:20 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:30 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:40 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:43:50 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:00 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:10 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:44:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:45:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:46:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:47:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:41 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:48:51 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:01 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:21 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:49:31 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 12:56:31 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:11:39 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:18:01 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:18:18 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:19:37 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:19:59 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:20:17 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:25:50 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:26:14 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:26:20 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:26:20 Asia/Bangkok] PHP Warning:  Undefined array key "email" in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 87
+[30-Oct-2025 13:31:47 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:36:04 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:36:19 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:36:32 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:39:02 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:41:05 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:42:06 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:44:25 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:46:45 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:47:21 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:47:30 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:47:36 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:47:38 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:49:44 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:50:04 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:50:35 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:51:23 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:52:05 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:52:25 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:54:12 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 13:54:23 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 13:54:33 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:15 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 14:00:26 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:28 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:33 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:36 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:38 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:40 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:00:42 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:01:23 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:01:46 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:05:31 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 14:06:06 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:06:11 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:06:14 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:06:37 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:06:45 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:06:57 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:07:11 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:07:17 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:10:12 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 14:10:34 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:10:40 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 14:26:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:11 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:47 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:26:57 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:27:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:27:07 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:27:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:27:17 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:27:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:27:27 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 14:34:46 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 14:35:06 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 15:20:00 Asia/Bangkok] PHP Warning:  Undefined variable $avatar in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\register.php on line 116
+[30-Oct-2025 15:20:35 Asia/Bangkok] PHP Warning:  Undefined variable $VALID_MINUTES in C:\xampp\htdocs\Pogopartyth-app-v2\api\auth\otp\verify.php on line 58
+[30-Oct-2025 16:35:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 16:35:37 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 16:37:04 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_normal_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57
+[30-Oct-2025 16:37:04 Asia/Bangkok] PHP Warning:  Undefined array key "rb_cp_boost_min" in C:\xampp\htdocs\Pogopartyth-app-v2\api\raid\get_room.php on line 57

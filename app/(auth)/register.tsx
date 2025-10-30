@@ -42,7 +42,7 @@ export default function Register() {
 
   // สถานะ
   const [loading, setLoading] = useState(false);
-  const [agreed, setAgreed] = useState(true);
+  const [agreed, setAgreed] = useState(false);
 
   const router = useRouter();
 
@@ -74,7 +74,7 @@ export default function Register() {
       const user = await register(payload);
       setUser(user.user);
       console.log("user", user);
-      router.replace({ pathname: "/(auth)/email_verify_otp", params: { email: email } });
+      router.replace({ pathname: "/(auth)/email_verify_otp", params: { email: email, user_id: user.user.id } });
     } catch (e: any) {
       showSnack({
         text: e?.message || "การสมัครสมาชิกไม่สำเร็จ",
@@ -113,7 +113,7 @@ export default function Register() {
               <Text style={styles.label}>อีเมล</Text>
               <View style={styles.inputRow}>
                 <TextInput
-                  placeholder="your@email.com"
+                  placeholder="your@example.com"
                   placeholderTextColor="#9CA3AF"
                   value={email}
                   onChangeText={setEmail}

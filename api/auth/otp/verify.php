@@ -57,7 +57,7 @@ try {
 
   if ($diffMin > $VALID_MINUTES) {
     // รหัสหมดอายุ → ลบทิ้ง
-    $del = $db->prepare("DELETE FROM otp WHERE id = :id");
+    $del = $db->prepare("UPDATE otp SET status = 'expire' WHERE id = :id");
     $del->execute([':id' => $row['id']]);
 
     http_response_code(410);
@@ -73,19 +73,31 @@ try {
     exit;
   }
 
-  // ตรง → consume (ลบทันที)
-  //$del = $db->prepare("DELETE FROM otp WHERE id = :id");
-  //$del->execute([':id' => $row['id']]);
+  // อัพเดทสถานะ user > status = active
+  $us = $db->prepare("UPDATE users SET status = 'active' WHERE id = :user_id");
+  $us->execute(['user_id' => $user_id]);
 
-  // TODO: ดำเนินการขั้นถัดไป ตาม type
-  // - register: mark email_verified_at, หรือออก token ให้เข้าสู่ระบบ
-  // - reset   : อนุญาตขั้นตอนตั้งรหัสผ่านใหม่ ฯลฯ
+  // ออก Token
+  $token  = makeToken($user_id, 86400 * 7);
+
+  // ถ้าตรง ลบ otp เก่าออก
+  $del = $db->prepare("DELETE FROM otp WHERE id = :id");
+  $del->execute([':id' => $row['id']]);
+
+  
+  $users = [
+    'id'  => $user_id,
+  ];
+
+  $data = [
+    'user'    => $users,
+    'token'   => $token,
+  ];
 
   echo json_encode([
     'success' => true,
-    'code'    => 'VERIFIED',
     'message' => 'ยืนยันรหัสสำเร็จ',
-    'next'    => $type === 'register' ? 'COMPLETE_REGISTER' : 'ALLOW_RESET',
+    'data'    => $data,
   ]);
 
 } catch (PDOException $e) {

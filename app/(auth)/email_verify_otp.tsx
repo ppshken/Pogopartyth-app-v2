@@ -1,5 +1,11 @@
 // app/(auth)/EmailOtpVerifyScreen.tsx
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -9,11 +15,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  Modal,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { showSnack } from "../../components/Snackbar";
-import { resendEmailOtp, verifyEmailOtp } from "../../lib/otp";
+import { sendEmailOtp, verifyEmailOtp } from "../../lib/otp";
 import { useAuth } from "../../store/authStore";
 
 const ACCENT = "#111827";
@@ -21,11 +28,11 @@ const BORDER = "#E5E7EB";
 const CARD_BG = "#FFFFFF";
 const TEXT_MAIN = "#111827";
 const TEXT_SUB = "#6B7280";
-const ERROR = "#DC2626";
 
 export default function EmailOtpVerifyScreen() {
-  const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
-  const email = (emailParam || "").toString();
+  const { email: emailParam, user_id: user_idParam } = useLocalSearchParams();
+  const user_id = user_idParam ? parseInt(Array.isArray(user_idParam) ? user_idParam[0] : user_idParam) : 0;
+  const email = Array.isArray(emailParam) ? emailParam[0] : emailParam;
   const router = useRouter();
   const setAuth = useAuth((s) => s.setAuth);
 
@@ -64,19 +71,25 @@ export default function EmailOtpVerifyScreen() {
     setSubmitting(true);
     try {
       // แนะนำให้ backend ส่งกลับ { success, data: { token?, user?, redirect? } }
-      const res = await verifyEmailOtp(email.trim(), code);
+      const res = await verifyEmailOtp(user_id, "register", code);
       // ถ้า backend ออก JWT พร้อม user เลย: login อัตโนมัติ
       if (res?.data?.token && res?.data?.user) {
         await setAuth(res.data.user, res.data.token);
         showSnack({ text: "ยืนยันอีเมลสำเร็จ", variant: "success" });
-        router.replace("/room_raid");
+        router.replace("/settings/profile-setup");
       } else {
         // กรณี backend แค่ verify สถานะ, ให้กลับหน้า login
-        showSnack({ text: "ยืนยันอีเมลสำเร็จ กรุณาเข้าสู่ระบบ", variant: "success" });
+        showSnack({
+          text: "ยืนยันอีเมลสำเร็จ กรุณาเข้าสู่ระบบ",
+          variant: "success",
+        });
         router.replace("/(auth)/login");
       }
     } catch (e: any) {
-      showSnack({ text: e?.message || "รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง", variant: "error" });
+      showSnack({
+        text: e?.message || "รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง",
+        variant: "error",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -90,11 +103,18 @@ export default function EmailOtpVerifyScreen() {
     if (cooldown > 0 || resending) return;
     setResending(true);
     try {
-      await resendEmailOtp(email.trim());
+      const payload = {
+        user_id: user_id,
+        type: "register",
+      };
+      await sendEmailOtp(payload);
       showSnack({ text: "ส่งรหัสใหม่แล้ว โปรดตรวจอีเมล", variant: "success" });
       setCooldown(60);
     } catch (e: any) {
-      showSnack({ text: e?.message || "ส่งรหัสใหม่ไม่สำเร็จ", variant: "error" });
+      showSnack({
+        text: e?.message || "ส่งรหัสใหม่ไม่สำเร็จ",
+        variant: "error",
+      });
     } finally {
       setResending(false);
     }
@@ -188,7 +208,9 @@ export default function EmailOtpVerifyScreen() {
                 <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>
                   กลับไป
                 </Text>
-                <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
+                <TouchableOpacity
+                  onPress={() => router.replace("/(auth)/login")}
+                >
                   <Text style={styles.link}>เข้าสู่ระบบ</Text>
                 </TouchableOpacity>
               </View>
@@ -196,6 +218,12 @@ export default function EmailOtpVerifyScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <Modal visible={resending} transparent animationType="fade">
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: 'rgba(0,0,0,0.4)' }}>
+          <ActivityIndicator size="small" color="#020202ff" />
+        </View>
+      </Modal>
     </View>
   );
 }

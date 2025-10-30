@@ -44,16 +44,20 @@ const TEXT_DIM = "#374151";
 const ERROR = "#DC2626";
 
 export default function Login() {
-  // ===== STATES =====
+  // ฟอร์ม
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [expoPushToken, setExpoPushToken] = useState("");
+
+  // Y/N
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
-
   const [emailError, setEmailError] = useState<string | null>(null);
 
+  const [loginEmail, setLoginEmail] = useState(true);
+
+  // เส้นทาง
   const router = useRouter();
   const setAuth = useAuth((s) => s.setAuth);
 
@@ -112,7 +116,10 @@ export default function Login() {
       router.replace("/room_raid");
       showSnack({ text: "เข้าสู่ระบบสำเร็จ", variant: "success" });
     } catch (e: any) {
-      Alert.alert(e?.message || "เข้าสู่ระบบไม่สำเร็จ");
+      showSnack({
+        text: e?.message || "เข้าสู่ระบบไม่สำเร็จ",
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -202,121 +209,136 @@ export default function Login() {
                 </View>
               </View>
 
-              {/* ระบุ email */}
-              <Text style={styles.label}>อีเมล</Text>
-              <View style={styles.inputRow}>
-                <TextInput
-                  placeholder="your@email.com"
-                  placeholderTextColor="#9CA3AF"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  returnKeyType="next"
-                  style={[styles.input, { paddingVertical: 2 }]} // แก้ padding แนวตั้ง
-                />
-              </View>
-              {!!emailError && (
-                <Text style={styles.errorText}>{emailError}</Text>
-              )}
-
-              {/* ระบุ password */}
-              <Text style={[styles.label, { marginTop: 12 }]}>รหัสผ่าน</Text>
-              <View style={styles.inputRow}>
-                <TextInput
-                  placeholder="อย่างน้อย 8 ตัวอักษร"
-                  placeholderTextColor="#9CA3AF"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPw}
-                  style={[styles.input, { paddingVertical: 2 }]}
-                  returnKeyType="done"
-                  onSubmitEditing={onLogin}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPw((v) => !v)}
-                  hitSlop={12}
-                >
-                  <Ionicons
-                    name={showPw ? "eye-off-outline" : "eye-outline"}
-                    size={18}
-                    color={TEXT_SUB}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View
-                style={{ marginTop: 10, marginRight: 8, alignSelf: "flex-end" }}
-              >
-                <TouchableOpacity
-                  onPress={() => router.push("/(auth)/forget_password")}
-                >
-                  <Text style={styles.link}>ลืมรหัสผ่าน ?</Text>
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                onPress={onLogin}
-                activeOpacity={0.9}
-                style={styles.primaryBtn}
-                disabled={loading}
-              >
-                <View style={styles.primaryBtnInner}>
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <>
-                      <Text style={styles.primaryBtnText}>เข้าสู่ระบบ</Text>
-                    </>
+              {loginEmail && (
+                <View>
+                  {/* ระบุ email */}
+                  <Text style={styles.label}>อีเมล</Text>
+                  <View style={styles.inputRow}>
+                    <TextInput
+                      placeholder="your@email.com"
+                      placeholderTextColor="#9CA3AF"
+                      value={email}
+                      onChangeText={setEmail}
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      returnKeyType="next"
+                      style={[styles.input, { paddingVertical: 2 }]} // แก้ padding แนวตั้ง
+                    />
+                  </View>
+                  {!!emailError && (
+                    <Text style={styles.errorText}>{emailError}</Text>
                   )}
-                </View>
-              </TouchableOpacity>
 
-              {/* Divider */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 16,
-                }}
-              >
-                <View style={{ flex: 1, height: 1, backgroundColor: BORDER }} />
-                <Text
-                  style={{
-                    marginHorizontal: 8,
-                    color: TEXT_SUB,
-                    fontSize: 12,
-                    fontFamily: "KanitRegular",
-                  }}
-                >
-                  หรือ
-                </Text>
-                <View style={{ flex: 1, height: 1, backgroundColor: BORDER }} />
-              </View>
-
-              {/* Google Sign-In (Native) */}
-              <TouchableOpacity
-                onPress={onGoogleLogin}
-                activeOpacity={0.9}
-                disabled={loadingGoogle || loading}
-                style={styles.googleBtn}
-              >
-                <View style={styles.googleBtnInner}>
-                  {loadingGoogle ? (
-                    <ActivityIndicator />
-                  ) : (
-                    <>
-                      <Image
-                        source={require("assets/g-logo.png")}
-                        style={{ width: 18, height: 18, marginRight: 8 }}
+                  {/* ระบุ password */}
+                  <Text style={[styles.label, { marginTop: 12 }]}>
+                    รหัสผ่าน
+                  </Text>
+                  <View style={styles.inputRow}>
+                    <TextInput
+                      placeholder="อย่างน้อย 8 ตัวอักษร"
+                      placeholderTextColor="#9CA3AF"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry={!showPw}
+                      style={[styles.input, { paddingVertical: 2 }]}
+                      returnKeyType="done"
+                      onSubmitEditing={onLogin}
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowPw((v) => !v)}
+                      hitSlop={12}
+                    >
+                      <Ionicons
+                        name={showPw ? "eye-off-outline" : "eye-outline"}
+                        size={18}
+                        color={TEXT_SUB}
                       />
-                      <Text style={styles.googleBtnText}>
-                        Sign in with Google
-                      </Text>
-                    </>
-                  )}
+                    </TouchableOpacity>
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: 10,
+                      marginRight: 8,
+                      alignSelf: "flex-end",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => router.push("/(auth)/forget_password")}
+                    >
+                      <Text style={styles.link}>ลืมรหัสผ่าน ?</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={onLogin}
+                    activeOpacity={0.9}
+                    style={styles.primaryBtn}
+                    disabled={loading}
+                  >
+                    <View style={styles.primaryBtnInner}>
+                      {loading ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <>
+                          <Text style={styles.primaryBtnText}>เข้าสู่ระบบ</Text>
+                        </>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+
+                  {/* Divider */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 16,
+                    }}
+                  >
+                    <View
+                      style={{ flex: 1, height: 1, backgroundColor: BORDER }}
+                    />
+                    <Text
+                      style={{
+                        marginHorizontal: 8,
+                        color: TEXT_SUB,
+                        fontSize: 12,
+                        fontFamily: "KanitRegular",
+                      }}
+                    >
+                      หรือ
+                    </Text>
+                    <View
+                      style={{ flex: 1, height: 1, backgroundColor: BORDER }}
+                    />
+                  </View>
                 </View>
-              </TouchableOpacity>
+              )}
+              <>
+                {/* Google Sign-In (Native) */}
+                <TouchableOpacity
+                  onPress={onGoogleLogin}
+                  activeOpacity={0.9}
+                  disabled={loadingGoogle || loading}
+                  style={styles.googleBtn}
+                >
+                  <View style={styles.googleBtnInner}>
+                    {loadingGoogle ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <>
+                        <Image
+                          source={require("assets/g-logo.png")}
+                          style={{ width: 18, height: 18, marginRight: 8 }}
+                        />
+                        <Text style={styles.googleBtnText}>
+                          Sign in with Google
+                        </Text>
+                      </>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              </>
 
               <View style={styles.bottomRow}>
                 <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>

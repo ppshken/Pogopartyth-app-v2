@@ -20,6 +20,16 @@ import { getProfile, updateProfile } from "../../lib/user";
 import { showSnack } from "../../components/Snackbar";
 import { teams } from "@/hooks/team";
 import { useAuth } from "../../store/authStore";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 type FullUser = {
   id: number;
@@ -55,6 +65,7 @@ export default function ProfileEdit() {
   const [team, setTeam] = useState(""); // เพิ่มทีม
   const [level, setLevel] = useState(""); // เก็บ string เพื่อคุม input
   const [avatar, setAvatar] = useState<string | null>(null); // preview
+  const [expoPushToken, setExpoPushToken] = useState("");
 
   // ===== Helpers =====
   const onlyDigits = (s: string) => s.replace(/\D/g, "");
@@ -72,6 +83,30 @@ export default function ProfileEdit() {
     if (n > 80) return setLevel("80");
     setLevel(String(n));
   };
+
+  async function registerForPushNotificationsAsync() {
+    try {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") return null;
+      const token = await Notifications.getExpoPushTokenAsync();
+      return token.data;
+    } catch (e) {
+      console.log("Push register error", e);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) setExpoPushToken(token);
+    });
+  }, []);
 
   // ===== Load profile =====
   const load = useCallback(async () => {
@@ -124,6 +159,7 @@ export default function ProfileEdit() {
         team: team || "",
         level: levelNum,
         setup_status: "yes",
+        device_token: expoPushToken,
       });
       showSnack({ text: "ตั้งค่าโปรไฟล์เรียบร้อย", variant: "success" });
       router.replace("/(tabs)/room_raid");

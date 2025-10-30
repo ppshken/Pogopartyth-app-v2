@@ -114,9 +114,7 @@ try {
       'id'        => $userId,
       'email'     => $email,
       'avatar'    => $avatar ?: null,
-      'otp'       => $otp_code,
     ],
-    'token' => $token,
   ], 'สมัครสมาชิกสำเร็จ', 201);
 
 } catch (Throwable $e) {

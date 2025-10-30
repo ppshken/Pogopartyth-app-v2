@@ -3,14 +3,17 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { api } from "../lib/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SnackHost } from "../components/Snackbar";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { useFonts } from "expo-font";
+import { Modal, View, Text, TouchableOpacity } from "react-native";
 
 export default function Layout() {
+  const [onupdate, setOnupdate] = useState(true);
+
   const [fontsLoaded] = useFonts({
     KanitRegular: require("../assets/fonts/Kanit-Regular.ttf"), // ฟอนต์ปกติ
     KanitMedium: require("../assets/fonts/Kanit-Medium.ttf"), // ฟอนต์น้ำหนักกลาง
@@ -134,6 +137,96 @@ export default function Layout() {
           />
         </Stack>
         <SnackHost />
+
+        <Modal
+          visible={onupdate}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setOnupdate(false)}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.35)",
+              padding: 24,
+            }}
+          >
+            <View
+              style={{
+                width: "100%",
+                maxWidth: 420,
+                borderRadius: 16,
+                padding: 20,
+                backgroundColor: "#fff",
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "KanitSemiBold",
+                  fontSize: 20,
+                  marginBottom: 6,
+                }}
+              >
+                มีอัปเดตใหม่พร้อมใช้งาน
+              </Text>
+
+              <View
+                style={{
+                  borderRadius: 12,
+                  marginBottom: 14,
+                  paddingBottom: 6,
+                }}
+              >
+                <Text style={{ color: "#111827", fontFamily: "KanitRegular" }}>
+                  กรุณาอัปเดตแอปเป็นเวอร์ชันล่าสุด (1.0.1)
+                  แอปเวอร์ชันใหม่มีการปรับปรุงความ ปลอดภัย เพิ่มฟีเจอร์ใหม่
+                  และแก้ไขข้อ เพื่อให้คุณได้รับ
+                  ประสบการณ์ที่ดีที่สุดในการใช้งาน หาก ไม่ได้อัปเดต
+                  คุณอาจไม่สามารถใช้งาน ฟีเจอร์บางอย่างได้
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => setOnupdate(false)}
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    borderRadius: 12,
+                    backgroundColor: "#E5E7EB",
+                  }}
+                >
+                  <Text
+                    style={{ fontFamily: "KanitSemiBold", color: "#111827" }}
+                  >
+                    ภายหลัง
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    borderRadius: 12,
+                    backgroundColor: "#111827",
+                  }}
+                >
+                  <Text style={{ fontFamily: "KanitSemiBold", color: "#fff" }}>
+                    อัปเดตตอนนี้
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

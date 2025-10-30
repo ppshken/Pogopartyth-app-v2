@@ -28,6 +28,7 @@ export async function updateProfile(payload: {
   team?: string;
   level?: number;
   setup_status?: string;
+  device_token?: string;
 }) {
   const { data } = await api.post("/api/auth/update_profile.php", payload, {
     validateStatus: () => true,

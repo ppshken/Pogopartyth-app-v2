@@ -32,7 +32,8 @@ $stmt = $db->prepare("
     device_token,
     noti_status,
     setup_status,
-    created_at
+    created_at,
+    google_sub
   FROM users
   WHERE id = :id
   LIMIT 1

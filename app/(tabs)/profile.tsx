@@ -34,6 +34,7 @@ type FullUser = {
   trainer_name?: string | null;
   created_at?: string | null;
   noti_status: string;
+  google_sub: string;
 };
 
 type Stats = {
@@ -49,7 +50,7 @@ type RatingOwner = {
 export default function Profile() {
   const navigation = useNavigation();
   const router = useRouter();
-  
+
   const authUser = useAuth((s) => s.user) as any; // user จาก store (อาจยังไม่มี field เสริม)
   const logout = useAuth((s) => s.clear);
 
@@ -176,12 +177,21 @@ export default function Profile() {
           <Text style={styles.name} numberOfLines={1}>
             {user?.username || "ไม่ระบุชื่อ"}
           </Text>
-          
-          <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-            <Image
-              source={require("assets/g-logo.png")}
-              style={{ width: 18, height: 18, marginRight: 8 }}
-            />
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {user.google_sub && (
+              <Image
+                source={require("assets/g-logo.png")}
+                style={{ width: 18, height: 18, marginRight: 8 }}
+              />
+            )}
+
             <Text style={styles.email} numberOfLines={1}>
               {user?.email || "-"}
             </Text>
