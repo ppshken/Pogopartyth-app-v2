@@ -12,7 +12,7 @@ import { useFonts } from "expo-font";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
 
 export default function Layout() {
-  const [onupdate, setOnupdate] = useState(true);
+  const [onupdate, setOnupdate] = useState(false);
 
   const [fontsLoaded] = useFonts({
     KanitRegular: require("../assets/fonts/Kanit-Regular.ttf"), // ฟอนต์ปกติ
@@ -116,8 +116,16 @@ export default function Layout() {
             options={{ title: "แชท", headerShown: true }}
           />
           <Stack.Screen
+            name="settings/profile"
+            options={{ title: "โปรไฟล์", headerShown: true }}
+          />
+          <Stack.Screen
             name="settings/profile-edit"
             options={{ title: "แก้ไขโปรไฟล์", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/user-log"
+            options={{ title: "ประวัติ", headerShown: true }}
           />
           <Stack.Screen
             name="settings/profile-setup"
@@ -126,6 +134,10 @@ export default function Layout() {
           <Stack.Screen
             name="settings/setting-app"
             options={{ title: "ตั้งค่าแอป", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/feedback"
+            options={{ title: "Feedback", headerShown: true }}
           />
           <Stack.Screen
             name="friends/[id]"

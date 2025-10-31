@@ -194,6 +194,9 @@ export default function RoomDetail() {
 
   const [data, setData] = useState<RoomPayload | null>(null);
   const [log, setLog] = useState<RoomLogList[]>([]);
+  const [loglimit, setLoglimit] = useState(5);
+  const [logtotal, setLogtotal] = useState(0);
+  const [loadingdata, setLoadingdata] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [loadingKick, setLoadingKick] = useState(false);
@@ -244,12 +247,13 @@ export default function RoomDetail() {
 
   // โหลดข้อมูลห้อง
   const load = useCallback(async () => {
+    setLoadingdata(true);
     try {
       const res = await getRoom(roomId);
-      const logdata = await getRoomLog(roomId);
+      const logdata = await getRoomLog(roomId, loglimit as number);
       setData(res as RoomPayload);
       setLog(Array.isArray(logdata?.list) ? logdata.list : []);
-      console.log(logdata);
+      setLogtotal(logdata.pagination.total as number);
 
       // โหลด ready-status ของเพื่อนเฉพาะตอนเราเป็นสมาชิก
       if (res?.you?.is_member) {
@@ -273,13 +277,27 @@ export default function RoomDetail() {
         }`,
         variant: "error",
       });
+    } finally {
+      setLoadingdata(false);
     }
-  }, [roomId]);
+  }, [roomId, loglimit]);
 
   // เริ่มโหลดครั้งแรก
   useEffect(() => {
     load();
   }, [load]);
+
+  // ดู log เพิ่มเติม
+  const logmore = () => {
+    setLoglimit(loglimit + 5);
+
+    //setLoglimit((prev) => {
+    //const next = prev + 1;
+    // เรียกโหลดด้วยค่าใหม่ทันที (ไม่รอ state)
+    //void load(next);
+    //return next;
+    //});
+  };
 
   // โพลลิ่งทุก 10 วินาที (รีเฟรชหน้าจออัตโนมัติ)
   useEffect(() => {
@@ -341,7 +359,7 @@ export default function RoomDetail() {
         const payload = {
           room_id: roomId,
           type: "invite",
-          description: "ทำการเชิญเพื่อนเข้าร่วมห้อง",
+          description: `ทำการเชิญเพื่อนเข้าร่วมห้อง ${friend.username}`,
         };
         await RoomLog(payload);
         await load();
@@ -845,10 +863,14 @@ export default function RoomDetail() {
           </View>
 
           {/* ปุ่มแชร์ห้อง */}
-          {isMember && <ShareRoom roomId={room.id} />}
+          {isMember && room.status === "active" && (
+            <ShareRoom roomId={room.id} />
+          )}
 
           {/* ปุ่มเปิดเกม Pokemon Go */}
-          {isMember ? (
+          {isMember &&
+          room.status !== "closed" &&
+          room.status !== "canceled" ? (
             <TouchableOpacity
               onPress={openPokemonGo}
               style={[styles.outlineBtn, { backgroundColor: "#d34228ff" }]}
@@ -1116,7 +1138,7 @@ export default function RoomDetail() {
           )}
 
           {/* ปุ่มเชิญเพื่อน */}
-          {isMember && !joinFull && (
+          {isMember && !joinFull && room.status === "active" && (
             <TouchableOpacity onPress={loadFriends} style={styles.outlineBtn}>
               <Ionicons name="people-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>เชิญเพื่อน</Text>
@@ -1153,7 +1175,7 @@ export default function RoomDetail() {
         {isMember && (
           <View style={styles.section}>
             <View style={styles.lineRow}>
-              <Text style={styles.sectionTitle}>ประวัติ ({log.length})</Text>
+              <Text style={styles.sectionTitle}>ประวัติ ({logtotal})</Text>
             </View>
             {log.length > 0 ? (
               log.map((item) => {
@@ -1214,6 +1236,17 @@ export default function RoomDetail() {
               <Text style={{ fontFamily: "KanitRegular", fontSize: 13 }}>
                 ไม่มีข้อมูลการบันทึก
               </Text>
+            )}
+            {loglimit < logtotal  && (
+              <View>
+                <TouchableOpacity style={styles.outlineBtn} onPress={logmore}>
+                  {loadingdata ? (
+                    <ActivityIndicator color="#ffffff" size="small" />
+                  ) : (
+                    <Text style={styles.outlineBtnText}>ดูเพิ่มเติม</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}

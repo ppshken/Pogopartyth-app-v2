@@ -122,9 +122,9 @@ export async function RoomLog(payload:
   return data.data;
 }
 
-export async function getRoomLog(room_id: number) {
+export async function getRoomLog(room_id: number, limit: number) {
   const { data } = await api.get("/api/raid/log/list.php", {
-    params: { room_id },
+    params: { room_id, limit },
     validateStatus: () => true,
   });
   if (!data?.success) throw new Error(data?.message || "Get RoomLog failed");

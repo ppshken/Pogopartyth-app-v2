@@ -68,3 +68,11 @@ export async function getFriendProfile(userId?: number) {
   return data.data;
 }
 
+export async function getUserLog(user_id: number, page = 1) {
+  const { data } = await api.get("/api/raid/log/my_list.php", {
+    params: { user_id, page },
+    validateStatus: () => true,
+  });
+  if (!data?.success) throw new Error(data?.message || "Get UserLog failed");
+  return data.data;
+}

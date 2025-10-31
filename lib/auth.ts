@@ -34,7 +34,7 @@ export async function register(payload: {
     validateStatus: () => true,
   });
   if (!data.success) throw new Error(data.message || "Register failed");
-  return data.data as { user: User; token: string };
+  return data.data as { user: User; type: boolean; };
 }
 
 /** โปรไฟล์ */

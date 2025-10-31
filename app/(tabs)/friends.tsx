@@ -22,7 +22,7 @@ import {
   avatarOrFallback,
   listMyFriends,
 } from "../../lib/friend"; // ✅ เพิ่ม listMyFriends
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 type Tab = "search" | "mine";
@@ -42,45 +42,7 @@ export default function FriendsScreen() {
   // ----- แท็บ: search | mine -----
   const [tab, setTab] = useState<Tab>("search");
 
-  const navigation = useNavigation();
   const router = useRouter();
-
-  // ตั้งปุ่ม help icon ที่มุมขวาบน
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => router.push("friends/request_friend")}
-          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
-          accessibilityRole="button"
-          accessibilityLabel="รายงานผู้ใช้งาน"
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 4,
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: "#EF4444",
-                paddingHorizontal: 6,
-                paddingVertical: 1,
-                borderRadius: 6,
-              }}
-            >
-              <Text style={{ color: "#ffff", fontFamily: "KanitSemiBold" }}>
-                40
-              </Text>
-            </View>
-            <Ionicons name="notifications-outline" size={22} color="#111827" />
-          </View>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
 
   // ----- debounce คำค้น -----
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -323,6 +285,7 @@ export default function FriendsScreen() {
             marginBottom: 4
           }}
         >
+          {/* แท็บหาเพื่อน*/}
           <TouchableOpacity
             onPress={() => setTab("search")}
             activeOpacity={0.8}
@@ -346,6 +309,7 @@ export default function FriendsScreen() {
             </Text>
           </TouchableOpacity>
 
+          {/* แท็บเพื่อน*/}
           <TouchableOpacity
             onPress={() => setTab("mine")}
             activeOpacity={0.8}

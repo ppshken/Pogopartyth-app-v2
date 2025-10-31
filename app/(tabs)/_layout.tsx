@@ -3,17 +3,19 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { GetPendingFriends } from "../../lib/friend";
-
+import { View, TouchableOpacity, Text } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function TabsLayout() {
   const [badge, setBadge] = useState<number | null>(null);
 
+  const router = useRouter();
+
   // ---- ดึงจำนวนคำขอเพื่อนค้าง ----
   const fetchPendingFriendCount = useCallback(async () => {
     try {
-      const res = await GetPendingFriends({ page: 1, limit: 1 });
-      const total =(Array.isArray(res?.list) ? res.list.length : 0); // นับจำนวน แบบ list
-      console.log('count',total);
+      const res = await GetPendingFriends({ page: 1, limit: 99 });
+      const total = Array.isArray(res?.list) ? res.list.length : 0; // นับจำนวน แบบ list
 
       setBadge(total);
     } catch (e) {
@@ -37,17 +39,15 @@ export default function TabsLayout() {
     return () => sub.remove();
   }, [fetchPendingFriendCount]);
 
-  // โพลทุก 60 วิ (เบาๆ)
-  useEffect(() => {
-    const t = setInterval(fetchPendingFriendCount, 60_000);
-    return () => clearInterval(t);
-  }, [fetchPendingFriendCount]);
-
   return (
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: true,
-        headerTitleStyle: { fontSize: 20, marginBottom: 8, fontFamily: "KanitSemiBold" },
+        headerTitleStyle: {
+          fontSize: 20,
+          marginBottom: 8,
+          fontFamily: "KanitSemiBold",
+        },
         tabBarActiveTintColor: "#000000ff",
         tabBarInactiveTintColor: "#6b7280ff",
         tabBarStyle: { paddingBottom: 8, height: 85 },
@@ -87,7 +87,57 @@ export default function TabsLayout() {
           title: "หาเพื่อน",
           tabBarBadge:
             // convert null to undefined and display "99+" when count is large
-            badge !== null && badge > 0 ? (badge > 99 ? "99+" : badge) : undefined,
+            badge !== null && badge > 0
+              ? badge > 99
+                ? "99+"
+                : badge
+              : undefined,
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push("friends/request_friend")}
+              style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+              accessibilityRole="button"
+              accessibilityLabel="รายงานผู้ใช้งาน"
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 4,
+                }}
+              >
+                {badge !== null && badge > 0 ? (
+                  <View
+                    style={{
+                      backgroundColor: "#EF4444",
+                      paddingHorizontal: 8,
+                      borderRadius: 999,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#ffff",
+                        fontFamily: "KanitSemiBold",
+                      }}
+                    >
+                      {badge !== null && badge > 0
+                        ? badge > 99
+                          ? "99+"
+                          : badge
+                        : undefined}
+                    </Text>
+                  </View>
+                ) : null}
+
+                <Ionicons
+                  name="notifications-outline"
+                  size={22}
+                  color="#111827"
+                />
+              </View>
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tabs.Screen name="profile" options={{ title: "โปรไฟล์" }} />

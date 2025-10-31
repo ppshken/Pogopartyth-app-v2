@@ -9,13 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') { jsonResponse(false, null, 'Method not allowed', 405); }
 
 try {
-  $room_id = (int)($_GET['room_id'] ?? 0);
+  $user_id = (int)($_GET['user_id'] ?? 0);
   $page    = (int)($_GET['page'] ?? 1);
   $limit   = (int)($_GET['limit'] ?? 20);
   $type    = trim((string)($_GET['type'] ?? ''));
   $order   = strtoupper((string)($_GET['order'] ?? 'DESC')); // ASC|DESC
 
-  if ($room_id <= 0) jsonResponse(false, null, 'room_id ไม่ถูกต้อง', 422);
+  if ($user_id <= 0) jsonResponse(false, null, 'user_id ไม่ถูกต้อง', 422);
   if ($page < 1) $page = 1;
   if ($limit < 1) $limit = 1;
   if ($limit > 100) $limit = 100;
@@ -23,8 +23,8 @@ try {
 
   $offset = ($page - 1) * $limit;
 
-  $where   = ['rl.room_id = :room_id'];
-  $params  = [':room_id' => $room_id];
+  $where   = ['rl.user_id = :user_id'];
+  $params  = [':user_id' => $user_id];
 
   if ($type !== '') {
     $where[] = 'rl.type = :type';
@@ -43,10 +43,12 @@ try {
       rl.type,
       rl.description,
       rl.created_at,
-      u.username AS username,           -- ✅ เพิ่ม username
-      u.avatar   AS avatar              -- (เผื่อใช้งานแสดงรูป)
+      u.username AS username,           
+      u.avatar   AS avatar,
+      r.pokemon_image AS pokemon_image              
     FROM raid_rooms_log rl
     LEFT JOIN users u ON u.id = rl.user_id
+    LEFT JOIN raid_rooms r ON r.id = rl.room_id
     WHERE $whereSql
     ORDER BY rl.id $order
     LIMIT :limit_plus
@@ -66,19 +68,10 @@ try {
     array_pop($rows);
   }
 
-  $clog = $db->prepare("
-    SELECT COUNT(*) FROM `raid_rooms_log` WHERE `room_id` = :rid;
-  ");
-  $clog->execute([':rid' => $room_id ]);
-  $crow = $clog->fetchColumn();
 
   jsonResponse(true, [
     'list' => $rows,
-    'pagination' => [
-      'page' => $page,
-      'has_more' => $has_more,
-      'total' => $crow,
-    ],
+    'pagination' => ['page' => $page, 'has_more' => $has_more],
   ], 'ok', 200);
 
 } catch (Throwable $e) {

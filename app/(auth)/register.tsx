@@ -9,12 +9,12 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Alert, // เพิ่ม Alert สำหรับการจัดการข้อผิดพลาดเบื้องต้น
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { register } from "../../lib/auth"; // สมมติว่ามี lib/auth.ts
 import { showSnack } from "../../components/Snackbar"; // สมมติว่ามี Snackbar
+import { sendEmailOtp } from "../../lib/otp";
 
 // ===== ให้เหมือนหน้า login =====
 const ACCENT = "#111827";
@@ -46,8 +46,6 @@ export default function Register() {
 
   const router = useRouter();
 
-  const [user, setUser] = useState<User | null>(null);
-
   // ตรวจรูปแบบ
   const emailOk = useMemo(
     () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
@@ -72,9 +70,18 @@ export default function Register() {
         email: email.trim(),
       };
       const user = await register(payload);
-      setUser(user.user);
       console.log("user", user);
-      router.replace({ pathname: "/(auth)/email_verify_otp", params: { email: email, user_id: user.user.id } });
+      if (!user.type) {
+        const payload = {
+          user_id: user.user.id,
+          type: "register",
+        };
+        await sendEmailOtp(payload);
+      }
+      router.replace({
+        pathname: "/(auth)/email_verify_otp",
+        params: { email: email, user_id: user.user.id },
+      });
     } catch (e: any) {
       showSnack({
         text: e?.message || "การสมัครสมาชิกไม่สำเร็จ",

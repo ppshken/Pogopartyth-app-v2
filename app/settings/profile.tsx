@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useState,
+  useLayoutEffect,
 } from "react";
 import {
   View,
@@ -15,10 +16,12 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useRouter } from "expo-router";
+import * as Clipboard from "expo-clipboard";
+import { useRouter, useNavigation } from "expo-router";
 import { useAuth } from "../../store/authStore";
 import { profile } from "../../lib/auth";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
+import { showSnack } from "../../components/Snackbar";
 
 type FullUser = {
   id: number;
@@ -34,56 +37,38 @@ type FullUser = {
   google_sub: string;
 };
 
-const menu = [
-  {
-    id: 1,
-    menu: "ดูโปรไฟล์",
-    icon: "person-outline",
-    router: "/settings/profile",
-  },
-  {
-    id: 2,
-    menu: "ตั้งค่าโปรไฟล์",
-    icon: "people-outline",
-    router: "/settings/profile-edit",
-  },
-  {
-    id: 3,
-    menu: "ประวัติ",
-    icon: "archive-outline",
-    router: "/settings/user-log",
-  },
-  {
-    id: 4,
-    menu: "ตั้งค่าแอพ",
-    icon: "settings-outline",
-    router: "/settings/setting-app",
-  },
-  {
-    id: 5,
-    menu: "Feedback",
-    icon: "alert-circle-outline",
-    router: "/settings/feedback",
-  },
-];
+type Stats = {
+  rooms_owned: number;
+  rooms_joined: number;
+};
+
+type RatingOwner = {
+  avg: number | null;
+  count: number;
+};
 
 export default function Profile() {
   const router = useRouter();
-
   const authUser = useAuth((s) => s.user) as any; // user จาก store (อาจยังไม่มี field เสริม)
-  const logout = useAuth((s) => s.clear);
 
   const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState<FullUser | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [rat, setRat] = useState<RatingOwner | null>(null);
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
-      const { user } = await profile(); // GET /api/auth/profile.php
+      const { user, stats, rating_owner } = await profile(); // GET /api/auth/profile.php
       setUser(user as FullUser);
+      setStats(stats as Stats);
+      setRat((rating_owner as RatingOwner) ?? { avg: null, count: 0 });
     } catch (e: any) {
       // ถ้าเรียกไม่สำเร็จ fallback ใช้ user ใน store ไปก่อน
       setUser(authUser || null);
+    } finally {
+      setLoading(false);
     }
   }, [authUser]);
 
@@ -96,31 +81,13 @@ export default function Profile() {
 
   useRefetchOnFocus(load, [load]);
 
-  const onLogout = async () => {
-    try {
-      Alert.alert("ยืนยัน", "คุณต้องการออกจากระบบใช่หรือไม่?", [
-        {
-          text: "ยกเลิก",
-          style: "cancel",
-          onPress: () => setLoading(false),
-        },
-        {
-          text: "ออกจากระบบ",
-          style: "destructive",
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await logout();
-              router.replace("/(auth)/login");
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]);
-    } catch (e) {
-      setLoading(false);
+  const onCopyFriendCode = async () => {
+    if (!user?.friend_code) {
+      showSnack({ text: "ยังไม่ได้ตั้ง Friend Code", variant: "error" });
+      return;
     }
+    await Clipboard.setStringAsync(user.friend_code);
+    showSnack({ text: "คัดลอก Friend Code เรียบร้อย", variant: "info" });
   };
 
   function formatFriendCode(v: string) {
@@ -217,93 +184,128 @@ export default function Profile() {
         </View>
       </View>
 
-      {/* เมนู */}
-      <View style={styles.card_stats}>
-        <Text style={styles.cardTitle}>เมนู</Text>
-        {menu.map((menuitem) => (
-          <View style={styles.menuSection} key={menuitem.id}>
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 8,
-                gap: 8,
-                borderBottomWidth: 1,
-                borderColor: "#e4e4e4ff",
-                paddingBottom: 8,
-              }}
-              onPress={() => {
-                if (menuitem.router) {
-                  router.push(menuitem.router);
-                }
-              }}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: 4,
-                }}
-              >
-                <Ionicons name={menuitem.icon as any} size={24} />
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "KanitSemiBold",
-                    color: "#111827",
-                  }}
-                >
-                  {menuitem.menu}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
-            </TouchableOpacity>
+      {/* Card: More info */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>ข้อมูลเพิ่มเติม</Text>
+
+        {/* Friend Code */}
+        <View style={styles.row}>
+          <Ionicons name="qr-code-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.rowValue}>
+            {formatFriendCode(user?.friend_code || "-")}
+          </Text>
+        </View>
+
+        {/* Level */}
+        <View style={styles.row}>
+          <Ionicons name="bookmark-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>เลเวล</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.rowValue}>{user?.level || "-"}</Text>
+        </View>
+
+        {/* Rating (หัวห้อง) */}
+        <View style={styles.row}>
+          <Ionicons name="star-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>คะแนนรีวิวที่ได้รับ</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.rowValue}>
+            <Ionicons name="star" size={14} color="#FBBF24" />{" "}
+            {rat?.avg
+              ? `${rat.avg.toFixed(2)} (${rat.count} รีวิว)`
+              : "ยังไม่มีรีวิว"}
+          </Text>
+        </View>
+
+        {/* Team ทีม */}
+        <View style={styles.row}>
+          <Ionicons name="cube-outline" size={18} color="#374151" />
+          <Text style={styles.rowText}>ทีม</Text>
+          <View style={{ flex: 1 }} />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: teamColors[user.team ?? ""] ?? "#E5E7EB",
+              paddingHorizontal: 8,
+              paddingVertical: 2,
+              borderRadius: 4,
+            }}
+          >
+            <Text style={[styles.rowValue, { color: "#ffffffff" }]}>
+              {user?.team || "-"}
+            </Text>
           </View>
-        ))}
+        </View>
+
+        {/* ปุ่มคัดลอก Friend Code กับ ห้องของฉัน 
+        <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={onCopyFriendCode}
+          >
+            <Ionicons name="copy-outline" size={16} color="#111827" />
+            <Text style={styles.outlineBtnText}>คัดลอก รหัสเพิ่มเพื่อน</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={() => router.push("/my_raid")}
+          >
+            <Ionicons name="invert-mode" size={16} color="#111827" />
+            <Text style={styles.outlineBtnText}>ห้องของฉัน</Text>
+          </TouchableOpacity>
+        </View>*/}
       </View>
 
-      {/* Actions */}
-      <View style={{ marginTop: 8 }}>
-        <TouchableOpacity
-          style={[styles.primaryBtn, { backgroundColor: "#EF4444" }]}
-          onPress={onLogout}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <Ionicons name="log-out-outline" size={18} color="#fff" />
-              <Text style={styles.primaryBtnText}>ออกจากระบบ</Text>
-            </>
-          )}
-        </TouchableOpacity>
-        <View>
-          <Text
-            style={{
-              color: "#9CA3AF",
-              fontSize: 12,
-              textAlign: "center",
-              marginTop: 12,
-              fontFamily: "KanitRegular",
-            }}
-          >
-            เวอร์ชัน 1.0.0
-          </Text>
-          <Text
-            style={{
-              color: "#9CA3AF",
-              fontSize: 12,
-              textAlign: "center",
-              marginTop: 4,
-              fontFamily: "KanitRegular",
-            }}
-          >
-            สร้างโดย PogoParty TH
-          </Text>
+      {/* รายงาน สถิติการเข้าร่วม รีวิว */}
+      <View style={styles.card_stats}>
+        <Text style={styles.cardTitle}>รายงาน</Text>
+        <View style={styles.cardSection}>
+          <View style={styles.card_stats_detail}>
+            <Ionicons name="paw-outline" size={24} />
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
+              จำนวนห้องที่สร้างทั้งหมด
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
+              {stats?.rooms_owned}
+            </Text>
+          </View>
+          <View style={styles.card_stats_detail}>
+            <Ionicons name="invert-mode-outline" size={24} />
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
+              จำนวนห้องที่เข้าร่วมทั้งหมด
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "KanitSemiBold",
+                color: "#111827",
+              }}
+            >
+              {stats?.rooms_joined}
+            </Text>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -397,9 +399,9 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#111827",
-    marginBottom: 14,
+    marginBottom: 8,
     fontFamily: "KanitBold",
   },
 
