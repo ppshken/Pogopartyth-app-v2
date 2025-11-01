@@ -204,7 +204,7 @@ export default function Profile() {
         variant: "success",
       });
       setReason("");
-      router.back();
+      setOnReport(false);
     } catch (e: any) {
       Alert.alert("เกิดข้อผิดพลาด", e?.message || "ลองใหม่อีกครั้ง");
     } finally {

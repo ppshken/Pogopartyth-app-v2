@@ -144,6 +144,10 @@ export default function Layout() {
             options={{ title: "โปรไฟล์เพื่อน", headerShown: true }}
           />
           <Stack.Screen
+            name="friends/request_friend"
+            options={{ title: "แจ้งเตือน", headerShown: true }}
+          />
+          <Stack.Screen
             name="friends/[id]/chat"
             options={{ title: "แชท", headerShown: true }}
           />
