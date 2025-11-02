@@ -37,7 +37,8 @@ export default function FriendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [user_all, setUser_all] = useState<number | null>(null);
+  const [friendAll, setFriendAll] = useState(0);
+  const [MyfriendAll, setMyFriendAll] = useState(0);
 
   // ----- แท็บ: search | mine -----
   const [tab, setTab] = useState<Tab>("search");
@@ -66,21 +67,22 @@ export default function FriendsScreen() {
       try {
         let res: {
           list: Friend[];
-          pagination: { page: number; has_more: boolean; user_all: number; };
+          pagination: { page: number; has_more: boolean; user_all: number };
         };
 
         if (currentTab === "search") {
           // โหมดค้นหาทุกคน
           res = await searchFriends({ q: keyword, page: pageNum, limit: 10 });
+          setFriendAll(res.pagination.user_all);
         } else {
           // โหมดเพื่อนของฉัน (อาจกรองด้วยคีย์เวิร์ด)
           res = await listMyFriends({ q: keyword, page: pageNum, limit: 10 });
+          setMyFriendAll(res.pagination.user_all);
         }
 
         setItems((prev) => (replace ? res.list : [...prev, ...res.list]));
         setHasMore(res.pagination.has_more);
         setPage(res.pagination.page);
-        setUser_all(res.pagination.user_all);
       } catch (e: any) {
         setError(e?.message || "โหลดไม่สำเร็จ");
         if (replace) setItems([]);
@@ -282,7 +284,7 @@ export default function FriendsScreen() {
             backgroundColor: "#F3F4F6",
             padding: 4,
             borderRadius: 10,
-            marginBottom: 4
+            marginBottom: 4,
           }}
         >
           {/* แท็บหาเพื่อน*/}
@@ -305,7 +307,7 @@ export default function FriendsScreen() {
                 color: tab === "search" ? "#111827" : "#6B7280",
               }}
             >
-              หาเพื่อน
+              หาเพื่อน ({friendAll})
             </Text>
           </TouchableOpacity>
 
@@ -329,7 +331,7 @@ export default function FriendsScreen() {
                 color: tab === "mine" ? "#111827" : "#6B7280",
               }}
             >
-              เพื่อนของฉัน
+              เพื่อนของฉัน ({MyfriendAll})
             </Text>
           </TouchableOpacity>
         </View>
@@ -337,8 +339,6 @@ export default function FriendsScreen() {
         {error ? (
           <Text style={{ color: "#B91C1C", marginTop: 8 }}>⚠️ {error}</Text>
         ) : null}
-
-        <Text style={{fontFamily: "KanitMedium", left: 6}}>จำนวนทั้งหมด ({user_all})</Text>
       </View>
 
       <FlatList

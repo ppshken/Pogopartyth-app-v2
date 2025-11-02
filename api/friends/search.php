@@ -43,9 +43,9 @@ try {
   $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
   // นับจำนวนรวมทั้งหมดในระบบ
-  $countAll = "SELECT COUNT(*) FROM users WHERE role <> 'admin'";
+  $countAll = "SELECT COUNT(*) FROM users WHERE role <> 'admin' AND setup_status = 'yes' AND id <> :uid";
   $stmt = $pdo->prepare($countAll);
-  $stmt->execute();
+  $stmt->execute([':uid' => $authUserId]);
   $user_all = (int)$stmt->fetchColumn();
 
   // ---- นับรวม ----

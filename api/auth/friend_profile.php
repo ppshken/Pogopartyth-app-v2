@@ -46,7 +46,7 @@ if (!$user) {
 
 // เช็ควสถานะเป็นเพื่อน
 $f1 = $db->prepare("
-  SELECT requester_id, addressee_id, status
+  SELECT id AS friendship_id, requester_id, addressee_id, status
   FROM friendships
   WHERE (requester_id=:me AND addressee_id=:target)
      OR (requester_id=:target AND addressee_id=:me)

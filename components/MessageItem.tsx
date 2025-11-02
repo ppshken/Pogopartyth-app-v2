@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
 import { useAuth } from "../store/authStore"; // ดึงข้อมูล user ที่ล็อกอิน
+import { Ionicons } from "@expo/vector-icons";
 
 export function MessageItem({ m }: { m: any }) {
   const currentUser = useAuth((s) => s.user);
@@ -15,11 +16,16 @@ export function MessageItem({ m }: { m: any }) {
       }}
     >
       {/* Avatar */}
-      {!isMe && (
-        m.avatar ? (
+      {!isMe &&
+        (m.avatar ? (
           <Image
             source={{ uri: m.avatar }}
-            style={{ width: 32, height: 32, borderRadius: 16, marginHorizontal: 8 }}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              marginHorizontal: 8,
+            }}
           />
         ) : (
           <View
@@ -37,8 +43,7 @@ export function MessageItem({ m }: { m: any }) {
               {m.username ? m.username.charAt(0).toUpperCase() : "?"}
             </Text>
           </View>
-        )
-      )}
+        ))}
 
       {/* Bubble */}
       <View
@@ -52,25 +57,56 @@ export function MessageItem({ m }: { m: any }) {
         }}
       >
         {!isMe && (
-          <Text style={{ fontSize: 12, color: "#555", marginBottom: 4, fontFamily: "KanitRegular" }}>
+          <Text
+            style={{
+              fontSize: 12,
+              color: "#555",
+              marginBottom: 4,
+              fontFamily: "KanitRegular",
+            }}
+          >
             {m.username || `User#${m.user_id}`}
           </Text>
         )}
-        <Text style={{ color: isMe ? "#fff" : "#000", fontFamily: "KanitRegular" }}>{m.message}</Text>
         <Text
+          style={{ color: isMe ? "#fff" : "#000", fontFamily: "KanitRegular" }}
+        >
+          {m.message}
+        </Text>
+
+        <View
           style={{
-            fontSize: 10,
-            color: isMe ? "#ddd" : "#666",
-            marginTop: 4,
-            textAlign: "right",
-            fontFamily: "KanitRegular",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 4,
           }}
         >
-          {new Date(m.created_at).toLocaleTimeString("th-TH", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Text>
+          {isMe && m.status === 'read' && (
+            <View
+              style={{
+                marginTop: 4,
+              }}
+            >
+              <Ionicons name="checkmark" color="#ddd" />
+            </View>
+          )}
+
+          <Text
+            style={{
+              fontSize: 10,
+              color: isMe ? "#ddd" : "#666",
+              marginTop: 4,
+              textAlign: "right",
+              fontFamily: "KanitRegular",
+            }}
+          >
+            {new Date(m.created_at).toLocaleTimeString("th-TH", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Text>
+        </View>
       </View>
     </View>
   );

@@ -46,6 +46,7 @@ type RatingOwner = {
 };
 
 type StatusFriend = {
+  friendship_id: number;
   requester_id?: number;
   status: string;
 };
@@ -53,7 +54,6 @@ type StatusFriend = {
 export default function Profile() {
   const navigation = useNavigation();
   const router = useRouter();
-  const nav = useNavigation();
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = Number(id);
@@ -225,9 +225,9 @@ export default function Profile() {
   // เปิดแชท
   const openChat = async () => {
     router.push({
-      pathname: `/friends/${user?.id}/chat`,
+      pathname: `/friends/chat`,
       params: {
-        thread_id: String(userId),
+        friendshipId: String(statusFriend?.friendship_id),
         other_user_id: String(user?.id),
         other_username: user?.username,
         other_avatar: user?.avatar,
@@ -297,7 +297,7 @@ export default function Profile() {
         {/* Name + email */}
         <View style={{ flex: 1 }}>
           <Text style={styles.name} numberOfLines={1}>
-            {user?.username || "ไม่ระบุชื่อ"}
+            {user?.username || "ไม่ระบุชื่อ"} - {statusFriend?.friendship_id}
           </Text>
 
           {/* Chips / quick actions */}
@@ -401,7 +401,7 @@ export default function Profile() {
               ) : (
                 <>
                   <Ionicons name="checkmark" size={16} color="#ffffffff" />
-                  <Text style={styles.outlineBtnAddText}>ยืนยัน</Text>
+                  <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
                 </>
               )}
             </TouchableOpacity>

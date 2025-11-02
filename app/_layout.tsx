@@ -148,7 +148,7 @@ export default function Layout() {
             options={{ title: "แจ้งเตือน", headerShown: true }}
           />
           <Stack.Screen
-            name="friends/[id]/chat"
+            name="friends/chat"
             options={{ title: "แชท", headerShown: true }}
           />
         </Stack>

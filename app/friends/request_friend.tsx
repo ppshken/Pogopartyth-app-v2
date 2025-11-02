@@ -9,11 +9,13 @@ import {
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
-  Alert,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { GetPendingFriends, AcceptFriend, DeclineFriend } from "@/lib/friend";
 import { showSnack } from "../../components/Snackbar";
+import { router } from "expo-router";
+import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 
 type PendingItem = {
   request_id: number;
@@ -37,6 +39,8 @@ export default function RequestFriend() {
   const [loadingAccept, setLoadingAccept] = useState(false);
   const [loadingDeclin, setLoadingDeclin] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [onModal, setOnmodal] = useState(false);
+  const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (p = 1, append = false) => {
@@ -76,6 +80,7 @@ export default function RequestFriend() {
     try {
       await AcceptFriend(requester_id);
       showSnack({ text: "รับเพื่อนแล้วเรียบร้อย", variant: "success" });
+      setOnmodal(false);
       setLoadingAccept(false);
       load();
     } catch (e: any) {
@@ -85,6 +90,7 @@ export default function RequestFriend() {
       });
     } finally {
       setLoadingAccept(false);
+      setOnmodal(false);
     }
   };
 
@@ -123,47 +129,67 @@ export default function RequestFriend() {
 
     return (
       <View style={s.card}>
-        <Image
-          source={{
-            uri:
-              item.avatar ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                item.username
-              )}`,
-          }}
-          style={s.avatar}
-        />
+        <TouchableOpacity
+          onPress={() => router.push(`/friends/${item.requester_id}`)}
+        >
+          <Image
+            source={{
+              uri:
+                item.avatar ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  item.username
+                )}`,
+            }}
+            style={s.avatar}
+          />
+        </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            <Text style={s.username} numberOfLines={1}>
-              {item.username}
-            </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <View
-              style={[s.team, { backgroundColor: teamColors[item.team ?? ""] }]}
+              style={{
+                flexDirection: "row",
+                gap: 8,
+                alignItems: "center",
+              }}
             >
-              <Text style={s.metalevel} numberOfLines={1}>
-                Level {item.level}
+              <Text style={s.username} numberOfLines={1}>
+                {item.username}
               </Text>
+              <View
+                style={[
+                  s.team,
+                  { backgroundColor: teamColors[item.team ?? ""] },
+                ]}
+              >
+                <Text style={s.metalevel}>Level {item.level}</Text>
+              </View>
             </View>
+            <Text style={s.timeago}>
+              {minutesAgoTH(item.created_at as string)}
+            </Text>
           </View>
 
-          <Text style={s.meta} numberOfLines={1}>
+          <Text style={s.meta}>
             Friend code - {formatCode(item.friend_code)}
           </Text>
 
           <View style={s.actions}>
             <TouchableOpacity
               style={[s.btn, s.primary]}
-              onPress={() => accept(item.requester_id)}
+              onPress={() => {
+                setSelected(item.requester_id);
+                setOnmodal(true);
+              }}
             >
-              {loadingAccept ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-                <>
-                  <Ionicons name="checkmark" size={16} color="#fff" />
-                  <Text style={s.primaryText}>ยอมรับ</Text>
-                </>
-              )}
+              <Ionicons name="checkmark" size={16} color="#fff" />
+              <Text style={s.primaryText}>ยอมรับ</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -226,6 +252,38 @@ export default function RequestFriend() {
           ) : null
         }
       />
+
+      {/* Modal: ยืนยันการรับเพื่อน */}
+      <Modal
+        visible={onModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnmodal(false)}
+      >
+        <View style={s.modalOverlay}>
+          <View style={s.modalCard}>
+            <Text style={s.modalTitle}>ยืนยันการรับเพื่อน ?</Text>
+            <TouchableOpacity
+              onPress={() => {
+                accept(selected);
+              }}
+              style={[s.modalBtn, { backgroundColor: "#3B82F6" }]}
+            >
+              {loadingAccept ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={s.modalBtnText}>ยืนยัน</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setOnmodal(false)}
+              style={[s.modalBtn, s.modalCancel]}
+            >
+              <Text style={[s.modalBtnText, { color: "#111827" }]}>ยกเลิก</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -271,21 +329,20 @@ const s = StyleSheet.create({
     backgroundColor: "#E5E7EB",
   },
   username: { fontFamily: "KanitSemiBold", fontSize: 16, color: "#111827" },
+  timeago: { fontFamily: "KanitMedium", fontSize: 12, color: "#56595eff" },
   team: {
-    backgroundColor: "#000000",
-    paddingHorizontal: 5,
-    borderRadius: 5,
+    padding: 2,
+    paddingHorizontal: 4,
+    borderRadius: 4,
   },
   metalevel: {
     fontFamily: "KanitSemiBold",
     fontSize: 12,
     color: "#ffffffff",
-    marginTop: 2,
   },
   meta: {
-    fontFamily: "KanitRegular",
-    fontSize: 12,
-    color: "#909090ff",
+    fontFamily: "KanitMedium",
+    color: "#6B7280",
     marginTop: 2,
   },
   actions: { flexDirection: "row", gap: 8, marginTop: 10 },
@@ -301,4 +358,43 @@ const s = StyleSheet.create({
   primaryText: { color: "#fff", fontFamily: "KanitSemiBold" },
   ghost: { backgroundColor: "#F3F4F6" },
   ghostText: { color: "#111827", fontFamily: "KanitSemiBold" },
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 420,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontFamily: "KanitSemiBold",
+    color: "#111827",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  modalBtn: {
+    marginTop: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+  },
+  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 14 },
+  modalCancel: {
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
 });
