@@ -425,7 +425,14 @@ export default function Profile() {
         {/* ปุ่มการทำงาน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           {/* ปุ่มแชท */}
-          <TouchableOpacity style={styles.outlinechatBtn} onPress={openChat}>
+          <TouchableOpacity
+            style={[
+              styles.outlinechatBtn,
+              { opacity: !statusFriend?.friendship_id ? 0.5 : 1 },
+            ]}
+            onPress={openChat}
+            disabled={!statusFriend?.friendship_id}
+          >
             <Ionicons
               name="chatbubble-ellipses-outline"
               size={16}
@@ -440,7 +447,7 @@ export default function Profile() {
             onPress={onCopyFriendCode}
           >
             <Ionicons name="copy-outline" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>คัดลอก รหัสเพิ่มเพื่อน</Text>
+            <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -673,7 +680,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
-    marginTop:8,
+    marginTop: 8,
   },
   outlineBtnAddText: {
     color: "#ffffffff",

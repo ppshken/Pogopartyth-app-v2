@@ -220,8 +220,8 @@ export default function RequestFriend() {
         </TouchableOpacity>
       )}
       <View style={{ marginLeft: 14, marginTop: 14, marginBottom: 14 }}>
-        <Text style={{ fontFamily: "KanitSemiBold" }}>
-          คำขอเป็นเพื่อน ({items.length})
+        <Text style={{ fontFamily: "KanitSemiBold", fontSize: 18 }}>
+          คำขอเป็นเพื่อน {items.length > 0 ? `(${items.length})` : null}
         </Text>
       </View>
 
@@ -232,7 +232,7 @@ export default function RequestFriend() {
         ListEmptyComponent={
           !loading ? (
             <View>
-              <Text style={{ fontFamily: "KanitRegular" }}>
+              <Text style={{ fontFamily: "KanitMedium", color: "#9CA3AF" }}>
                 ยังไม่มีคำขอเป็นเพื่อน
               </Text>
             </View>

@@ -270,15 +270,15 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#F9FAFB" },
   header: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 8 },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     color: TEXT_MAIN,
     fontFamily: "KanitSemiBold",
   },
   subtitle: {
     marginTop: 2,
-    color: TEXT_SUB,
-    fontSize: 13,
-    fontFamily: "KanitRegular",
+    color: "#9CA3AF",
+    fontSize: 14,
+    fontFamily: "KanitMedium",
   },
 
   listContent: {

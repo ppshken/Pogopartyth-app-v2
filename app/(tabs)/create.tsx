@@ -297,16 +297,15 @@ export default function CreateRoom() {
               style={{
                 color: "#6B7280",
                 marginTop: 6,
+                marginBottom: 16,
                 fontSize: 12,
                 fontFamily: "KanitRegular",
               }}
             >
               เวลาระหว่างวัน 5:00 - 23:00 โดยแบ่งออก รอบละ 5 นาที
             </Text>
-          </View>
 
-          {/* People dropdown */}
-          <View style={styles.card}>
+            {/* People dropdown */}
             <Text style={styles.label}>จำนวนสมาชิก</Text>
             <TouchableOpacity
               style={styles.dropdown}
@@ -321,16 +320,15 @@ export default function CreateRoom() {
               style={{
                 color: "#6B7280",
                 marginTop: 6,
+                marginBottom: 16,
                 fontSize: 12,
                 fontFamily: "KanitRegular",
               }}
             >
               เลือกสมาชิกได้สูงสุด 2–20 คน
             </Text>
-          </View>
 
-          {/* Note */}
-          <View style={styles.card}>
+            {/* Note */}
             <Text style={styles.label}>หมายเหตุ</Text>
             <TextInput
               placeholder="พิมพ์หมายเหตุ เช่น ขอคนมี Remote Pass"
