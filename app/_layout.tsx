@@ -12,7 +12,7 @@ import { useFonts } from "expo-font";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
 
 export default function Layout() {
-  const [onupdate, setOnupdate] = useState(false);
+  const [onupdate, setOnupdate] = useState(false); // เปิด - ปิด Update
 
   const [fontsLoaded] = useFonts({
     KanitRegular: require("../assets/fonts/Kanit-Regular.ttf"), // ฟอนต์ปกติ

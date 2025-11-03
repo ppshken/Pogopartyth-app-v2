@@ -150,7 +150,7 @@ function notifyFriendRequest(PDO $db, int $fromUserId, int $toUserId): void
   $data = [
     'type'      => 'friend_request',
     'from_id'   => $fromUserId,
-    'url'      => 'pogopartyth://friends/'.$fromUserId
+    'url'      => 'pogopartyth://friends/request_friend'
   ];
 
   // ส่ง Expo Push (ถ้ามี token)

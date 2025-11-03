@@ -93,50 +93,97 @@ export default function TabsLayout() {
                 : badge
               : undefined,
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => router.push("friends/request_friend")}
-              style={{ paddingHorizontal: 12, paddingVertical: 6 }}
-              accessibilityRole="button"
-              accessibilityLabel="รายงานผู้ใช้งาน"
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 4,
-                }}
+            <>
+              <TouchableOpacity
+                onPress={() => router.push("friends/request_friend")}
+                style={{ paddingHorizontal: 0, paddingVertical: 6 }}
+                accessibilityRole="button"
+                accessibilityLabel="รายงานผู้ใช้งาน"
               >
-                {badge !== null && badge > 0 ? (
-                  <View
-                    style={{
-                      backgroundColor: "#EF4444",
-                      paddingHorizontal: 8,
-                      borderRadius: 999,
-                    }}
-                  >
-                    <Text
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                  }}
+                >
+                  {badge !== null && badge > 0 ? (
+                    <View
                       style={{
-                        color: "#ffff",
-                        fontFamily: "KanitSemiBold",
+                        backgroundColor: "#EF4444",
+                        paddingHorizontal: 8,
+                        borderRadius: 999,
                       }}
                     >
-                      {badge !== null && badge > 0
-                        ? badge > 99
-                          ? "99+"
-                          : badge
-                        : undefined}
-                    </Text>
-                  </View>
-                ) : null}
+                      <Text
+                        style={{
+                          color: "#ffff",
+                          fontFamily: "KanitSemiBold",
+                        }}
+                      >
+                        {badge !== null && badge > 0
+                          ? badge > 99
+                            ? "99+"
+                            : badge
+                          : undefined}
+                      </Text>
+                    </View>
+                  ) : null}
 
-                <Ionicons
-                  name="notifications-outline"
-                  size={22}
-                  color="#111827"
-                />
-              </View>
-            </TouchableOpacity>
+                  <Ionicons
+                    name="notifications-outline"
+                    size={22}
+                    color="#111827"
+                  />
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => router.push("friends/request_friend")}
+                style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+                accessibilityRole="button"
+                accessibilityLabel="รายงานผู้ใช้งาน"
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                  }}
+                >
+                  {badge !== null && badge < 0 ? (
+                    <View
+                      style={{
+                        backgroundColor: "#EF4444",
+                        paddingHorizontal: 8,
+                        borderRadius: 999,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#ffff",
+                          fontFamily: "KanitSemiBold",
+                        }}
+                      >
+                        {badge !== null && badge > 0
+                          ? badge > 99
+                            ? "99+"
+                            : badge
+                          : undefined}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  <Ionicons
+                    name="chatbubble-ellipses-outline"
+                    size={22}
+                    color="#111827"
+                  />
+                </View>
+              </TouchableOpacity>
+            </>
           ),
         }}
       />

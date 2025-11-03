@@ -19,7 +19,7 @@ import { getProfile, getUserLog } from "@/lib/user"; // คาดว่ามี
 const ACCENT = "#111827";
 const BORDER = "#E5E7EB";
 const TEXT_MAIN = "#111827";
-const TEXT_SUB = "#6B7280";
+const TEXT_SUB = "#9CA3AF";
 const CARD_BG = "#FFFFFF";
 const ERROR = "#DC2626";
 
@@ -189,8 +189,15 @@ export default function UserLogScreen() {
           <Image source={{ uri: avatarSrc }} style={styles.avatar} />
           <View style={{ flex: 1 }}>
             <View style={styles.rowTop}>
-              <View style={[styles.typeBadge, { backgroundColor: type_color }]}>
-                <Text style={styles.typeText}>{item.type}</Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
+                <View
+                  style={[styles.typeBadge, { backgroundColor: type_color }]}
+                >
+                  <Text style={styles.typeText}>{item.type}</Text>
+                </View>
+                <Text style={styles.descText}>#{item.room_id}</Text>
               </View>
               <Text style={styles.timeText}>{ago}</Text>
             </View>
@@ -209,7 +216,6 @@ export default function UserLogScreen() {
   const listEmpty = useMemo(
     () => (
       <View style={styles.emptyWrap}>
-        <Ionicons name="newspaper-outline" size={28} color={TEXT_SUB} />
         <Text style={styles.emptyText}>ยังไม่มีประวัติการใช้งาน</Text>
       </View>
     ),
@@ -219,7 +225,9 @@ export default function UserLogScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>ประวัติการใช้งาน ({items.length})</Text>
+        <Text style={styles.title}>
+          ประวัติการใช้งาน {items.length > 0 ? `(${items.length})` : null}
+        </Text>
         <Text style={styles.subtitle}>การเข้าร่วมห้อง ออกจากห้อง และรีวิว</Text>
       </View>
 
@@ -334,7 +342,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 40,
   },
-  emptyText: { marginTop: 8, color: TEXT_SUB, fontFamily: "KanitRegular" },
+  emptyText: {
+    fontSize: 16,
+    marginTop: 8,
+    color: TEXT_SUB,
+    fontFamily: "KanitSemiBold",
+  },
 
   errorWrap: {
     marginHorizontal: 16,

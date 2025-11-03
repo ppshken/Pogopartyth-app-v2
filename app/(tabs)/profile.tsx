@@ -65,6 +65,12 @@ const menu = [
     icon: "alert-circle-outline",
     router: "/settings/feedback",
   },
+  {
+    id: 6,
+    menu: "บัญชี",
+    icon: "person-circle-outline",
+    router: "",
+  },
 ];
 
 export default function Profile() {
@@ -121,17 +127,6 @@ export default function Profile() {
     } catch (e) {
       setLoading(false);
     }
-  };
-
-  function formatFriendCode(v: string) {
-    const digits = v.replace(/\D/g, "").slice(0, 12);
-    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
-  }
-
-  const teamColors: Record<string, string> = {
-    Mystic: "#3B82F6",
-    Valor: "#EF4444",
-    Instinct: "#F59E0B",
   };
 
   if (!user) {

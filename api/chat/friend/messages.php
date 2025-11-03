@@ -17,8 +17,7 @@ try {
 
   $friendship_id = (int)($_GET['friendship_id'] ?? 0);
   $sinceId       = (int)($_GET['since_id'] ?? 0);
-  $limit         = (int)($_GET['limit'] ?? 50);
-  $limit         = max(1, min(20, $limit)); // 1..200
+  $limit         = (int)($_GET['limit'] ?? 5);
 
   if ($friendship_id <= 0) {
     jsonResponse(false, null, 'friendship_id ไม่ถูกต้อง', 422);

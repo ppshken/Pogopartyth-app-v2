@@ -11,8 +11,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { getMessages, sendMessage, readMessage, ChatMessage } from "../../lib/chat_friend";
-import { MessageItem } from "../../components/MessageItem";
+import {
+  getMessages,
+  sendMessage,
+  readMessage,
+  ChatMessage,
+} from "../../lib/chat_friend";
+import { MessageItemFriend } from "../../components/MessageItemFriend";
 import { Ionicons } from "@expo/vector-icons";
 import { showSnack } from "../../components/Snackbar";
 
@@ -38,6 +43,7 @@ export default function ChatScreen() {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const listRef = useRef<FlatList<ChatMessage>>(null);
   const firstOpenRef = useRef(true);
+  const [limit, setLimit] = useState(15);
 
   const [loading, setLoading] = useState(false);
 
@@ -71,7 +77,7 @@ export default function ChatScreen() {
       const res = await getMessages(
         friendship_id,
         sinceIdRef.current || undefined,
-        100
+        limit
       );
       await readMessage(friendship_id, OtherUserId);
       if (res.items?.length) {
@@ -147,7 +153,7 @@ export default function ChatScreen() {
           ref={listRef}
           data={items}
           keyExtractor={(m) => String(m.id)}
-          renderItem={({ item }) => <MessageItem m={item} />}
+          renderItem={({ item }) => <MessageItemFriend m={item} />}
           contentContainerStyle={{
             paddingBottom: 16,
             paddingTop: 8,

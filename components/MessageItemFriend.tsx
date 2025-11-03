@@ -4,7 +4,7 @@ import { useAuth } from "../store/authStore"; // ดึงข้อมูล use
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
-export function MessageItem({ m }: { m: any }) {
+export function MessageItemFriend({ m }: { m: any }) {
   const currentUser = useAuth((s) => s.user);
   const isMe = m.user_id === currentUser?.id;
 
@@ -20,7 +20,9 @@ export function MessageItem({ m }: { m: any }) {
       {!isMe &&
         (m.avatar ? (
           <TouchableOpacity
-            onPress={() => {router.push(`/friends/${m.user_id}`)}}
+            onPress={() => {
+              router.push(`/friends/${m.user_id}`);
+            }}
           >
             <Image
               source={{ uri: m.avatar }}
@@ -61,18 +63,6 @@ export function MessageItem({ m }: { m: any }) {
           borderBottomLeftRadius: isMe ? 12 : 0,
         }}
       >
-        {!isMe && (
-          <Text
-            style={{
-              fontSize: 12,
-              color: "#555",
-              marginBottom: 4,
-              fontFamily: "KanitRegular",
-            }}
-          >
-            {m.username || `User#${m.user_id}`}
-          </Text>
-        )}
         <Text
           style={{ color: isMe ? "#fff" : "#000", fontFamily: "KanitRegular" }}
         >
@@ -87,7 +77,7 @@ export function MessageItem({ m }: { m: any }) {
             gap: 4,
           }}
         >
-          {isMe && m.status === 'read' && (
+          {isMe && m.status === "read" && (
             <View
               style={{
                 marginTop: 4,

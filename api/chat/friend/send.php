@@ -181,7 +181,7 @@ try {
     'message_id'     => (int)$row['id'],
     'from_user_id'   => (int)$row['user_id'],
     // ปรับ deep link ให้ตรงแอปคุณ
-    'url'            => "pogopartyth://friends/chat?friendship_id=".$friendshipId,
+    'url'            => "pogopartyth://friends/chat?friendshipId=".$friendshipId,
   ];
 
   $notiResult = sendExpoPush($tokens, 'ข้อความใหม่', $body, $data);

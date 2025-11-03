@@ -319,15 +319,51 @@ export default function Profile() {
               </View>
             ) : null}
 
-            {/* ปุ่มแชท */}
-            <TouchableOpacity style={styles.outlinechatBtn} onPress={openChat}>
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={14}
-                color="#ffffffff"
-              />
-              <Text style={styles.outlinechatBtnText}>แชท</Text>
-            </TouchableOpacity>
+            {/* ปุ่มจัดการเพื่อน*/}
+            {is_me_addressee && statusFriend?.status === "pending" ? (
+              <TouchableOpacity
+                style={[styles.outlineBtnAdd, { backgroundColor: "#3B82F6" }]}
+                onPress={() => {
+                  setOnAccepted(true);
+                }}
+              >
+                {acting ? (
+                  <ActivityIndicator color="#ffffff" size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="checkmark" size={16} color="#ffffffff" />
+                    <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[
+                  styles.outlineBtnAdd,
+                  { backgroundColor: status_friend_color },
+                ]}
+                onPress={addfriend}
+                disabled={
+                  statusFriend?.status === "pending" ||
+                  statusFriend?.status === "accepted"
+                }
+              >
+                {acting ? (
+                  <ActivityIndicator color="#ffffff" size="small" />
+                ) : (
+                  <>
+                    <Ionicons
+                      name={status_friend_icon}
+                      size={16}
+                      color="#ffffffff"
+                    />
+                    <Text style={styles.outlineBtnAddText}>
+                      {status_friend_text}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -388,51 +424,15 @@ export default function Profile() {
 
         {/* ปุ่มการทำงาน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
-          {/* ปุ่มจัดการเพื่อน*/}
-          {is_me_addressee && statusFriend?.status === "pending" ? (
-            <TouchableOpacity
-              style={[styles.outlineBtnAdd, { backgroundColor: "#3B82F6" }]}
-              onPress={() => {
-                setOnAccepted(true);
-              }}
-            >
-              {acting ? (
-                <ActivityIndicator color="#ffffff" size="small" />
-              ) : (
-                <>
-                  <Ionicons name="checkmark" size={16} color="#ffffffff" />
-                  <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
-                </>
-              )}
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={[
-                styles.outlineBtnAdd,
-                { backgroundColor: status_friend_color },
-              ]}
-              onPress={addfriend}
-              disabled={
-                statusFriend?.status === "pending" ||
-                statusFriend?.status === "accepted"
-              }
-            >
-              {acting ? (
-                <ActivityIndicator color="#ffffff" size="small" />
-              ) : (
-                <>
-                  <Ionicons
-                    name={status_friend_icon}
-                    size={16}
-                    color="#ffffffff"
-                  />
-                  <Text style={styles.outlineBtnAddText}>
-                    {status_friend_text}
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
-          )}
+          {/* ปุ่มแชท */}
+          <TouchableOpacity style={styles.outlinechatBtn} onPress={openChat}>
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={16}
+              color="#ffffffff"
+            />
+            <Text style={styles.outlinechatBtnText}>แชท</Text>
+          </TouchableOpacity>
 
           {/* ปุ่มคัดลอกรหัสเพิ่มเพื่อน */}
           <TouchableOpacity
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   outlinechatBtn: {
-    paddingVertical: 6,
+    flex: 1,
     paddingHorizontal: 14,
     borderRadius: 8,
     alignItems: "center",
@@ -658,7 +658,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     backgroundColor: "#111827",
-    marginTop: 8,
   },
   outlinechatBtnText: {
     color: "#ffffffff",
@@ -667,13 +666,14 @@ const styles = StyleSheet.create({
   },
 
   outlineBtnAdd: {
-    flex: 1,
+    paddingHorizontal: 10,
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
+    marginTop:8,
   },
   outlineBtnAddText: {
     color: "#ffffffff",
