@@ -95,11 +95,22 @@ try {
     if ($mid > $nextSinceId) $nextSinceId = $mid;
   }
 
+  // นับจำนวนทั้งหมด
+  $count = "
+      SELECT COUNT(*)
+      FROM chat_friends cf
+      WHERE cf.friendship_id = :fs
+    ";
+  $total = $db->prepare($count);
+  $total->execute([':fs' => $friendship_id]);
+  $chat_all = (int)$total->fetchColumn();
+
   jsonResponse(true, [
     'items'         => $rows,
     'count'         => count($rows),
     'next_since_id' => $nextSinceId,
     'server_time'   => now(),
+    'chat_all'      => $chat_all,
   ], 'ดึงข้อความสำเร็จ');
 
 } catch (Throwable $e) {

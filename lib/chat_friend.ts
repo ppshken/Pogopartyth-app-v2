@@ -14,7 +14,7 @@ export type ChatMessage = {
 export async function getMessages(friendship_id: number, since_id?: number, limit = 5) {
   const { data } = await api.get("/api/chat/friend/messages.php", { params: { friendship_id, since_id, limit } });
   if (!data.success) throw new Error(data.message || "Get messages failed");
-  return data.data as { items: ChatMessage[]; next_since_id: number; server_time: string; count: number; };
+  return data.data as { items: ChatMessage[]; next_since_id: number; server_time: string; count: number; chat_all: number; };
 }
 
 export async function sendMessage(friendship_id: number, message: string) {
