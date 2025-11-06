@@ -40,6 +40,7 @@ $stmt = $db->prepare("
     u.friend_code AS owner_friend_code,
     u.avatar   AS owner_avatar,
     u.level AS owner_level,
+    u.device_token AS owner_device_token,
     (SELECT COUNT(*) FROM chat c WHERE c.raid_rooms_id = r.id) AS current_chat_messages
   FROM raid_rooms r
   JOIN users u ON u.id = r.owner_id
@@ -164,6 +165,7 @@ jsonResponse(true, [
       'username'    => $room['owner_username'],
       'friend_code' => $room['owner_friend_code'],
       'avatar'      => $room['owner_avatar'],
+      'device_token'=> $room['owner_device_token'],
     ],
     'note'            => $room['note'],
     'created_at'      => $room['created_at'],

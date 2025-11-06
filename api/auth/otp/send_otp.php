@@ -71,8 +71,8 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com'; // ตัวอย่าง: Gmail SMTP
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'kensaohin@gmail.com'; // อีเมลผู้ส่ง
-    $mail->Password   = 'hsfy uzhb cwmk eazs';      // รหัสผ่านสำหรับแอป
+    $mail->Username   = 'pogopartyth@gmail.com'; // อีเมลผู้ส่ง
+    $mail->Password   = 'lmqa ufkb voon mgvm';      // รหัสผ่านสำหรับแอป
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 

@@ -42,6 +42,9 @@ import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
+import { useNotifyRoomExpired } from "../../function/RoomExpiredNoti";
+import { useNotifyRoomExpiredLocal } from "../../function/LocalPushExpire";
+import * as Notifications from 'expo-notifications';
 import ShareRoom from "../../components/ShareRoom";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { Friend, getFriendAvailable } from "../../lib/friend";
@@ -64,6 +67,7 @@ type RoomOwner = {
   username: string;
   avatar?: string | null;
   friend_code?: string | null;
+  device_token?: string;
 };
 
 type Raidboss = {
@@ -136,45 +140,6 @@ const ReasonCancel = [
   { id: 4, reasoncancel: "อื่นๆ (โปรดระบุ)" },
 ];
 
-const pad2 = (n: number) => n.toString().padStart(2, "0");
-const toYmdHms = (d: Date) =>
-  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(
-    d.getHours()
-  )}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-
-function parseStart(s: string): Date {
-  const iso = s.includes("T") ? s : s.replace(" ", "T");
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? new Date(s) : d;
-}
-
-/** >1ชม = ชม.นาทีวินาที, <1ชม = นาทีวินาที, <1นาที = วินาที */
-function useCountdown(start: string) {
-  const target = useMemo(() => parseStart(start).getTime(), [start]);
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const diffMs = target - now;
-  const expired = diffMs <= 0;
-  if (expired) return { expired: true, label: "หมดเวลา" };
-
-  const totalSec = Math.floor(diffMs / 1000);
-  const hh = Math.floor(totalSec / 3600);
-  const mm = Math.floor((totalSec % 3600) / 60);
-  const ss = totalSec % 60;
-
-  let label = "";
-  if (hh > 0) label = `เหลือ ${hh} ชม. ${pad2(mm)} นาที ${pad2(ss)} วินาที`;
-  else if (mm > 0) label = `เหลือ ${mm} นาที ${pad2(ss)} วินาที`;
-  else label = `เหลือ ${ss} วินาที`;
-
-  return { expired: false, label };
-}
-
 export default function RoomDetail() {
   // ✅ hooks ทั้งหมดต้องอยู่ตรงนี้ (บนสุดเสมอ)
   const insets = useSafeAreaInsets();
@@ -207,6 +172,7 @@ export default function RoomDetail() {
   const [forseReview, setForseReview] = useState(true);
 
   const [copied, setCopied] = useState(false); // คัดลอกชื่อผู้เล่น
+  const [room_expire, setRoom_Expire] = useState(false);
 
   // เปิด Modal เชิญเพื่อน
   const [onInvitedFriend, setOnInvitedFriend] = useState(false);
@@ -244,6 +210,71 @@ export default function RoomDetail() {
 
   // ป้องกันสั่งปิดห้องซ้ำ
   const closingRef = useRef(false);
+
+  const pad2 = (n: number) => n.toString().padStart(2, "0");
+  const toYmdHms = (d: Date) =>
+    `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(
+      d.getHours()
+    )}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+
+  function parseStart(s: string): Date {
+    const iso = s.includes("T") ? s : s.replace(" ", "T");
+    const d = new Date(iso);
+    return isNaN(d.getTime()) ? new Date(s) : d;
+  }
+
+  /** >1ชม = ชม.นาทีวินาที, <1ชม = นาทีวินาที, <1นาที = วินาที */
+  function useCountdown(start: string) {
+    const target = useMemo(() => parseStart(start).getTime(), [start]);
+    const [now, setNow] = useState(() => Date.now());
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const firedRef = useRef(false); // กัน onExpire ยิงซ้ำ
+
+    useEffect(() => {
+      const t = setInterval(() => setNow(Date.now()), 1000);
+      return () => clearInterval(t);
+    }, []);
+
+    const diffMs = target - now;
+    const expired = diffMs <= 0;
+    // หมดเวลาปุ๊บ: หยุด interval + call onExpire (ครั้งเดียว)
+    useEffect(() => {
+      if (expired) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        if (!firedRef.current && data?.room.status === 'active') {
+          firedRef.current = true;
+          console.log("log", true);
+          
+        }
+      }
+    }, [expired]);
+
+    if (expired)
+      return {
+        expired: true,
+        label: "หมดเวลา",
+      };
+
+    const totalSec = Math.floor(diffMs / 1000);
+    const hh = Math.floor(totalSec / 3600);
+    const mm = Math.floor((totalSec % 3600) / 60);
+    const ss = totalSec % 60;
+
+    let label = "";
+    if (hh > 0) label = `เหลือ ${hh} ชม. ${pad2(mm)} นาที ${pad2(ss)} วินาที`;
+    else if (mm > 0) label = `เหลือ ${mm} นาที ${pad2(ss)} วินาที`;
+    else label = `เหลือ ${ss} วินาที`;
+
+    return { expired: false, label };
+  }
+
+  // เคาน์ดาวน์: ต้องเรียกทุกครั้ง (ใส่ fallback เมื่อ data ยังไม่มา)
+  const startForCountdown =
+    data?.room?.start_time ?? toYmdHms(new Date(Date.now() + 60_000));
+  const { label: countdownLabel, expired } = useCountdown(startForCountdown);
 
   // โหลดข้อมูลห้อง
   const load = useCallback(async () => {
@@ -290,13 +321,6 @@ export default function RoomDetail() {
   // ดู log เพิ่มเติม
   const logmore = () => {
     setLoglimit(loglimit + 5);
-
-    //setLoglimit((prev) => {
-    //const next = prev + 1;
-    // เรียกโหลดด้วยค่าใหม่ทันที (ไม่รอ state)
-    //void load(next);
-    //return next;
-    //});
   };
 
   // โพลลิ่งทุก 10 วินาที (รีเฟรชหน้าจออัตโนมัติ)
@@ -380,11 +404,6 @@ export default function RoomDetail() {
     [roomId]
   );
 
-  // เคาน์ดาวน์: ต้องเรียกทุกครั้ง (ใส่ fallback เมื่อ data ยังไม่มา)
-  const startForCountdown =
-    data?.room?.start_time ?? toYmdHms(new Date(Date.now() + 60_000));
-  const { label: countdownLabel, expired } = useCountdown(startForCountdown);
-
   // ถ้ามีเมตารีวิวครบแล้ว (หลังเชิญ) → ปิดห้องอัตโนมัติ (ฝั่ง server ควรตรวจให้ชัวร์ด้วย)
   useEffect(() => {
     if (!data) return;
@@ -426,6 +445,35 @@ export default function RoomDetail() {
   }
 
   // --- ฟังก์ชันจัดการต่าง ๆ ---
+
+  // หมดเวลาห้อง noti แจ้งเจ้าของห้อง ว่าห้องตัวเอง หมดเวลาแล้วนะ
+  const noti_expire = async () => {
+    try {
+      const message = {
+        to: data.room.owner.device_token,
+        sound: "default",
+        title: `ห้องของคุณหมดเวลาแล้ว`,
+        body: `ห้องของคุณหมดเวลาแล้ว`,
+        data: {
+          type: "expire_room",
+          room_id: roomId,
+          url: `pogopartyth://rooms/${roomId}`,
+        },
+      };
+      const res = await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+      console.log("loaded friends:", res);
+    } catch (err: any) {
+      Alert.alert("เชิญเพื่อนไม่สำเร็จ", err?.message || "ลองใหม่อีกครั้ง");
+    }
+  };
 
   // เข้าร่วมห้อง
   const onJoinLeave = async () => {
@@ -1237,7 +1285,7 @@ export default function RoomDetail() {
                 ไม่มีข้อมูลการบันทึก
               </Text>
             )}
-            {loglimit < logtotal  && (
+            {loglimit < logtotal && (
               <View>
                 <TouchableOpacity style={styles.outlineBtn} onPress={logmore}>
                   {loadingdata ? (
