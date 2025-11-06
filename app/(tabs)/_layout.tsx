@@ -2,7 +2,7 @@ import { Tabs, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useState } from "react";
 import { AppState } from "react-native";
-import { GetPendingFriends } from "../../lib/friend";
+import { GetPendingFriends, getInbox_list } from "../../lib/friend";
 import { View, TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -17,7 +17,10 @@ export default function TabsLayout() {
       const res = await GetPendingFriends({ page: 1, limit: 99 });
       const total = Array.isArray(res?.list) ? res.list.length : 0; // นับจำนวน แบบ list
 
-      setBadge(total);
+      const inbox = await getInbox_list();
+      const inboxtotal = inbox.length;
+
+      setBadge(total + inboxtotal);
     } catch (e) {
       // เงียบไว้ ไม่ให้รบกวน UX
       // console.log("GetPendingFriends error:", e);
@@ -96,7 +99,7 @@ export default function TabsLayout() {
             <>
               <TouchableOpacity
                 onPress={() => router.push("friends/request_friend")}
-                style={{ paddingHorizontal: 0, paddingVertical: 6 }}
+                style={{ paddingHorizontal: 0, paddingVertical: 6, marginRight: 12 }}
                 accessibilityRole="button"
                 accessibilityLabel="รายงานผู้ใช้งาน"
               >
@@ -105,7 +108,6 @@ export default function TabsLayout() {
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: 4,
                   }}
                 >
                   {badge !== null && badge > 0 ? (
@@ -131,56 +133,13 @@ export default function TabsLayout() {
                     </View>
                   ) : null}
 
-                  <Ionicons
-                    name="notifications-outline"
-                    size={22}
-                    color="#111827"
-                  />
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => router.push("friends/request_friend")}
-                style={{ paddingHorizontal: 12, paddingVertical: 6 }}
-                accessibilityRole="button"
-                accessibilityLabel="รายงานผู้ใช้งาน"
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 4,
-                  }}
-                >
-                  {badge !== null && badge < 0 ? (
-                    <View
-                      style={{
-                        backgroundColor: "#EF4444",
-                        paddingHorizontal: 8,
-                        borderRadius: 999,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: "#ffff",
-                          fontFamily: "KanitSemiBold",
-                        }}
-                      >
-                        {badge !== null && badge > 0
-                          ? badge > 99
-                            ? "99+"
-                            : badge
-                          : undefined}
-                      </Text>
-                    </View>
-                  ) : null}
-
-                  <Ionicons
-                    name="chatbubble-ellipses-outline"
-                    size={22}
-                    color="#111827"
-                  />
+                  <View>
+                    <Ionicons
+                      name="notifications-outline"
+                      size={22}
+                      color="#111827"
+                    />
+                  </View>
                 </View>
               </TouchableOpacity>
             </>

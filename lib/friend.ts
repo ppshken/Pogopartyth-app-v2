@@ -29,6 +29,15 @@ export type Pagination = {
   user_all: number;
 };
 
+export type Inbox = {
+  id: number;
+  sender: number;
+  username: string;
+  avatar?: string | null;
+  message: string;
+  created_at: string;
+};
+
 export type FriendSearchPayload = {
   q?: string;
   page?: number;
@@ -164,4 +173,17 @@ export async function getFriendAvailable(params?: {
   }
   // เซิร์ฟเวอร์ส่งกลับใน data.list ไม่ใช่ data.items
   return (json.data?.list ?? []) as Friend[];
+}
+
+// ดึงข้อความเพื่อนที่ยังไม่อ่าน
+export async function getInbox_list() {
+  const res = await api.get("/api/friends/inbox_list.php", {
+    validateStatus: () => true, // อย่าปล่อย axios throw เอง (เผื่อ 422/429/etc.)
+  });
+  const json = res.data;
+  if (!json?.success) {
+    throw new Error(json?.message || "โหลดข้อความไม่สำเร็จ");
+  }
+  // เซิร์ฟเวอร์ส่งกลับใน data.list ไม่ใช่ data.items
+  return (json.data?.list ?? []);
 }

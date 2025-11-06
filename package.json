@@ -16,6 +16,7 @@
     "@react-native-google-signin/google-signin": "^16.0.0",
     "@react-native-vector-icons/ionicons": "^12.3.0",
     "axios": "^0.21.4",
+    "dotenv": "^17.2.3",
     "expo": "54.0.21",
     "expo-auth-session": "~7.0.8",
     "expo-build-properties": "~1.0.9",

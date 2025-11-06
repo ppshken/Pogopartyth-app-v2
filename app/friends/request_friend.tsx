@@ -12,10 +12,16 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { GetPendingFriends, AcceptFriend, DeclineFriend } from "@/lib/friend";
+import {
+  GetPendingFriends,
+  AcceptFriend,
+  DeclineFriend,
+  getInbox_list,
+} from "@/lib/friend";
 import { showSnack } from "../../components/Snackbar";
 import { router } from "expo-router";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
+import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 
 type PendingItem = {
   request_id: number;
@@ -29,10 +35,21 @@ type PendingItem = {
   status?: string;
 };
 
+type Inbox = {
+  id: number;
+  friendship_id: number;
+  sender: number;
+  username: string;
+  avatar?: string | null;
+  message: string;
+  created_at: string;
+};
+
 const PAGE_SIZE = 20;
 
 export default function RequestFriend() {
   const [items, setItems] = useState<PendingItem[]>([]);
+  const [inboxitems, setInboxItems] = useState<Inbox[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -51,6 +68,9 @@ export default function RequestFriend() {
         page: p,
         limit: PAGE_SIZE,
       });
+      const inbox = await getInbox_list();
+      console.log("inbox", inbox);
+      setInboxItems(inbox);
       setHasMore(!!res.pagination?.has_more);
       setPage(res.pagination?.page || p);
       setItems((prev) => (append ? [...prev, ...res.list] : res.list));
@@ -62,6 +82,8 @@ export default function RequestFriend() {
     }
   }, []);
 
+  useRefetchOnFocus(load, [load]); // โหลดทุกครั้งที่เข้าหน้า
+
   useEffect(() => {
     load(1, false);
   }, [load]);
@@ -72,6 +94,19 @@ export default function RequestFriend() {
   };
   const loadMore = () => {
     if (!loading && hasMore) load(page + 1, true);
+  };
+
+  // เปิดแชท
+  const openChat = async (inboxitems: Inbox) => {
+    router.push({
+      pathname: `/friends/chat`,
+      params: {
+        friendshipId: String(inboxitems.friendship_id),
+        other_user_id: String(inboxitems?.sender),
+        other_username: inboxitems?.username,
+        other_avatar: inboxitems?.avatar,
+      },
+    });
   };
 
   // รับเพื่อน
@@ -128,21 +163,21 @@ export default function RequestFriend() {
     };
 
     return (
-      <View style={s.card}>
-        <TouchableOpacity
-          onPress={() => router.push(`/friends/${item.requester_id}`)}
-        >
-          <Image
-            source={{
-              uri:
-                item.avatar ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  item.username
-                )}`,
-            }}
-            style={s.avatar}
-          />
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={s.card}
+        onPress={() => router.push(`/friends/${item.requester_id}`)}
+      >
+        <Image
+          source={{
+            uri:
+              item.avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                item.username
+              )}`,
+          }}
+          style={s.avatar}
+        />
+
         <View style={{ flex: 1 }}>
           <View
             style={{
@@ -207,7 +242,57 @@ export default function RequestFriend() {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const InboxRow = ({ item }: { item: Inbox }) => {
+    const teamColors: Record<string, string> = {
+      Mystic: "#3B82F6", // น้ำเงิน
+      Valor: "#EF4444", // แดง
+      Instinct: "#FBBF24", // เหลือง
+    };
+
+    return (
+      <TouchableOpacity style={s.card} onPress={() => openChat(item)}>
+        <Image
+          source={{
+            uri:
+              item.avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                item.username
+              )}`,
+          }}
+          style={s.avatar}
+        />
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 8,
+                alignItems: "center",
+              }}
+            >
+              <Text style={s.username} numberOfLines={1}>
+                {item.username}
+              </Text>
+            </View>
+            <Text style={s.timeago}>
+              {minutesAgoTH(item.created_at as string)}
+            </Text>
+          </View>
+
+          <Text style={s.meta}>{item.message}</Text>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -225,33 +310,66 @@ export default function RequestFriend() {
         </Text>
       </View>
 
-      <FlatList
-        data={items}
-        keyExtractor={(it) => String(it.request_id)}
-        renderItem={Row}
-        ListEmptyComponent={
-          !loading ? (
-            <View>
-              <Text style={{ fontFamily: "KanitMedium", color: "#9CA3AF" }}>
-                ยังไม่มีคำขอเป็นเพื่อน
-              </Text>
-            </View>
-          ) : null
-        }
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 24 }}
-        onEndReachedThreshold={0.2}
-        onEndReached={loadMore}
-        ListFooterComponent={
-          loading && items.length > 0 ? (
-            <View style={{ paddingVertical: 12, alignItems: "center" }}>
-              <ActivityIndicator />
-            </View>
-          ) : null
-        }
-      />
+      <View>
+        <FlatList
+          data={items}
+          keyExtractor={(it) => String(it.request_id)}
+          renderItem={Row}
+          ListEmptyComponent={
+            !loading ? (
+              <View>
+                <Text style={{ fontFamily: "KanitMedium", color: "#9CA3AF" }}>
+                  ยังไม่มีคำขอเป็นเพื่อน
+                </Text>
+              </View>
+            ) : null
+          }
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 24 }}
+          onEndReachedThreshold={0.2}
+          onEndReached={loadMore}
+          ListFooterComponent={
+            loading && items.length > 0 ? (
+              <View style={{ paddingVertical: 12, alignItems: "center" }}>
+                <ActivityIndicator />
+              </View>
+            ) : null
+          }
+        />
+      </View>
+
+      <View style={{ marginLeft: 14, marginTop: 14, marginBottom: 14 }}>
+        <Text style={{ fontFamily: "KanitSemiBold", fontSize: 18 }}>
+          ข้อความ {inboxitems.length > 0 ? `(${inboxitems.length})` : null}
+        </Text>
+      </View>
+
+      <View>
+        <FlatList
+          data={inboxitems}
+          keyExtractor={(it) => String(it.username)}
+          renderItem={InboxRow}
+          ListEmptyComponent={
+            !loading ? (
+              <View>
+                <Text style={{ fontFamily: "KanitMedium", color: "#9CA3AF" }}>
+                  ยังไม่มีข้อความใหม่
+                </Text>
+              </View>
+            ) : null
+          }
+          contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 24 }}
+          ListFooterComponent={
+            loading && inboxitems.length > 0 ? (
+              <View style={{ paddingVertical: 12, alignItems: "center" }}>
+                <ActivityIndicator />
+              </View>
+            ) : null
+          }
+        />
+      </View>
 
       {/* Modal: ยืนยันการรับเพื่อน */}
       <Modal
