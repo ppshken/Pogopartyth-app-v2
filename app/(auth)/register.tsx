@@ -183,7 +183,7 @@ export default function Register() {
                 <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>
                   มีบัญชีอยู่แล้ว?
                 </Text>
-                <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
+                <TouchableOpacity onPress={() => router.back()}>
                   <Text style={styles.link}>เข้าสู่ระบบ</Text>
                 </TouchableOpacity>
               </View>

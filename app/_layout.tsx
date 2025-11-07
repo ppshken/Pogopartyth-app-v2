@@ -9,10 +9,11 @@ import { SnackHost } from "../components/Snackbar";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { useFonts } from "expo-font";
-import { Modal, View, Text, TouchableOpacity } from "react-native";
+import { Modal, View, Text, Image, TouchableOpacity } from "react-native";
 
 export default function Layout() {
   const [onupdate, setOnupdate] = useState(false); // เปิด - ปิด Update
+  const [onEvent, setOnEvent] = useState(false);
 
   const [fontsLoaded] = useFonts({
     KanitRegular: require("../assets/fonts/Kanit-Regular.ttf"), // ฟอนต์ปกติ
@@ -31,6 +32,7 @@ export default function Layout() {
       const token = await AsyncStorage.getItem("token");
       if (token) {
         api.defaults.headers.common.Authorization = `Bearer ${token}`;
+        setOnEvent(true);
       } else {
         router.replace("/(auth)/login");
       }
@@ -154,6 +156,7 @@ export default function Layout() {
         </Stack>
         <SnackHost />
 
+        {/* แจ้งอัพเดทเวอร์ชั่นใหม่ */}
         <Modal
           visible={onupdate}
           transparent
@@ -198,9 +201,8 @@ export default function Layout() {
                 <Text style={{ color: "#111827", fontFamily: "KanitRegular" }}>
                   กรุณาอัปเดตแอปเป็นเวอร์ชันล่าสุด (1.0.1)
                   แอปเวอร์ชันใหม่มีการปรับปรุงความ ปลอดภัย เพิ่มฟีเจอร์ใหม่
-                  และแก้ไขข้อ เพื่อให้คุณได้รับ
-                  ประสบการณ์ที่ดีที่สุดในการใช้งาน หาก ไม่ได้อัปเดต
-                  คุณอาจไม่สามารถใช้งาน ฟีเจอร์บางอย่างได้
+                  และแก้ไขข้อ เพื่อให้คุณได้รับ ประสบการณ์ที่ดีที่สุดในการใช้งาน
+                  หาก ไม่ได้อัปเดต คุณอาจไม่สามารถใช้งาน ฟีเจอร์บางอย่างได้
                 </Text>
               </View>
 
@@ -237,6 +239,105 @@ export default function Layout() {
                 >
                   <Text style={{ fontFamily: "KanitSemiBold", color: "#fff" }}>
                     อัปเดตตอนนี้
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* แจ้งอัพเดทอีเว้นท์ใหม่ */}
+        <Modal
+          visible={onEvent}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setOnupdate(false)}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.35)",
+              padding: 24,
+            }}
+          >
+            <View
+              style={{
+                width: "100%",
+                maxWidth: 420,
+                borderRadius: 16,
+                padding: 20,
+                backgroundColor: "#fff",
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "KanitSemiBold",
+                  fontSize: 20,
+                  marginBottom: 8,
+                }}
+              >
+                Pokémon GO ไวลด์แอเรีย: ทั่วโลก
+              </Text>
+
+              <View style={{ marginBottom: 12 }}>
+                <Image
+                  source={{
+                    uri: "https://lh3.googleusercontent.com/lbCY-RkrL1u02I9PhzJjdPAr3KOjL24bll2o7E__LLIOVPUY5VGeltdenmRmn37WEjKZy2IcOk8SnA--hspmRJQlIj-iflFhpg=e365-pa-nu-w2880",
+                  }}
+                  style={{
+                    width: "auto",
+                    height: 200,
+                    borderRadius: 8,
+                    backgroundColor: "#F3F4F6",
+                    marginBottom: 8,
+                  }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "KanitSemiBold",
+                    fontSize: 20,
+                    marginBottom: 6,
+                  }}
+                >
+                  15 และ 16 พฤศจิกายน 2025
+                </Text>
+                <Text
+                  style={{
+                    color: "#000000ff",
+                    fontFamily: "KanitRegular",
+                  }}
+                >
+                  เทรนเนอร์จากทั่วโลกสามารถเตรียมพร้อมสำหรับการผจญภัยทั่วโลกได้ระหว่าง
+                  Pokémon GO ไวลด์แอเรีย: ทั่วโลก ซึ่งเปิดให้เล่นในเกมเป็นเวลา 2
+                  วันเท่านั้น! กำลังมองหาวิธีเพิ่มความสนุกให้กับสุดสัปดาห์ GO
+                  ไวลด์แอเรียของคุณอยู่ใช่ไหม?
+                  ไม่ว่าจะเป็นงานวิจัยพิเศษสุดพิเศษ, โบนัสเพิ่มเติม
+                  หรือโอกาสเพิ่มขึ้นที่จะได้เจอโปเกมอนสีแตกต่าง
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => setOnEvent(false)}
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    borderRadius: 12,
+                    backgroundColor: "#E5E7EB",
+                  }}
+                >
+                  <Text
+                    style={{ fontFamily: "KanitSemiBold", color: "#111827" }}
+                  >
+                    ปิด
                   </Text>
                 </TouchableOpacity>
               </View>

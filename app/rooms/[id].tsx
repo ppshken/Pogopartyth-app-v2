@@ -44,7 +44,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
 import { useNotifyRoomExpired } from "../../function/RoomExpiredNoti";
 import { useNotifyRoomExpiredLocal } from "../../function/LocalPushExpire";
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 import ShareRoom from "../../components/ShareRoom";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { Friend, getFriendAvailable } from "../../lib/friend";
@@ -99,6 +99,7 @@ type RoomPayload = {
     user_id: number;
     is_member: boolean;
     is_owner: boolean;
+    is_review: boolean;
     role: "owner" | "member";
   };
   // ⬇️ ถ้าแบ็กเอนด์มีเมตารีวิว ให้ใช้ได้เลย (optional)
@@ -114,6 +115,7 @@ type RoomLogList = {
   room_id: number;
   user_id: number;
   type: string;
+  target: string;
   description: string;
   created_at: string;
   username: string;
@@ -244,10 +246,9 @@ export default function RoomDetail() {
           clearInterval(timerRef.current);
           timerRef.current = null;
         }
-        if (!firedRef.current && data?.room.status === 'active') {
+        if (!firedRef.current && data?.room.status === "active") {
           firedRef.current = true;
           console.log("log", true);
-          
         }
       }
     }, [expired]);
@@ -383,7 +384,8 @@ export default function RoomDetail() {
         const payload = {
           room_id: roomId,
           type: "invite",
-          description: `ทำการเชิญเพื่อนเข้าร่วมห้อง ${friend.username}`,
+          target: friend.username,
+          description: "ทำการเชิญเพื่อนเข้าร่วมห้อง",
         };
         await RoomLog(payload);
         await load();
@@ -487,6 +489,7 @@ export default function RoomDetail() {
       const payload = {
         room_id: room.id,
         type: "join",
+        target: "",
         description: "เข้าร่วมห้อง",
       };
       await RoomLog(payload);
@@ -510,6 +513,7 @@ export default function RoomDetail() {
       const payload = {
         room_id: room.id,
         type: "leave",
+        target: "",
         description: "ออกจากห้อง",
       };
       await RoomLog(payload);
@@ -601,6 +605,7 @@ export default function RoomDetail() {
       const payloadLog = {
         room_id: room.id,
         type: "cancel",
+        target: "",
         description: "ยกเลิกห้อง",
       };
       await RoomLog(payloadLog);
@@ -656,6 +661,7 @@ export default function RoomDetail() {
       const payload = {
         room_id: room.id,
         type: "invite",
+        target: "",
         description: "เชิญในเกมแล้ว",
       };
       await RoomLog(payload);
@@ -689,7 +695,8 @@ export default function RoomDetail() {
       const payload = {
         room_id: room.id,
         type: "review",
-        description: `ทำการรีวิวแล้ว ตีบอสสำเร็จ ${rating} ดาว`,
+        target: `${rating} ดาว`,
+        description: "ทำการรีวิวแล้ว ตีบอสสำเร็จ",
       };
       await RoomLog(payload);
       setForseReview(false);
@@ -734,7 +741,8 @@ export default function RoomDetail() {
       const payload = {
         room_id: room.id,
         type: "review",
-        description: `ทำการรีวิวแล้ว ตีบอสไม่สำเร็จ : ${reasonText}`,
+        target: reasonText,
+        description: `ทำการรีวิวแล้ว ตีบอสไม่สำเร็จ`,
       };
       await RoomLog(payload);
       setForseReview(false);
@@ -1189,7 +1197,7 @@ export default function RoomDetail() {
           {isMember && !joinFull && room.status === "active" && (
             <TouchableOpacity onPress={loadFriends} style={styles.outlineBtn}>
               <Ionicons name="people-outline" size={16} color="#ffffffff" />
-              <Text style={styles.outlineBtnText}>เชิญเพื่อน</Text>
+              <Text style={styles.outlineBtnText}>เชิญเพื่อนของคุณ</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -1231,6 +1239,7 @@ export default function RoomDetail() {
                   <View
                     key={item.id}
                     style={{
+                      flex: 1,
                       flexDirection: "row",
                       alignItems: "center",
                       gap: 4,
@@ -1249,15 +1258,36 @@ export default function RoomDetail() {
                         style={styles.avatar}
                       />
                     </TouchableOpacity>
-                    <View>
-                      <Text style={{ fontFamily: "KanitSemiBold" }}>
-                        {item.username}
-                      </Text>
+                    <View style={{ flex: 1 }}>
                       <View
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
+                          flex: 1,
                           justifyContent: "space-between",
+                        }}
+                      >
+                        <View>
+                          <Text style={{ fontFamily: "KanitSemiBold" }}>
+                            {item.username}
+                          </Text>
+                        </View>
+                        <View>
+                          <Text
+                            style={{
+                              fontFamily: "KanitRegular",
+                              color: "#949494ff",
+                              fontSize: 12,
+                            }}
+                          >
+                            {minutesAgoTH(item.created_at)}
+                          </Text>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
                           gap: 8,
                         }}
                       >
@@ -1266,15 +1296,13 @@ export default function RoomDetail() {
                         >
                           {item.description}
                         </Text>
-                        <Text
-                          style={{
-                            fontFamily: "KanitRegular",
-                            color: "#949494ff",
-                            fontSize: 12,
-                          }}
-                        >
-                          - {minutesAgoTH(item.created_at)}
-                        </Text>
+                        {item.target && (
+                          <Text
+                            style={{ fontFamily: "KanitMedium", fontSize: 13 }}
+                          >
+                            {item.target}
+                          </Text>
+                        )}
                       </View>
                     </View>
                   </View>
@@ -1291,7 +1319,7 @@ export default function RoomDetail() {
                   {loadingdata ? (
                     <ActivityIndicator color="#ffffff" size="small" />
                   ) : (
-                    <Text style={styles.outlineBtnText}>ดูเพิ่มเติม</Text>
+                    <Text style={styles.outlineBtnText}>ดูประวัติเพิ่มเติม</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -1381,7 +1409,7 @@ export default function RoomDetail() {
         ) : null}
 
         {/* ปุ่มตีบอสเสร็จ */}
-        {room.status === "invited" && isMember ? (
+        {room.status === "invited" && isMember && !you.is_review ? (
           <TouchableOpacity
             onPress={onBattleFinished}
             style={[styles.primaryBtn, { backgroundColor: "#10B981" }]}
@@ -1682,7 +1710,9 @@ export default function RoomDetail() {
 
       {/* Modal: หมดเวลา และ เชิญแล้ว รอ รีวิว */}
       <Modal
-        visible={expired && room.status === "invited" && forseReview}
+        visible={
+          expired && room.status === "invited" && forseReview && !you.is_review
+        }
         transparent
         animationType="fade"
       >

@@ -188,6 +188,7 @@ export default function CreateRoom() {
       const payloadLog = {
         room_id: room.id,
         type: "create",
+        target: "",
         description: "สร้างห้อง",
       };
       await RoomLog(payloadLog);
@@ -229,8 +230,8 @@ export default function CreateRoom() {
                 <Image
                   source={{ uri: boss?.pokemon_image || FALLBACK }}
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: 52,
+                    height: 52,
                     borderRadius: 8,
                     backgroundColor: "#F3F4F6",
                   }}

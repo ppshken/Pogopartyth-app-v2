@@ -17,6 +17,7 @@ $input = getJsonInput(); // ควรคืน array
 
 $room_id    = isset($input['room_id']) ? (int)$input['room_id'] : 0;
 $type       = trim((string)($input['type'] ?? ''));
+$target     = trim((string)($input['target'] ?? ''));
 $description= isset($input['description']) ? trim((string)$input['description']) : null;
 
 // --- Validation พื้นฐาน ---
@@ -42,14 +43,15 @@ try {
   $db = pdo();
 
   $stmt = $db->prepare("
-    INSERT INTO raid_rooms_log (room_id, user_id, type, description)
-    VALUES (:room_id, :user_id, :type, :description)
+    INSERT INTO raid_rooms_log (room_id, user_id, type, target, description)
+    VALUES (:room_id, :user_id, :type, :target, :description)
   ");
 
   $stmt->execute([
     ':room_id'     => $room_id,
     ':user_id'     => $userIdFromToken,
     ':type'        => $type,
+    ':target'      => $target,
     ':description' => $description !== '' ? $description : null,
   ]);
 
@@ -60,6 +62,7 @@ try {
     'room_id'     => $room_id,
     'user_id'     => $userIdFromToken,
     'type'        => $type,
+    'target'      => $target,
     'description' => $description,
   ], 'บันทึก log สำเร็จ', 201);
 

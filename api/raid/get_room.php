@@ -137,17 +137,36 @@ unset($m);
 $you = null;
 if ($authedUserId !== null) {
   $youRole = null;
+  $youReviewed = 0; // 0|1
+
   foreach ($members as $m) {
     if ((int)$m['user_id'] === $authedUserId) {
       $youRole = $m['role'];
+      $youReviewed = (int)$m['is_review']; // ใช้ค่าที่ดึงมาพร้อมสมาชิก
       break;
     }
   }
+
+  // เผื่อเคยรีวิวแม้ไม่ได้อยู่ในลิสต์สมาชิก (เช่น ลบออก/ข้อมูลเก่า) => เช็คตารางโดยตรง
+  if ($youReviewed === 0) {
+    $qYouRv = $db->prepare("
+      SELECT 1
+      FROM raid_reviews
+      WHERE room_id = :rid AND user_id = :uid
+      LIMIT 1
+    ");
+    $qYouRv->execute([':rid' => $roomId, ':uid' => $authedUserId]);
+    if ($qYouRv->fetchColumn()) {
+      $youReviewed = 1;
+    }
+  }
+
   $you = [
-    'user_id'   => $authedUserId,
-    'is_member' => $youRole !== null,
-    'role'      => $youRole,                 // owner | member | null
-    'is_owner'  => $youRole === 'owner',
+    'user_id'    => $authedUserId,
+    'is_member'  => $youRole !== null,
+    'role'       => $youRole,            // owner | member | null
+    'is_owner'   => $youRole === 'owner',
+    'is_review'  => $youReviewed,        // 0|1 ✅ เพิ่มฟิลด์นี้
   ];
 }
 

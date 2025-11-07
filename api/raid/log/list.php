@@ -41,6 +41,7 @@ try {
       rl.room_id,
       rl.user_id,
       rl.type,
+      rl.target,
       rl.description,
       rl.created_at,
       u.username AS username,           -- ✅ เพิ่ม username

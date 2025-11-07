@@ -112,7 +112,8 @@ export async function CancelRoom(payload: { room_id: number; reason?: string }) 
 export async function RoomLog(payload: 
   { 
   room_id: number; 
-  type?: string; 
+  type?: string;
+  target: string; 
   description?: string; 
   }) {
   const { data } = await api.post("/api/raid/log/create.php", payload, {
