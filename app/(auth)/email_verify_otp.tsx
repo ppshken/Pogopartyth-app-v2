@@ -30,9 +30,16 @@ const TEXT_MAIN = "#111827";
 const TEXT_SUB = "#6B7280";
 
 export default function EmailOtpVerifyScreen() {
-  const { email: emailParam, user_id: user_idParam } = useLocalSearchParams();
-  const user_id = user_idParam ? parseInt(Array.isArray(user_idParam) ? user_idParam[0] : user_idParam) : 0;
+  const {
+    email: emailParam,
+    user_id: user_idParam,
+    type: Type,
+  } = useLocalSearchParams();
+  const user_id = user_idParam
+    ? parseInt(Array.isArray(user_idParam) ? user_idParam[0] : user_idParam)
+    : 0;
   const email = Array.isArray(emailParam) ? emailParam[0] : emailParam;
+  const type = String(Type);
   const router = useRouter();
   const setAuth = useAuth((s) => s.setAuth);
 
@@ -55,6 +62,7 @@ export default function EmailOtpVerifyScreen() {
   // ตรวจว่ากรอกครบ 6 แล้ว auto-verify
   useEffect(() => {
     if (code.length === 6) onVerify();
+    console.log("type", type);
   }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const canSubmit = useMemo(
@@ -71,12 +79,20 @@ export default function EmailOtpVerifyScreen() {
     setSubmitting(true);
     try {
       // แนะนำให้ backend ส่งกลับ { success, data: { token?, user?, redirect? } }
-      const res = await verifyEmailOtp(user_id, "register", code);
+      const res = await verifyEmailOtp(user_id, type, code);
       // ถ้า backend ออก JWT พร้อม user เลย: login อัตโนมัติ
-      if (res?.data?.token && res?.data?.user) {
+      if (res?.data?.token && res?.data?.user && type === "register") {
         await setAuth(res.data.user, res.data.token);
         showSnack({ text: "ยืนยันอีเมลสำเร็จ", variant: "success" });
         router.replace("/settings/profile-setup");
+      } else if (res?.data?.user && type === "reset") {
+        showSnack({ text: "ยืนยันอีเมลสำเร็จ", variant: "success" });
+        router.replace({
+          pathname: "(auth)/reset_password",
+          params: {
+            user_id: res.data.user.id,
+          },
+        });
       } else {
         // กรณี backend แค่ verify สถานะ, ให้กลับหน้า login
         showSnack({
@@ -105,7 +121,7 @@ export default function EmailOtpVerifyScreen() {
     try {
       const payload = {
         user_id: user_id,
-        type: "register",
+        type: type,
       };
       await sendEmailOtp(payload);
       showSnack({ text: "ส่งรหัสใหม่แล้ว โปรดตรวจอีเมล", variant: "success" });
@@ -220,7 +236,14 @@ export default function EmailOtpVerifyScreen() {
       </KeyboardAvoidingView>
 
       <Modal visible={resending} transparent animationType="fade">
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: 'rgba(0,0,0,0.4)' }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.4)",
+          }}
+        >
           <ActivityIndicator size="small" color="#020202ff" />
         </View>
       </Modal>

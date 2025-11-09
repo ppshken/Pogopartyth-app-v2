@@ -33,7 +33,10 @@ $stmt = $db->prepare("
     noti_status,
     setup_status,
     created_at,
-    google_sub
+    google_sub,
+    plan,
+    plan_expires_at,
+    premium_since
   FROM users
   WHERE id = :id
   LIMIT 1

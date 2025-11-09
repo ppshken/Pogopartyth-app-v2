@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -9,15 +15,15 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { showSnack } from "../../components/Snackbar";
+import { forget_password } from "../../lib/auth";
 
 export default function ForgetPasswordScreen() {
   const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [cooldown, setCooldown] = useState<number>(0); // วินาที
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [loading, setLoading] = useState(false);
 
   const canSubmit = useMemo(() => {
     if (!email) return false;
@@ -26,48 +32,46 @@ export default function ForgetPasswordScreen() {
     return re.test(email);
   }, [email]);
 
-  // handle cooldown
-  useEffect(() => {
-    if (cooldown <= 0 && timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, [cooldown]);
-
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);
 
-  const startCooldown = useCallback((sec: number) => {
-    setCooldown(sec);
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setCooldown((s) => s - 1);
-    }, 1000);
-  }, []);
+  const onReset = async () => {
+    if (!canSubmit) return;
+    setLoading(true);
 
-  const onSubmit = useCallback(async () => {
-    if (!canSubmit || submitting || cooldown > 0) return;
-    setSubmitting(true);
+    // ตรวจสอบความถูกต้องของ UI อีกครั้งก่อนส่ง
+    if (!canSubmit) {
+      showSnack({ text: "รูปแบบอีเมลไม่ถูกต้อง", variant: "error" });
+      setLoading(false);
+      return;
+    }
+
     try {
-      await requestPasswordReset(email.trim());
-      showSnack({
-        text:
-          "ส่งคำขอรีเซ็ตรหัสผ่านแล้ว ตรวจอีเมลของคุณภายในไม่กี่นาที (เช็คโฟลเดอร์สแปมด้วย)",
-        variant: "success",
+      const payload = {
+        email: email.trim(),
+      };
+      const user = await forget_password(payload);
+      console.log("user", user);
+      router.replace({
+        pathname: "/(auth)/email_verify_otp",
+        params: {
+          email: email,
+          user_id: user.user.id,
+          type: "reset",
+        },
       });
-      startCooldown(60);
     } catch (e: any) {
       showSnack({
-        text: e?.message || "ส่งคำขอไม่สำเร็จ ลองใหม่อีกครั้ง",
+        text: e?.message || "การรีเซ็ทรหัสผ่านไม่สำเร็จ",
         variant: "error",
       });
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
-  }, [canSubmit, cooldown, email, startCooldown, submitting]);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -97,18 +101,16 @@ export default function ForgetPasswordScreen() {
         <TouchableOpacity
           style={[
             styles.button,
-            (!canSubmit || submitting || cooldown > 0) && styles.buttonDisabled,
+            (!canSubmit || loading) && styles.buttonDisabled,
           ]}
-          disabled={!canSubmit || submitting || cooldown > 0}
-          onPress={onSubmit}
+          disabled={!canSubmit || loading}
+          onPress={onReset}
           activeOpacity={0.7}
         >
-          {submitting ? (
-            <ActivityIndicator />
+          {loading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
           ) : (
-            <Text style={styles.buttonText}>
-              {cooldown > 0 ? `ขอใหม่ได้ใน ${cooldown}s` : "ส่งคำขอรีเซ็ต"}
-            </Text>
+            <Text style={styles.buttonText}>รีเซ็ทรหัสผ่าน</Text>
           )}
         </TouchableOpacity>
       </View>

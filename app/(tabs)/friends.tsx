@@ -24,6 +24,7 @@ import {
 } from "../../lib/friend"; // ✅ เพิ่ม listMyFriends
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { AvatarComponent } from "../../components/Avatar";
 
 type Tab = "search" | "mine";
 
@@ -156,9 +157,14 @@ export default function FriendsScreen() {
           alignItems: "center",
         }}
       >
-        <Image
-          source={{ uri: avatarOrFallback(item.username, item.avatar) }}
-          style={{ width: 48, height: 48, borderRadius: 24 }}
+        <AvatarComponent
+          avatar={item.avatar}
+          username={item.username}
+          plan={item.plan}
+          width={48}
+          height={48}
+          borderRadius={24}
+          fontsize={10}
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>

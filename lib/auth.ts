@@ -10,6 +10,7 @@ export type User = {
   friend_code: string | null;
   level: number;
   created_at: string | null;
+  plan: string;
 };
 
 /** เข้าสู่ระบบ */
@@ -34,6 +35,28 @@ export async function register(payload: {
     validateStatus: () => true,
   });
   if (!data.success) throw new Error(data.message || "Register failed");
+  return data.data as { user: User; type: boolean; };
+}
+
+/** ลืมรหัสผ่าน */
+export async function forget_password(payload: {
+  email: string;
+}) {
+  const { data } = await api.post("/api/auth/forget_password.php", payload, {
+    validateStatus: () => true,
+  });
+  if (!data.success) throw new Error(data.message || "Send Otp Forget Password failed");
+  return data.data as { user: User; type: boolean; };
+}
+
+export async function reset_password(payload: {
+  user_id: number;
+  password: string;
+}) {
+  const { data } = await api.post("/api/auth/reset_password.php", payload, {
+    validateStatus: () => true,
+  });
+  if (!data.success) throw new Error(data.message || "Reset Password failed");
   return data.data as { user: User; type: boolean; };
 }
 

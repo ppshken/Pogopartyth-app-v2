@@ -107,6 +107,7 @@ $qMembers = $db->prepare("
     uu.friend_code AS friend_code,
     uu.team,
     uu.level AS member_level,
+    uu.plan,
     CASE 
       WHEN EXISTS (
         SELECT 1 

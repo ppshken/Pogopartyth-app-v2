@@ -36,7 +36,6 @@ export default function Index() {
           setHref("/(auth)/login");
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
         await AsyncStorage.removeItem("token"); // อาจจะลบ token เก่าออก
         setHref("/(auth)/login");
       } finally {

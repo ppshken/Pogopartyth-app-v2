@@ -35,7 +35,7 @@ if ($q !== '') {
  */
 $sql = "
   SELECT
-    u.id, u.username, u.avatar, u.team, u.level,
+    u.id, u.username, u.avatar, u.team, u.level, u.plan,
     CAST(ru.avg_rating AS DECIMAL(10,2)) AS rating_owner,
     CASE
       WHEN u.friend_code IS NOT NULL AND u.friend_code <> ''

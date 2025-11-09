@@ -348,7 +348,7 @@ export default function CreateRoom() {
                 fontFamily: "KanitRegular",
               }}
             >
-              สามารถใส่ได้ไม่เกิน 100 ตัวอักษร
+              ไม่เกิน 100 ตัวอักษร
             </Text>
           </View>
 

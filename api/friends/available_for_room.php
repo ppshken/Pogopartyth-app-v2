@@ -67,6 +67,7 @@ $sql = "
     u.level,
     u.friend_code,
     u.device_token,
+    u.plan,
     CAST(ru.avg_rating AS DECIMAL(10,2)) AS rating_owner
   FROM friendships f
   JOIN users u

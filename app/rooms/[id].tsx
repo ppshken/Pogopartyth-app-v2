@@ -48,15 +48,17 @@ import * as Notifications from "expo-notifications";
 import ShareRoom from "../../components/ShareRoom";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { Friend, getFriendAvailable } from "../../lib/friend";
+import { AvatarComponent } from "../../components/Avatar";
 
 type Member = {
   user_id: number;
   role: "owner" | "member";
   joined_at: string;
   username: string;
-  avatar?: string | null;
+  avatar?: string;
   friend_code?: string | null;
   team?: string | null;
+  plan?: string;
   member_level: number;
   friend_ready?: 0 | 1;
   is_review?: 0 | 1;
@@ -777,7 +779,7 @@ export default function RoomDetail() {
   const allAdded =
     nonOwnerMembers.length > 0 &&
     nonOwnerMembers.every((m) => friendAdded[m.user_id]);
-  const joinFull = data.room.max_members === members.length; // เข้าห้องเต็ม
+  const joinFull = data.room.max_members === members.length && !isMember; // เข้าห้องเต็ม
 
   // สี/ข้อความสถานะ
   const statusBg =
@@ -1057,17 +1059,16 @@ export default function RoomDetail() {
                   disabled={iAmThisMember} // กันกรณี user_id ว่าง (ไม่ควรเกิด)
                   onPress={() => router.push(`/friends/${m.user_id}`)}
                 >
-                  {m.avatar ? (
-                    <Image source={{ uri: m.avatar }} style={styles.avatar} />
-                  ) : (
-                    <View style={styles.avatarEmpty}>
-                      <Text
-                        style={{ color: "#fff", fontFamily: "KanitSemiBold" }}
-                      >
-                        {m.username ? m.username.charAt(0).toUpperCase() : "?"}
-                      </Text>
-                    </View>
-                  )}
+                  {/* Avatar */}
+                  <AvatarComponent
+                    avatar={m.avatar}
+                    username={m.username}
+                    plan={m.plan}
+                    width={32}
+                    height={32}
+                    borderRadius={16}
+                    fontsize={8}
+                  />
 
                   <View style={{ flex: 1 }}>
                     <View
@@ -1319,7 +1320,9 @@ export default function RoomDetail() {
                   {loadingdata ? (
                     <ActivityIndicator color="#ffffff" size="small" />
                   ) : (
-                    <Text style={styles.outlineBtnText}>ดูประวัติเพิ่มเติม</Text>
+                    <Text style={styles.outlineBtnText}>
+                      ดูประวัติเพิ่มเติม
+                    </Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -2115,15 +2118,15 @@ export default function RoomDetail() {
                           router.push(`/friends/${item.id}`);
                         }}
                       >
-                        <Image
-                          source={{ uri: item.avatar || FALLBACK }}
-                          style={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 10,
-                            marginRight: 12,
-                            backgroundColor: "#F3F4F6",
-                          }}
+                        {/* Avatar */}
+                        <AvatarComponent
+                          avatar={item.avatar}
+                          username={item.username}
+                          plan={item.plan}
+                          width={48}
+                          height={48}
+                          borderRadius={999}
+                          fontsize={10}
                         />
                       </TouchableOpacity>
                       <View style={{ flex: 1 }}>
@@ -2315,6 +2318,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#F3F4F6",
     marginBottom: 8,
+    gap: 8,
   },
   avatar: { width: 32, height: 32, borderRadius: 16, marginRight: 8 },
   avatarEmpty: {
@@ -2514,5 +2518,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 10,
     backgroundColor: "#fff",
+    gap: 8
   },
 });

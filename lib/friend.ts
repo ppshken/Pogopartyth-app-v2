@@ -10,10 +10,11 @@ export type FriendRelation = {
 export type Friend = {
   id: number;
   username: string;
-  avatar?: string | null;
+  avatar: string;
   friend_code_masked?: string | null;
-  team?: string | null;
+  team: string;
   level?: number;
+  plan: string;
   device_token: string;
   rating_owner?: number | null;
   relation?: FriendRelation;

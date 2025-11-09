@@ -80,7 +80,11 @@ export default function Register() {
       }
       router.replace({
         pathname: "/(auth)/email_verify_otp",
-        params: { email: email, user_id: user.user.id },
+        params: {
+          email: email,
+          user_id: user.user.id,
+          type: "register",
+        },
       });
     } catch (e: any) {
       showSnack({

@@ -35,6 +35,7 @@ export default function Layout() {
         setOnEvent(true);
       } else {
         router.replace("/(auth)/login");
+        //router.replace("/(auth)/reset_password");
       }
     })();
   }, []);
@@ -108,6 +109,10 @@ export default function Layout() {
           <Stack.Screen
             name="(auth)/forget_password"
             options={{ title: "ลืมรหัสผ่าน", headerShown: true }}
+          />
+          <Stack.Screen
+            name="(auth)/reset_password"
+            options={{ title: "รหัสผ่านใหม่", headerShown: true }}
           />
           <Stack.Screen
             name="rooms/[id]"

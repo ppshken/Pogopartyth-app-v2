@@ -27,17 +27,19 @@ import { useRouter, useNavigation } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import { AddFriend, AcceptFriend } from "../../lib/friend";
 import { createReport } from "../../lib/reports";
+import { AvatarComponent } from "../../components/Avatar";
 
 type FullUser = {
   id: number;
   email: string;
   username: string;
-  avatar?: string | null;
+  avatar?: string;
   friend_code?: string | null;
   team?: string | null;
   level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
+  plan: string;
 };
 
 type RatingOwner = {
@@ -284,15 +286,15 @@ export default function Profile() {
       {/* Card: User */}
       <View style={styles.card}>
         {/* Avatar */}
-        {user?.avatar ? (
-          <Image source={{ uri: user.avatar }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarEmpty}>
-            <Text style={styles.avatarLetter}>
-              {user?.username ? user.username.charAt(0).toUpperCase() : "?"}
-            </Text>
-          </View>
-        )}
+        <AvatarComponent
+          avatar={user?.avatar}
+          username={user?.username}
+          plan={user?.plan}
+          width={80}
+          height={80}
+          borderRadius={40}
+          fontsize={14}
+        />
 
         {/* Name + email */}
         <View style={{ flex: 1 }}>

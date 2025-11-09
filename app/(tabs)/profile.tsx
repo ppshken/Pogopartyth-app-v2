@@ -1,8 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,23 +11,25 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useAuth } from "../../store/authStore";
 import { profile } from "../../lib/auth";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
+import { AvatarComponent } from "../../components/Avatar";
 
 type FullUser = {
   id: number;
   email: string;
   username: string;
-  avatar?: string | null;
+  avatar: string;
   friend_code?: string | null;
-  team?: string | null;
+  team: string;
   level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
   noti_status: string;
   google_sub: string;
+  plan: string;
 };
 
 const menu = [
@@ -147,15 +145,15 @@ export default function Profile() {
       {/* Card: User */}
       <View style={styles.card}>
         {/* Avatar */}
-        {user?.avatar ? (
-          <Image source={{ uri: user.avatar }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarEmpty}>
-            <Text style={styles.avatarLetter}>
-              {user?.username ? user.username.charAt(0).toUpperCase() : "?"}
-            </Text>
-          </View>
-        )}
+        <AvatarComponent
+          avatar={user.avatar}
+          username={user.username}
+          plan={user.plan}
+          width={80}
+          height={80}
+          borderRadius={40}
+          fontsize={14}
+        />
 
         {/* Name + email */}
         <View style={{ flex: 1 }}>

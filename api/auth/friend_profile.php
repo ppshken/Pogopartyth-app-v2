@@ -32,7 +32,8 @@ $stmt = $db->prepare("
     friend_code,
     team,
     level,
-    created_at
+    created_at,
+    plan
   FROM users
   WHERE id = :id
   LIMIT 1
