@@ -31,6 +31,10 @@ export async function createRoom(body: {
   start_time: string;
   max_members: number;
   note?: string;
+  min_level: number | null;
+  vip_only: boolean | null;
+  lock_room: boolean | null;
+  password_room: string | null;
 }) {
   const { data } = await api.post("/api/raid/create.php", body, {
     validateStatus: () => true,

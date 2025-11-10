@@ -299,7 +299,7 @@ export default function Profile() {
         {/* Name + email */}
         <View style={{ flex: 1 }}>
           <Text style={styles.name} numberOfLines={1}>
-            {user?.username || "ไม่ระบุชื่อ"} - {statusFriend?.friendship_id}
+            {user?.username || "ไม่ระบุชื่อ"}
           </Text>
 
           {/* Chips / quick actions */}

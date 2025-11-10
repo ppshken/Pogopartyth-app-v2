@@ -104,6 +104,10 @@ SELECT
   r.status,
   r.owner_id,
   r.note,
+  r.min_level,
+  r.vip_only,
+  r.lock_room,
+  r.password_room,
   r.created_at,
   u.username    AS owner_username,
   u.avatar      AS owner_avatar,
@@ -116,7 +120,7 @@ LEFT JOIN users u ON u.id = r.owner_id
 LEFT JOIN raid_boss rb ON rb.id = r.raid_boss_id
 $joinJoined
 $where
-ORDER BY current_members DESC, r.id ASC
+ORDER BY r.vip_only DESC, r.id ASC
 ";
 
 // โหมด all=1

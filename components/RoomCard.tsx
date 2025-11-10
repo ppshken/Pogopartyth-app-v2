@@ -13,6 +13,10 @@ type Room = {
   current_members: number;
   max_members: number;
   note?: string | null;
+  min_level: number | null;
+  vip_only: boolean | null;
+  lock_room: boolean | null;
+  password_room: string | null;
   owner_username: string;
   is_full?: boolean;
   pokemon_tier: number;
@@ -45,9 +49,9 @@ function useCountdown(start: string) {
   const pad = (n: number) => n.toString().padStart(2, "0");
 
   let label = "";
-  if (hh > 0) label = `เหลือ ${hh} ชม. ${pad(mm)} นาที ${pad(ss)} วินาที`;
-  else if (mm > 0) label = `เหลือ ${mm} นาที ${pad(ss)} วินาที`;
-  else label = `เหลือ ${ss} วินาที`;
+  if (hh > 0) label = `${hh} ชม. ${pad(mm)} นาที ${pad(ss)} วินาที`;
+  else if (mm > 0) label = `${mm} นาที ${pad(ss)} วินาที`;
+  else label = `${ss} วินาที`;
 
   return { expired: false, label };
 }
@@ -91,7 +95,17 @@ export function RoomCardMinimal({
       ]}
     >
       {/* แสดงรูปบอส */}
-      <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
+      <View>
+        <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
+        {room.lock_room && (
+          <Ionicons
+            name="bag"
+            size={16}
+            color="#3066dbff"
+            style={{ position: "absolute", right: 10, bottom: 0 }}
+          />
+        )}
+      </View>
 
       <View style={{ flex: 1 }}>
         {/* แสดงชื่อบอสกับ เวลา */}
@@ -136,6 +150,7 @@ export function RoomCardMinimal({
           </View>
 
           <View style={{ flexDirection: "row", gap: 4 }}>
+            {/* เข้าร่วมแล้ว */}
             {room.is_joined === 1 && (
               <View
                 style={[
@@ -151,12 +166,48 @@ export function RoomCardMinimal({
                 <Text style={styles.statusText}>เข้าร่วมแล้ว</Text>
               </View>
             )}
+
+            {/* เลเวลขั้นต่ำ */}
+            {room.min_level && (
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: "#dab75dff",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                  },
+                ]}
+              >
+                <Text style={styles.statusText}>Lv.{room.min_level}+</Text>
+              </View>
+            )}
+
             <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
               <Text style={styles.statusText}>{statusText}</Text>
             </View>
           </View>
         </View>
       </View>
+      {/* VIP */}
+      {room.vip_only && (
+        <View style={{ position: "absolute", top: 12, left: 0 }}>
+          <View
+            style={[
+              styles.vipBadge,
+              {
+                backgroundColor: "#EFBF04",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+              },
+            ]}
+          >
+            <Text style={[styles.statusText, { color: "#666666" }]}>VIP</Text>
+          </View>
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -214,6 +265,12 @@ const styles = StyleSheet.create({
   metaText: { color: "#374151", fontSize: 12, fontFamily: "KanitSemiBold" },
 
   statusBadge: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 6 },
+  vipBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+  },
   statusText: {
     color: "#fff",
     fontSize: 12,

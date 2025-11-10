@@ -94,6 +94,10 @@ type RoomPayload = {
     current_chat_messages: number;
     is_full?: boolean;
     note?: string | null;
+    min_level: number | null;
+    vip_only: boolean | null;
+    lock_room: boolean | null;
+    password_room: string | null;
     owner: RoomOwner;
     raid_boss?: Raidboss;
   };
@@ -189,6 +193,9 @@ export default function RoomDetail() {
 
   //เปิด modal เข้าร่วมห้อง
   const [joinModal, setJoinModal] = useState(false); // โมดัลเข้าร่วมห้อง
+
+  const [onPassword, setOnPassword] = useState(false);
+  const [passwordRoom, setPasswordRoom] = useState("");
 
   // สถานะ “เพิ่มเพื่อนแล้ว”
   const [friendAdded, setFriendAdded] = useState<Record<number, boolean>>({});
@@ -482,11 +489,33 @@ export default function RoomDetail() {
 
   // เข้าร่วมห้อง
   const onJoinLeave = async () => {
+    if (room.lock_room && !isMember && !isOwner) {
+      setOnPassword(true);
+      return;
+    }
+    if (isMember && !isOwner) {
+      setExitRoom(true);
+      return;
+    }
+    onJoinRoom();
+  };
+
+  const checkPassword = async () => {
+    if (passwordRoom === room.password_room) {
+      setOnPassword(false);
+      onJoinRoom();
+      return;
+    }
+    showSnack({
+      text: passwordRoom ? "รหัสผ่านไม่ถูกต้อง" : "กรุณาระบุรหัสผ่าน",
+      variant: "error",
+    });
+    return;
+  };
+
+  // เข้าร่วมห้อง
+  const onJoinRoom = async () => {
     try {
-      if (isMember && !isOwner) {
-        setExitRoom(true);
-        return;
-      }
       setLoading(true);
       await joinRoom(room.id);
       const payload = {
@@ -879,9 +908,45 @@ export default function RoomDetail() {
 
         {/* รายละเอียดห้อง */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
+          <Text style={styles.sectionTitle}>ข้อมูลห้อง</Text>
+          <View style={styles.roomRow}>
+            {/* เลเวลขั้นต่ำ */}
+            {room.min_level && (
+              <View style={[styles.roomBage, { backgroundColor: "#ef5a04ff" }]}>
+                <Text style={{ fontFamily: "KanitMedium", color: "#ffffffff" }}>
+                  Lv.{room.min_level}+
+                </Text>
+              </View>
+            )}
+
+            {/* เฉพาะ VIP */}
+            {room.vip_only && (
+              <View style={[styles.roomBage, { backgroundColor: "#EFBF04" }]}>
+                <Text style={{ fontFamily: "KanitMedium", color: "#666666" }}>
+                  VIP
+                </Text>
+              </View>
+            )}
+
+            {/* ล็อคห้อง */}
+            {room.lock_room && (
+              <View style={[styles.roomBage, { backgroundColor: "#ebebebff" }]}>
+                <Ionicons name="bag" size={18} color="#3066dbff" />
+              </View>
+            )}
+
+            {/* รหัสผ่านห้อง */}
+            {room.password_room && isMember && (
+              <View style={[styles.roomBage, { backgroundColor: "#469665ff" }]}>
+                <Text style={{ fontFamily: "KanitMedium", color: "#ffffffff" }}>
+                  {room.password_room}
+                </Text>
+              </View>
+            )}
+          </View>
 
           {/* ชื่อ และ รหัสหัวห้อง */}
+          <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
           <View style={styles.friendRow}>
             <View
               style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
@@ -1727,6 +1792,59 @@ export default function RoomDetail() {
         </View>
       </Modal>
 
+      {/* Modal: ระบุรหัสผ่านห้อง กรณีห้อง ล็อค */}
+      <Modal
+        visible={onPassword && room.status === "active"}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>กรุณาระบุรหัสผ่านห้อง</Text>
+            <TextInput
+              placeholder="อย่างน้อย 8 ตัวอักษร"
+              placeholderTextColor="#9CA3AF"
+              value={passwordRoom}
+              onChangeText={setPasswordRoom}
+              secureTextEntry
+              style={{
+                paddingVertical: 10,
+                paddingHorizontal: 12,
+                color: "#000000ff",
+                fontSize: 15,
+                fontFamily: "KanitRegular",
+                borderWidth: 1,
+                borderColor: "#dbdbdbff",
+                borderRadius: 8,
+              }}
+            />
+            <TouchableOpacity
+              onPress={checkPassword}
+              style={[styles.modalBtn, { backgroundColor: "#10B981" }]}
+            >
+              {loadingClose ? (
+                <ActivityIndicator size="small" color="#111827" />
+              ) : (
+                <Text style={[styles.modalBtnText, { color: "#ffffffff" }]}>
+                  ยืนยัน
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setOnPassword(false);
+                setPasswordRoom("");
+              }}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Modal: หมดเวลา และ เชิญแล้ว รอ รีวิว */}
       <Modal
         visible={
@@ -2535,5 +2653,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#fff",
     gap: 8,
+  },
+  roomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+  },
+  roomBage: {
+    backgroundColor: "#123123",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
 });

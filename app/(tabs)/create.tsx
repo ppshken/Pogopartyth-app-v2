@@ -154,7 +154,7 @@ export default function CreateRoom() {
     try {
       const items = await getActiveRaidBosses(q ? { q, all: 1 } : { all: 1 });
       setBosses(items);
-      if (!boss && items.length) setBoss(items[0]); // auto เลือกตัวแรกหากยังไม่มี
+      if (!boss && items.length) setBoss(items[1]); // auto เลือกตัวแรกหากยังไม่มี
 
       const { user } = await profile();
       if (user.plan === "premium") {
@@ -215,6 +215,10 @@ export default function CreateRoom() {
         start_time: formatYmdHms(startAt),
         max_members: max,
         note: note.trim() || undefined,
+        min_level: minLevel ? minLevel : null, 
+        vip_only: vipOnly ? vipOnly : null,
+        lock_room: lockRoom ? lockRoom : null,
+        password_room: passwordRoom ? passwordRoom : null,
       };
       const room = await createRoom(payload);
       const payloadLog = {
@@ -404,8 +408,31 @@ export default function CreateRoom() {
               เลือกสมาชิกได้สูงสุด 2–20 คน
             </Text>
 
+            {/* Note */}
+            <Text style={styles.label}>หมายเหตุ</Text>
+            <TextInput
+              placeholder="พิมพ์หมายเหตุ เช่น ขอคนมี Remote Pass"
+              value={note}
+              onChangeText={setNote}
+              multiline
+              maxLength={100}
+              style={[styles.textarea, { fontFamily: "KanitRegular" }]}
+              placeholderTextColor="#9CA3AF"
+            />
+            <Text
+              style={{
+                color: "#6B7280",
+                marginTop: 6,
+                fontSize: 12,
+                fontFamily: "KanitRegular",
+              }}
+            >
+              ไม่เกิน 100 ตัวอักษร
+            </Text>
+          </View>
+
             {/* VIP Zone */}
-            <View>
+            <View style={styles.card}>
               {/* เลเวลขั้นต่ำ */}
               <View style={{ opacity: vip ? 1 : 0.3 }}>
                 <View
@@ -590,29 +617,6 @@ export default function CreateRoom() {
               </View>
             </View>
 
-            {/* Note */}
-            <Text style={styles.label}>หมายเหตุ</Text>
-            <TextInput
-              placeholder="พิมพ์หมายเหตุ เช่น ขอคนมี Remote Pass"
-              value={note}
-              onChangeText={setNote}
-              multiline
-              maxLength={100}
-              style={[styles.textarea, { fontFamily: "KanitRegular" }]}
-              placeholderTextColor="#9CA3AF"
-            />
-            <Text
-              style={{
-                color: "#6B7280",
-                marginTop: 6,
-                fontSize: 12,
-                fontFamily: "KanitRegular",
-              }}
-            >
-              ไม่เกิน 100 ตัวอักษร
-            </Text>
-          </View>
-
           {/* Submit */}
           <TouchableOpacity
             onPress={onSubmit}
@@ -703,6 +707,7 @@ export default function CreateRoom() {
                 keyExtractor={(x) => String(x.pokemon_id) + x.pokemon_name}
                 renderItem={({ item }) => {
                   const selected = boss?.raid_boss_id === item.raid_boss_id;
+                  const bossVip = !vip && item.special;
                   return (
                     <TouchableOpacity
                       onPress={() => {
@@ -712,7 +717,9 @@ export default function CreateRoom() {
                       style={[
                         styles.itemRow,
                         selected && { backgroundColor: "#e5ebf7ff" },
+                        bossVip && {opacity: 0.3}
                       ]}
+                      disabled={bossVip}
                     >
                       <Image
                         source={{ uri: item.pokemon_image || FALLBACK }}

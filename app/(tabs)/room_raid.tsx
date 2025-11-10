@@ -33,6 +33,10 @@ type Room = {
   current_members: number;
   max_members: number;
   note?: string | null;
+  min_level: number | null;
+  vip_only: boolean | null;
+  lock_room: boolean | null;
+  password_room: string | null;
   owner_username: string;
   pokemon_tier: number;
   is_joined: number;

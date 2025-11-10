@@ -26,6 +26,12 @@ $start_time  = trim($input['start_time'] ?? '');
 $max_members = (int)($input['max_members'] ?? 5);
 $note        = trim($input['note'] ?? '');
 
+//VIP
+$min_level  = isset($input['min_level']) ? (int)$input['min_level'] : null;
+$vip_only   = isset($input['vip_only']) ? (int)$input['vip_only'] : null;
+$lock_room  = isset($input['lock_room']) ? (int)$input['lock_room'] : null;
+$password_room  = isset($input['password_room']) ? $input['password_room'] : null;
+
 if (($boss === '' && !$bossId) || $start_time === '' || $max_members < 2) {
   jsonResponse(false, null, 'ข้อมูลไม่ครบหรือไม่ถูกต้อง', 422);
 }
@@ -126,8 +132,8 @@ try {
   
   // สร้างห้อง
   $stmt = $db->prepare("
-    INSERT INTO raid_rooms (raid_boss_id, pokemon_image, boss, start_time, max_members, status, owner_id, note, created_at)
-    VALUES (:raid_boss_id, :pokemon_image, :boss, :start_time, :max_members, 'active', :owner_id, :note, :created_at)
+    INSERT INTO raid_rooms (raid_boss_id, pokemon_image, boss, start_time, max_members, status, owner_id, note, min_level, vip_only, lock_room, password_room, created_at)
+    VALUES (:raid_boss_id, :pokemon_image, :boss, :start_time, :max_members, 'active', :owner_id, :note, :min_level, :vip_only, :lock_room, :password_room, :created_at)
   ");
   $stmt->execute([
     ':raid_boss_id'=> $raid_boss_id,
@@ -137,6 +143,10 @@ try {
     ':max_members' => $max_members,
     ':owner_id'    => $userId,
     ':note'        => $note ?: null,
+    ':min_level'   => $min_level ?: null,
+    ':vip_only'    => $vip_only ?: null,
+    ':lock_room'   => $lock_room ?: null,
+    ':password_room'    => $password_room ?: null,
     ':created_at'  => now(),
   ]);
 
