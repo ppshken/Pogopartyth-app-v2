@@ -9,6 +9,8 @@ export type RaidBoss = {
   pokemon_tier: number;
   start_date: string;
   end_date: string;
+  type: string;
+  special: boolean;
   created_at: string;
 };
 

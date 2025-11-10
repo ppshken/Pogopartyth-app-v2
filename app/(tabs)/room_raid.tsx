@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   bossChip: {
     height: CHIP_H, // ล็อกความสูงชิป
     paddingHorizontal: 10,
-    borderRadius: 12,
+    borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
     alignItems: "center",

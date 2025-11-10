@@ -49,6 +49,7 @@ import ShareRoom from "../../components/ShareRoom";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { Friend, getFriendAvailable } from "../../lib/friend";
 import { AvatarComponent } from "../../components/Avatar";
+import { logTypeColor, iconType } from "@/hooks/logTypeColor";
 
 type Member = {
   user_id: number;
@@ -780,6 +781,7 @@ export default function RoomDetail() {
     nonOwnerMembers.length > 0 &&
     nonOwnerMembers.every((m) => friendAdded[m.user_id]);
   const joinFull = data.room.max_members === members.length && !isMember; // เข้าห้องเต็ม
+  const joinFulled = data.room.max_members === members.length;
 
   // สี/ข้อความสถานะ
   const statusBg =
@@ -1195,8 +1197,11 @@ export default function RoomDetail() {
           )}
 
           {/* ปุ่มเชิญเพื่อน */}
-          {isMember && !joinFull && room.status === "active" && (
-            <TouchableOpacity onPress={loadFriends} style={styles.outlineBtn}>
+          {isMember && !joinFulled && room.status === "active" && (
+            <TouchableOpacity
+              onPress={loadFriends}
+              style={[styles.outlineBtn, { backgroundColor: "#7b3281ff" }]}
+            >
               <Ionicons name="people-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>เชิญเพื่อนของคุณ</Text>
             </TouchableOpacity>
@@ -1236,6 +1241,8 @@ export default function RoomDetail() {
             </View>
             {log.length > 0 ? (
               log.map((item) => {
+                const icontype = iconType(item.type);
+                const icontypecolor = logTypeColor(item.type);
                 return (
                   <View
                     key={item.id}
@@ -1293,10 +1300,19 @@ export default function RoomDetail() {
                         }}
                       >
                         <Text
-                          style={{ fontFamily: "KanitRegular", fontSize: 13 }}
+                          style={{
+                            fontFamily: "KanitRegular",
+                            fontSize: 13,
+                            color: icontypecolor ? icontypecolor : "#252525ff",
+                          }}
                         >
                           {item.description}
                         </Text>
+
+                        {icontype && icontypecolor && (
+                          <Ionicons name={icontype} color={icontypecolor} />
+                        )}
+
                         {item.target && (
                           <Text
                             style={{ fontFamily: "KanitMedium", fontSize: 13 }}
@@ -2518,6 +2534,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 10,
     backgroundColor: "#fff",
-    gap: 8
+    gap: 8,
   },
 });

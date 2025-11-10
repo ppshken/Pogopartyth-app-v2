@@ -48,9 +48,11 @@ function useCountdown(start: string) {
 
 export function MyRoomCard({
   room,
+  isCreatedSection,
   onPress,
 }: {
   room: MyRoom;
+  isCreatedSection: boolean;
   onPress?: () => void;
 }) {
   const { label, expired } = useCountdown(room.start_time);
@@ -79,7 +81,10 @@ export function MyRoomCard({
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[
+        styles.card,
+        { backgroundColor: !isCreatedSection ? "#dde9f5ff" : "#ffffff" },
+      ]}
       onPress={onPress}
       activeOpacity={0.85}
     >
@@ -102,7 +107,12 @@ export function MyRoomCard({
 
         <View style={styles.metaRow}>
           <View style={{ flexDirection: "row", gap: 6 }}>
-            <View style={[styles.chipDark, expired ? { backgroundColor: "#9CA3AF" } : null]}>
+            <View
+              style={[
+                styles.chipDark,
+                expired ? { backgroundColor: "#9CA3AF" } : null,
+              ]}
+            >
               <Ionicons
                 name="time-outline"
                 size={14}

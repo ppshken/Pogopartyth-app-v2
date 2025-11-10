@@ -150,6 +150,7 @@ export default function MyRaid() {
                   <MyRoomCard
                     key={r.id}
                     room={r}
+                    isCreatedSection={isCreatedSection}
                     onPress={() => onPressRoom(r)}
                   />
                 ))

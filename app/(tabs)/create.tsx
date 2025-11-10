@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Switch,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ import { getActiveRaidBosses } from "../../lib/raidBoss"; // << ใช้ API �
 import { TierStars } from "../../components/TierStars";
 import { showSnack } from "../../components/Snackbar";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
+import { profile } from "../../lib/auth";
 
 type RaidBoss = {
   raid_boss_id: number;
@@ -29,8 +31,12 @@ type RaidBoss = {
   pokemon_tier: number;
   start_date: string;
   end_date: string;
+  type: string;
+  special: boolean;
   created_at: string;
 };
+
+const MIN_LEVEL_OPTIONS = [30, 40, 50, 60, 70];
 
 const FALLBACK =
   "https://static.wikia.nocookie.net/pokemongo/images/5/55/Emblem_Raid.png/revision/latest?cb=20170907130239";
@@ -97,36 +103,15 @@ export default function CreateRoom() {
   const router = useRouter();
   const [howto, setHowto] = useState(true);
 
+  // เช็ค user VIP
+  const [vip, setVip] = useState(false);
+
   // 1) Boss (จาก API)
   const [bossOpen, setBossOpen] = useState(false);
   const [boss, setBoss] = useState<RaidBoss | null>(null);
   const [bosses, setBosses] = useState<RaidBoss[]>([]);
   const [loadingBoss, setLoadingBoss] = useState(false);
   const [q, setQ] = useState("");
-
-  const loadBosses = useCallback(async () => {
-    setLoadingBoss(true);
-    try {
-      const items = await getActiveRaidBosses(q ? { q, all: 1 } : { all: 1 });
-      setBosses(items);
-      if (!boss && items.length) setBoss(items[0]); // auto เลือกตัวแรกหากยังไม่มี
-    } catch (e: any) {
-      showSnack({
-        text: `ผิดพลาด${
-          e?.message ? ` : ${e.message}` : "โหลดรายชื่อบอสไม่สำเร็จ"
-        }`,
-        variant: "error",
-      });
-    } finally {
-      setLoadingBoss(false);
-    }
-  }, [q, boss]);
-
-  useRefetchOnFocus(loadBosses, [loadBosses]);
-
-  useEffect(() => {
-    loadBosses();
-  }, [loadBosses]);
 
   // 2) Time
   const [timeOpen, setTimeOpen] = useState(false);
@@ -150,9 +135,55 @@ export default function CreateRoom() {
   // 4) Note
   const [note, setNote] = useState("");
 
+  // VIP
+  // เลเวลขั้นต่ำ
+  const [minLevel, setMinLevel] = useState<number | null>(null);
+  // เฉพาะ Premium
+  const [vipOnly, setVipOnly] = useState(false);
+  // ล็อคห้อง
+  const [lockRoom, setLockRoom] = useState(false);
+  const [passwordRoom, setPasswordRoom] = useState("");
+
   const [loading, setLoading] = useState(false);
   const isPast = startAt.getTime() <= Date.now();
   const canSubmit = !loading && !!boss && !isPast && max >= 2 && max <= 20;
+
+  // โหลด บอส
+  const loadBosses = useCallback(async () => {
+    setLoadingBoss(true);
+    try {
+      const items = await getActiveRaidBosses(q ? { q, all: 1 } : { all: 1 });
+      setBosses(items);
+      if (!boss && items.length) setBoss(items[0]); // auto เลือกตัวแรกหากยังไม่มี
+
+      const { user } = await profile();
+      if (user.plan === "premium") {
+        setVip(true);
+      } else {
+        setVip(false);
+        setMinLevel(null);
+        setLockRoom(false);
+        setVipOnly(false);
+        setPasswordRoom("");
+      }
+    } catch (e: any) {
+      showSnack({
+        text: `ผิดพลาด${
+          e?.message ? ` : ${e.message}` : "โหลดรายชื่อบอสไม่สำเร็จ"
+        }`,
+        variant: "error",
+      });
+    } finally {
+      setLoadingBoss(false);
+    }
+  }, [q, boss]);
+
+  useRefetchOnFocus(loadBosses, [loadBosses]);
+
+  useEffect(() => {
+    loadBosses();
+    console.log("vip", vip);
+  }, [loadBosses]);
 
   const refreshTimeSlots = async () => {
     setSlots(generateTimeSlots());
@@ -164,6 +195,7 @@ export default function CreateRoom() {
     });
   };
 
+  // สร้างห้อง
   const onSubmit = async () => {
     if (!canSubmit) {
       showSnack({
@@ -227,21 +259,64 @@ export default function CreateRoom() {
                   flex: 1,
                 }}
               >
-                <Image
-                  source={{ uri: boss?.pokemon_image || FALLBACK }}
-                  style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: 8,
-                    backgroundColor: "#F3F4F6",
-                  }}
-                />
+                <View>
+                  <Image
+                    source={require("assets/background-wild-area 2025.png")}
+                    style={{
+                      position: "absolute",
+                      width: 52,
+                      height: 52,
+                      borderRadius: 8,
+                      opacity: 0.8,
+                      borderWidth: 2,
+                      borderColor: "#7b3281ff",
+                    }}
+                  />
+                  <Image
+                    source={{ uri: boss?.pokemon_image || FALLBACK }}
+                    style={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: 8,
+                    }}
+                  />
+                </View>
                 <View style={{ flex: 1 }}>
-                  <Text
-                    style={{ color: "#111827", fontFamily: "KanitSemiBold" }}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
                   >
-                    {boss?.pokemon_name || "เลือกบอสจากรายการ"}
-                  </Text>
+                    {/* ชื่อบอส */}
+                    <Text
+                      style={{ color: "#111827", fontFamily: "KanitSemiBold" }}
+                    >
+                      {boss?.pokemon_name || "เลือกบอสจากรายการ"}
+                    </Text>
+
+                    {/* Special Boss */}
+                    {boss?.special ? (
+                      <View
+                        style={{
+                          alignItems: "center",
+                          backgroundColor: "#EFBF04",
+                          borderRadius: 4,
+                          paddingHorizontal: 6,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#666666",
+                            fontFamily: "KanitMedium",
+                          }}
+                        >
+                          VIP
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
                   {!!boss && (
                     <Text style={{ color: "#6B7280", fontSize: 12 }}>
                       <TierStars
@@ -256,7 +331,7 @@ export default function CreateRoom() {
             </TouchableOpacity>
           </View>
 
-          {/* Time dropdown */}
+          {/* General dropdown */}
           <View style={styles.card}>
             <View
               style={{
@@ -328,6 +403,192 @@ export default function CreateRoom() {
             >
               เลือกสมาชิกได้สูงสุด 2–20 คน
             </Text>
+
+            {/* VIP Zone */}
+            <View>
+              {/* เลเวลขั้นต่ำ */}
+              <View style={{ opacity: vip ? 1 : 0.3 }}>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <Text style={styles.label}>เลเวลขั้นต่ำ</Text>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      backgroundColor: "#EFBF04",
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                      marginBottom: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#666666",
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      VIP
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                >
+                  {MIN_LEVEL_OPTIONS.map((lv) => (
+                    <TouchableOpacity
+                      key={lv}
+                      style={[
+                        styles.mm_level,
+                        minLevel === lv && styles.mm_levelActive,
+                      ]}
+                      onPress={() => setMinLevel(lv)}
+                      disabled={!vip}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: "KanitMedium",
+                          color: minLevel === lv ? "#fff" : "#111827",
+                        }}
+                      >
+                        {lv}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text
+                  style={{
+                    color: "#6B7280",
+                    marginTop: 6,
+                    marginBottom: 16,
+                    fontSize: 12,
+                    fontFamily: "KanitRegular",
+                  }}
+                >
+                  เลเวล 20 - 80
+                </Text>
+              </View>
+
+              {/* เฉพาะผู้ใช้ Premium */}
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    opacity: vip ? 1 : 0.3,
+                  }}
+                >
+                  <Text style={styles.label}>เฉพาะผู้ใช้ Premium</Text>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      backgroundColor: "#EFBF04",
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                      marginBottom: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#666666",
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      VIP
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={{ alignSelf: "flex-start" }}>
+                  <Switch
+                    style={{ opacity: 1 }}
+                    value={vipOnly}
+                    onValueChange={setVipOnly}
+                    disabled={!vip}
+                  />
+                </View>
+
+                <Text
+                  style={{
+                    color: "#6B7280",
+                    marginTop: 6,
+                    marginBottom: 16,
+                    fontSize: 12,
+                    fontFamily: "KanitRegular",
+                    opacity: vip ? 1 : 0.3,
+                  }}
+                >
+                  ล็อคให้แค่ เฉพาะผู้ใช้ระดับ Premium เท่านั้น
+                </Text>
+              </View>
+
+              {/* ล็อคห้อง ระบุ รหัสผ่าน */}
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    opacity: vip ? 1 : 0.3,
+                  }}
+                >
+                  <Text style={styles.label}>ล็อคห้อง</Text>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      backgroundColor: "#EFBF04",
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                      marginBottom: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#666666",
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      VIP
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
+                  <Switch
+                    style={{ opacity: 1 }}
+                    value={lockRoom}
+                    onValueChange={setLockRoom}
+                    disabled={!vip}
+                  />
+                </View>
+
+                {lockRoom && (
+                  <>
+                    <TextInput
+                      placeholder="ระบุรหัสผ่านห้อง"
+                      value={passwordRoom}
+                      secureTextEntry={true}
+                      onChangeText={setPasswordRoom}
+                      style={[styles.dropdown, { fontFamily: "KanitRegular" }]}
+                      placeholderTextColor="#9CA3AF"
+                    />
+
+                    <Text
+                      style={{
+                        color: "#6B7280",
+                        marginTop: 6,
+                        marginBottom: 16,
+                        fontSize: 12,
+                        fontFamily: "KanitRegular",
+                        opacity: vip ? 1 : 0.3,
+                      }}
+                    >
+                      ระบุรหัสผ่านสำหรับห้อง อย่างน้อย 6 ตัวอักษร
+                    </Text>
+                  </>
+                )}
+              </View>
+            </View>
 
             {/* Note */}
             <Text style={styles.label}>หมายเหตุ</Text>
@@ -464,14 +725,44 @@ export default function CreateRoom() {
                         }}
                       />
                       <View style={{ flex: 1 }}>
-                        <Text
+                        <View
                           style={{
-                            fontFamily: "KanitSemiBold",
-                            color: "#111827",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 8,
                           }}
                         >
-                          {item.pokemon_name}
-                        </Text>
+                          {/* ชื่อบอส */}
+                          <Text
+                            style={{
+                              color: "#111827",
+                              fontFamily: "KanitSemiBold",
+                            }}
+                          >
+                            {item?.pokemon_name || "เลือกบอสจากรายการ"}
+                          </Text>
+
+                          {/* Special Boss */}
+                          {item?.special ? (
+                            <View
+                              style={{
+                                alignItems: "center",
+                                backgroundColor: "#EFBF04",
+                                borderRadius: 4,
+                                paddingHorizontal: 6,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: "#666666",
+                                  fontFamily: "KanitMedium",
+                                }}
+                              >
+                                VIP
+                              </Text>
+                            </View>
+                          ) : null}
+                        </View>
                         <Text style={{ color: "#6B7280", fontSize: 12 }}>
                           <TierStars
                             pokemon_tier={item.pokemon_tier}
@@ -851,5 +1142,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#F3F4F6",
+  },
+  mm_level: {
+    backgroundColor: "#ffffffff",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+  },
+  mm_levelActive: {
+    backgroundColor: "#111827",
+    borderColor: "#111827",
   },
 });
