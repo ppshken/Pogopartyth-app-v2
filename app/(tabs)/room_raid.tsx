@@ -28,6 +28,7 @@ type Room = {
   raid_boss_id: number;
   pokemon_image: string;
   boss: string;
+  special: boolean;
   start_time: string; // "YYYY-MM-DD HH:mm:ss"
   status: string;
   current_members: number;

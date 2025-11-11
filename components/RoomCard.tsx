@@ -8,6 +8,7 @@ type Room = {
   raid_boss_id: number;
   pokemon_image: string;
   boss: string;
+  special: boolean;
   start_time: string;
   status: string;
   current_members: number;
@@ -83,6 +84,7 @@ export function RoomCardMinimal({
     ? "เปิดรับ"
     : room.status;
 
+  const is_joined = room.is_joined === 1;
   const is_joinedbg = room.is_joined === 1 ? "#dde9f5ff" : "#ffffffff";
 
   return (
@@ -90,9 +92,10 @@ export function RoomCardMinimal({
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: is_joinedbg, borderColor: "#E5E7EB" }, // ✅ เพิ่มตรงนี้
+        { backgroundColor: is_joinedbg, borderColor: "#E5E7EB", opacity: isFull && !is_joined ? 0.4 : 1 }, // ✅ เพิ่มตรงนี้
         pressed && styles.pressed,
       ]}
+      disabled={isFull && !is_joined}
     >
       {/* แสดงรูปบอส */}
       <View>
@@ -173,7 +176,7 @@ export function RoomCardMinimal({
                 style={[
                   styles.statusBadge,
                   {
-                    backgroundColor: "#dab75dff",
+                    backgroundColor: "#d67547ff",
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 4,
@@ -184,6 +187,23 @@ export function RoomCardMinimal({
               </View>
             )}
 
+            {/* เฉพาะ VIP */}
+            {room.vip_only && (
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: "#EFBF04",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                  },
+                ]}
+              >
+                <Text style={[styles.statusText,{color: "#666666"}]}>VIP</Text>
+              </View>
+            )}
+
             <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
               <Text style={styles.statusText}>{statusText}</Text>
             </View>
@@ -191,23 +211,26 @@ export function RoomCardMinimal({
         </View>
       </View>
       {/* VIP */}
-      {room.vip_only && (
+      {room.special ? (
         <View style={{ position: "absolute", top: 12, left: 0 }}>
           <View
             style={[
               styles.vipBadge,
               {
-                backgroundColor: "#EFBF04",
+                backgroundColor: "#1bad23ff",
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 4,
               },
             ]}
           >
-            <Text style={[styles.statusText, { color: "#666666" }]}>VIP</Text>
+            <Ionicons name="paw" color="#ffffff" size={14} />
+            <Text style={[styles.statusText, { color: "#ffffffff" }]}>
+              Special
+            </Text>
           </View>
         </View>
-      )}
+      ) : null}
     </Pressable>
   );
 }
@@ -264,18 +287,18 @@ const styles = StyleSheet.create({
   people: { flexDirection: "row", alignItems: "center" },
   metaText: { color: "#374151", fontSize: 12, fontFamily: "KanitSemiBold" },
 
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 6 },
+  statusBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   vipBadge: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     paddingVertical: 2,
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
+    borderTopRightRadius: 6,
+    borderBottomRightRadius: 6,
   },
   statusText: {
     color: "#fff",
     fontSize: 12,
     letterSpacing: 0.2,
-    fontFamily: "KanitSemiBold",
+    fontFamily: "KanitMedium",
   },
 
   note: { marginTop: 6, color: "#4B5563", fontSize: 14 },

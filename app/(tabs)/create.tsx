@@ -477,7 +477,7 @@ export default function CreateRoom() {
                           color: minLevel === lv ? "#fff" : "#111827",
                         }}
                       >
-                        {lv}
+                        {lv} {"+"}
                       </Text>
                     </TouchableOpacity>
                   ))}

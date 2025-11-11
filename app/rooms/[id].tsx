@@ -42,14 +42,13 @@ import { openPokemonGo } from "../../lib/openpokemongo";
 import { showSnack } from "../../components/Snackbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatFriendCode } from "../../function/formatFriendCode";
-import { useNotifyRoomExpired } from "../../function/RoomExpiredNoti";
-import { useNotifyRoomExpiredLocal } from "../../function/LocalPushExpire";
-import * as Notifications from "expo-notifications";
 import ShareRoom from "../../components/ShareRoom";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { Friend, getFriendAvailable } from "../../lib/friend";
 import { AvatarComponent } from "../../components/Avatar";
 import { logTypeColor, iconType } from "@/hooks/logTypeColor";
+import { countdown } from "@/function/countdown";
+import { profile } from "../../lib/auth";
 
 type Member = {
   user_id: number;
@@ -86,6 +85,7 @@ type RoomPayload = {
     raid_boss_id: number;
     pokemon_image: string;
     boss: string;
+    special: boolean | null;
     start_time: string;
     status: "active" | "closed" | "canceled" | "invited" | string;
     current_members: number;
@@ -94,7 +94,7 @@ type RoomPayload = {
     current_chat_messages: number;
     is_full?: boolean;
     note?: string | null;
-    min_level: number | null;
+    min_level: number;
     vip_only: boolean | null;
     lock_room: boolean | null;
     password_room: string | null;
@@ -181,7 +181,6 @@ export default function RoomDetail() {
   const [forseReview, setForseReview] = useState(true);
 
   const [copied, setCopied] = useState(false); // คัดลอกชื่อผู้เล่น
-  const [room_expire, setRoom_Expire] = useState(false);
 
   // เปิด Modal เชิญเพื่อน
   const [onInvitedFriend, setOnInvitedFriend] = useState(false);
@@ -220,6 +219,16 @@ export default function RoomDetail() {
   const [kickmember, setKickmember] = useState<number | false>(false); // เตะ
   const [rating, setRating] = useState<number>(5);
 
+  // คลูดาวน์ ก่อนเข้าห้อง
+  const [onCooldown, setOnCooldown] = useState(false);
+  const [left, setLeft] = useState(10);
+  const [running, setRunning] = useState(false);
+  const [onJoin, setOnjoin] = useState(false);
+
+  // User VIP
+  const [vip, setVip] = useState(false);
+  const [userlevel, setUserlevel] = useState(0);
+
   // ป้องกันสั่งปิดห้องซ้ำ
   const closingRef = useRef(false);
 
@@ -234,6 +243,16 @@ export default function RoomDetail() {
     const d = new Date(iso);
     return isNaN(d.getTime()) ? new Date(s) : d;
   }
+
+  const cooldown = useCallback(async () => {
+    if (running) return;
+    setRunning(true);
+    const ok = await countdown(10, setLeft); // นับ 10→0
+    if (ok) {
+      return setOnjoin(true);
+    }
+    setRunning(false);
+  }, [running]);
 
   /** >1ชม = ชม.นาทีวินาที, <1ชม = นาทีวินาที, <1นาที = วินาที */
   function useCountdown(start: string) {
@@ -324,9 +343,28 @@ export default function RoomDetail() {
     }
   }, [roomId, loglimit]);
 
+  // โหลด Profile
+  const loadUser = async () => {
+    try {
+      const { user } = await profile();
+      setUserlevel(user.level);
+      if (user.plan === "premium") {
+        return setVip(true);
+      }
+    } catch (e: any) {
+      showSnack({
+        text: `ผิดพลาด${
+          e?.message ? ` : ${e.message}` : "โหลดข้อมูลไม่สำเร็จ"
+        }`,
+        variant: "error",
+      });
+    }
+  };
+
   // เริ่มโหลดครั้งแรก
   useEffect(() => {
     load();
+    loadUser();
   }, [load]);
 
   // ดู log เพิ่มเติม
@@ -458,48 +496,69 @@ export default function RoomDetail() {
 
   // --- ฟังก์ชันจัดการต่าง ๆ ---
 
-  // หมดเวลาห้อง noti แจ้งเจ้าของห้อง ว่าห้องตัวเอง หมดเวลาแล้วนะ
-  const noti_expire = async () => {
-    try {
-      const message = {
-        to: data.room.owner.device_token,
-        sound: "default",
-        title: `ห้องของคุณหมดเวลาแล้ว`,
-        body: `ห้องของคุณหมดเวลาแล้ว`,
-        data: {
-          type: "expire_room",
-          room_id: roomId,
-          url: `pogopartyth://rooms/${roomId}`,
-        },
-      };
-      const res = await fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Accept-encoding": "gzip, deflate",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
-      console.log("loaded friends:", res);
-    } catch (err: any) {
-      Alert.alert("เชิญเพื่อนไม่สำเร็จ", err?.message || "ลองใหม่อีกครั้ง");
-    }
-  };
+  // // หมดเวลาห้อง noti แจ้งเจ้าของห้อง ว่าห้องตัวเอง หมดเวลาแล้วนะ
+  // const noti_expire = async () => {
+  //   try {
+  //     const message = {
+  //       to: data.room.owner.device_token,
+  //       sound: "default",
+  //       title: `ห้องของคุณหมดเวลาแล้ว`,
+  //       body: `ห้องของคุณหมดเวลาแล้ว`,
+  //       data: {
+  //         type: "expire_room",
+  //         room_id: roomId,
+  //         url: `pogopartyth://rooms/${roomId}`,
+  //       },
+  //     };
+  //     const res = await fetch("https://exp.host/--/api/v2/push/send", {
+  //       method: "POST",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Accept-encoding": "gzip, deflate",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(message),
+  //     });
+  //     console.log("loaded friends:", res);
+  //   } catch (err: any) {
+  //     Alert.alert("เชิญเพื่อนไม่สำเร็จ", err?.message || "ลองใหม่อีกครั้ง");
+  //   }
+  // };
 
   // เข้าร่วมห้อง
   const onJoinLeave = async () => {
-    if (room.lock_room && !isMember && !isOwner) {
+    if (isMember && !isOwner) {
+      // ถ้าเป็นสมาชิก แต่ไม่ใช้หัวห้อง
+      setExitRoom(true);
+      return;
+    } else if (room.lock_room && !isMember && !isOwner) {
+      // ถ้าห้อง ล็อค ไม่ใช้หัวห้อง และ ไม่ใส่สมาชิก
       setOnPassword(true);
       return;
-    }
-    if (isMember && !isOwner) {
-      setExitRoom(true);
+    } else if (userlevel < room.min_level) {
+      // เวเวลมากกว่า ที่ห้องตั้งไว้
+      showSnack({
+        text: "ไม่สามารถเข้าร่วมได้ เวเวลไม่พอ",
+        variant: "error",
+      });
+      return;
+    } else if (room.vip_only && !vip) {
+      // ถ้าห้องเฉพาะ VIP และ โปรไฟล์ ไม่เป็น VIP
+      showSnack({
+        text: "เฉพาะผู้ใช้ VIP เท่านั้น",
+        variant: "error",
+      });
+      return;
+    } else if (room.special && !vip) {
+      // ถ้าบอสเป็น special และ ไม่ใช้ VIP
+      setOnCooldown(true);
+      cooldown();
       return;
     }
     onJoinRoom();
   };
 
+  // เช็ครหัสผ่าน
   const checkPassword = async () => {
     if (passwordRoom === room.password_room) {
       setOnPassword(false);
@@ -533,6 +592,7 @@ export default function RoomDetail() {
       showSnack({ text: e.message, variant: "error" });
     } finally {
       setLoading(false);
+      setOnCooldown(false);
     }
   };
 
@@ -860,7 +920,7 @@ export default function RoomDetail() {
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={styles.title}>
-                {room.boss} #{room.id}
+                {room.boss} #{room.id} {vip ? "true" : "false"} {userlevel}
               </Text>
               <View style={[styles.badge, { backgroundColor: statusBg }]}>
                 <Text style={styles.badgeText}>{statusText}</Text>
@@ -937,12 +997,34 @@ export default function RoomDetail() {
 
             {/* รหัสผ่านห้อง */}
             {room.password_room && isMember && (
-              <View style={[styles.roomBage, { backgroundColor: "#469665ff" }]}>
+              <View style={[styles.roomBage, { backgroundColor: "#d6882eff" }]}>
                 <Text style={{ fontFamily: "KanitMedium", color: "#ffffffff" }}>
                   {room.password_room}
                 </Text>
               </View>
             )}
+
+            {/* บอส Special */}
+            {room.special ? (
+              <View
+                style={[
+                  styles.roomBage,
+                  {
+                    backgroundColor: "#1bad23ff",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                  },
+                ]}
+              >
+                <>
+                  <Ionicons name="paw" color="#ffffff" size={14} />
+                  <Text style={{ fontFamily: "KanitMedium", color: "#ffffff" }}>
+                    Special Boss
+                  </Text>
+                </>
+              </View>
+            ) : null}
           </View>
 
           {/* ชื่อ และ รหัสหัวห้อง */}
@@ -1792,6 +1874,86 @@ export default function RoomDetail() {
         </View>
       </Modal>
 
+      {/* Modal: นับเวลาถอยหลังเข้าห้อง */}
+      <Modal visible={onCooldown} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+              }}
+            >
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
+                ผู้ใช้
+              </Text>
+              <View
+                style={{
+                  backgroundColor: "#EFBF04",
+                  paddingHorizontal: 8,
+                  borderRadius: 4,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "KanitSemiBold",
+                    fontSize: 16,
+                    color: "#666666",
+                  }}
+                >
+                  VIP
+                </Text>
+              </View>
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
+                จะสามารถเข้าห้องได้ก่อน 10 วินาที
+              </Text>
+            </View>
+
+            {!onJoin && (
+              <View style={{ alignItems: "center", padding: 8 }}>
+                <Text
+                  style={{
+                    fontSize: 40,
+                    fontFamily: "KanitSemiBold",
+                    color: "#414141ff",
+                  }}
+                >
+                  {String(left).padStart(2)}
+                </Text>
+              </View>
+            )}
+
+            {onJoin && (
+              <TouchableOpacity
+                onPress={onJoinRoom}
+                style={[styles.modalBtn, { backgroundColor: "#10B981" }]}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#ffffffff" />
+                ) : (
+                  <Text style={[styles.modalBtnText, { color: "#ffffffff" }]}>
+                    เข้าร่วม
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              onPress={() => {
+                setOnCooldown(false);
+              }}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Modal: ระบุรหัสผ่านห้อง กรณีห้อง ล็อค */}
       <Modal
         visible={onPassword && room.status === "active"}
@@ -2425,8 +2587,7 @@ const styles = StyleSheet.create({
     fontFamily: "KanitMedium",
   },
   friendCodeText: {
-    color: "#374151",
-    marginLeft: 6,
+    color: "#2b2b2bff",
     fontSize: 24,
     fontFamily: "KanitMedium",
   },
