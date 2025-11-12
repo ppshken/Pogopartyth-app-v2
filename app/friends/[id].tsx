@@ -380,7 +380,9 @@ export default function Profile() {
           <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
           <View style={{ flex: 1 }} />
           <Text style={styles.rowValue}>
-            {formatFriendCode(user?.friend_code || "-")}
+            {statusFriend?.status === "accepted"
+              ? formatFriendCode(user?.friend_code || "-")
+              : "-"}
           </Text>
         </View>
 
@@ -425,12 +427,13 @@ export default function Profile() {
         </View>
 
         {/* ปุ่มการทำงาน */}
+        {statusFriend?.friendship_id && (
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           {/* ปุ่มแชท */}
           <TouchableOpacity
             style={[
               styles.outlinechatBtn,
-              { opacity: !statusFriend?.friendship_id ? 0.5 : 1 },
+              { opacity: !statusFriend?.friendship_id ? 0.5 : 1, paddingVertical: 10 },
             ]}
             onPress={openChat}
             disabled={!statusFriend?.friendship_id}
@@ -444,14 +447,18 @@ export default function Profile() {
           </TouchableOpacity>
 
           {/* ปุ่มคัดลอกรหัสเพิ่มเพื่อน */}
-          <TouchableOpacity
-            style={styles.outlineBtn}
-            onPress={onCopyFriendCode}
-          >
-            <Ionicons name="copy-outline" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
-          </TouchableOpacity>
-        </View>
+          {statusFriend?.status === "accepted" && (
+            <TouchableOpacity
+              style={styles.outlineBtn}
+              onPress={onCopyFriendCode}
+            >
+              <Ionicons name="copy-outline" size={16} color="#111827" />
+              <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
+            </TouchableOpacity>
+          )}
+        </View>          
+        )}
+
       </View>
 
       {/* Modal: ยืนยันการรับเพื่อน */}

@@ -562,6 +562,23 @@ export default function RoomDetail() {
   const checkPassword = async () => {
     if (passwordRoom === room.password_room) {
       setOnPassword(false);
+      if (userlevel < room.min_level) {
+        // เวเวลมากกว่า ที่ห้องตั้งไว้
+        setPasswordRoom("");
+        showSnack({
+          text: "ไม่สามารถเข้าร่วมได้ เวเวลไม่พอ",
+          variant: "error",
+        });
+        return;
+      } else if (room.vip_only && !vip) {
+        // ถ้าห้องเฉพาะ VIP และ โปรไฟล์ ไม่เป็น VIP
+        setPasswordRoom("");
+        showSnack({
+          text: "เฉพาะผู้ใช้ VIP เท่านั้น",
+          variant: "error",
+        });
+        return;
+      }
       onJoinRoom();
       return;
     }
@@ -974,7 +991,7 @@ export default function RoomDetail() {
             {room.min_level && (
               <View style={[styles.roomBage, { backgroundColor: "#ef5a04ff" }]}>
                 <Text style={{ fontFamily: "KanitMedium", color: "#ffffffff" }}>
-                  Lv.{room.min_level}+
+                  เลเวลขั้นต่ำ {room.min_level}+
                 </Text>
               </View>
             )}
@@ -1034,7 +1051,7 @@ export default function RoomDetail() {
               style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
             >
               <Text style={styles.friendCodeText}>
-                {formatFriendCode(room.owner?.friend_code || "-")}
+                {isMember ? formatFriendCode(room.owner?.friend_code || "-") : "-"}
               </Text>
             </View>
           </View>
@@ -1448,7 +1465,7 @@ export default function RoomDetail() {
                       >
                         <Text
                           style={{
-                            fontFamily: "KanitRegular",
+                            fontFamily: "KanitMedium",
                             fontSize: 13,
                             color: icontypecolor ? icontypecolor : "#252525ff",
                           }}
@@ -1462,7 +1479,10 @@ export default function RoomDetail() {
 
                         {item.target && (
                           <Text
-                            style={{ fontFamily: "KanitMedium", fontSize: 13 }}
+                            style={{
+                              fontFamily: "KanitSemiBold",
+                              fontSize: 13,
+                            }}
                           >
                             {item.target}
                           </Text>
