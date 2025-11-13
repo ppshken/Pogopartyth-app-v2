@@ -158,6 +158,14 @@ export default function Layout() {
             name="friends/chat"
             options={{ title: "แชท", headerShown: true }}
           />
+          <Stack.Screen
+            name="package/premium_plan"
+            options={{
+              title: "Premium",
+              headerShown: true,
+              animation: "slide_from_bottom",
+            }}
+          />
         </Stack>
         <SnackHost />
 

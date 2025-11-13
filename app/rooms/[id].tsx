@@ -49,6 +49,7 @@ import { AvatarComponent } from "../../components/Avatar";
 import { logTypeColor, iconType } from "@/hooks/logTypeColor";
 import { countdown } from "@/function/countdown";
 import { profile } from "../../lib/auth";
+import { BossImage } from "../../components/ฺBossImage";
 
 type Member = {
   user_id: number;
@@ -86,6 +87,7 @@ type RoomPayload = {
     pokemon_image: string;
     boss: string;
     special: boolean | null;
+    boss_type: string;
     start_time: string;
     status: "active" | "closed" | "canceled" | "invited" | string;
     current_members: number;
@@ -548,6 +550,7 @@ export default function RoomDetail() {
         text: "เฉพาะผู้ใช้ VIP เท่านั้น",
         variant: "error",
       });
+      router.push("/package/premium_plan");
       return;
     } else if (room.special && !vip) {
       // ถ้าบอสเป็น special และ ไม่ใช้ VIP
@@ -933,11 +936,22 @@ export default function RoomDetail() {
       >
         {/* Header */}
         <View style={styles.headerCard}>
-          <Image source={{ uri: room.pokemon_image }} style={styles.cover} />
+          <View style={{ marginRight: 12 }}>
+            <BossImage
+              pokemon_image={room?.pokemon_image}
+              boss_type={room?.boss_type}
+              width={92}
+              height={92}
+              borderRadius={12}
+              iconheight={30}
+              iconwidth={30}
+            />
+          </View>
+
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={styles.title}>
-                {room.boss} #{room.id} {vip ? "true" : "false"} {userlevel}
+                {room.boss} #{room.id}
               </Text>
               <View style={[styles.badge, { backgroundColor: statusBg }]}>
                 <Text style={styles.badgeText}>{statusText}</Text>
@@ -1000,15 +1014,27 @@ export default function RoomDetail() {
             {room.vip_only && (
               <View style={[styles.roomBage, { backgroundColor: "#EFBF04" }]}>
                 <Text style={{ fontFamily: "KanitMedium", color: "#666666" }}>
-                  VIP
+                  เฉพาะ Premium
                 </Text>
               </View>
             )}
 
             {/* ล็อคห้อง */}
             {room.lock_room && (
-              <View style={[styles.roomBage, { backgroundColor: "#ebebebff" }]}>
+              <View
+                style={[
+                  styles.roomBage,
+                  {
+                    backgroundColor: "#ebebebff",
+                    flexDirection: "row",
+                    gap: 8,
+                  },
+                ]}
+              >
                 <Ionicons name="bag" size={18} color="#3066dbff" />
+                <Text style={{ fontFamily: "KanitMedium", color: "#666666" }}>
+                  ห้องส่วนตัว
+                </Text>
               </View>
             )}
 
@@ -1051,7 +1077,9 @@ export default function RoomDetail() {
               style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
             >
               <Text style={styles.friendCodeText}>
-                {isMember ? formatFriendCode(room.owner?.friend_code || "-") : "-"}
+                {isMember
+                  ? formatFriendCode(room.owner?.friend_code || "-")
+                  : "-"}
               </Text>
             </View>
           </View>
@@ -1364,7 +1392,7 @@ export default function RoomDetail() {
           {isMember && !joinFulled && room.status === "active" && (
             <TouchableOpacity
               onPress={loadFriends}
-              style={[styles.outlineBtn, { backgroundColor: "#7b3281ff" }]}
+              style={[styles.outlineBtn, { backgroundColor: "#2563EB" }]}
             >
               <Ionicons name="people-outline" size={16} color="#ffffffff" />
               <Text style={styles.outlineBtnText}>เชิญเพื่อนของคุณ</Text>
@@ -1984,7 +2012,7 @@ export default function RoomDetail() {
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>กรุณาระบุรหัสผ่านห้อง</Text>
             <TextInput
-              placeholder="อย่างน้อย 8 ตัวอักษร"
+              placeholder="อย่างน้อย 6 ตัวอักษร"
               placeholderTextColor="#9CA3AF"
               value={passwordRoom}
               onChangeText={setPasswordRoom}
@@ -1993,18 +2021,37 @@ export default function RoomDetail() {
                 paddingVertical: 10,
                 paddingHorizontal: 12,
                 color: "#000000ff",
-                fontSize: 15,
+                fontSize: 14,
                 fontFamily: "KanitRegular",
                 borderWidth: 1,
                 borderColor: "#dbdbdbff",
                 borderRadius: 8,
               }}
             />
+            {passwordRoom && passwordRoom.length < 6 && (
+              <Text
+                style={{
+                  fontFamily: "KanitRegular",
+                  fontSize: 12,
+                  color: "red",
+                  marginLeft: 2,
+                }}
+              >
+                อย่างน้อย 6 ตัวอักษร
+              </Text>
+            )}
             <TouchableOpacity
               onPress={checkPassword}
-              style={[styles.modalBtn, { backgroundColor: "#10B981" }]}
+              style={[
+                styles.modalBtn,
+                {
+                  backgroundColor: "#10B981",
+                  opacity: passwordRoom.length < 6 ? 0.6 : 1,
+                },
+              ]}
+              disabled={passwordRoom.length < 6}
             >
-              {loadingClose ? (
+              {loading ? (
                 <ActivityIndicator size="small" color="#111827" />
               ) : (
                 <Text style={[styles.modalBtnText, { color: "#ffffffff" }]}>
@@ -2426,42 +2473,86 @@ export default function RoomDetail() {
                 renderItem={({ item }) => {
                   const invited = !!invitedMap[item.id]; // เช็คจาก invitedMap
                   const loading = !!loadingMap[item.id];
+                  const teamColor =
+                    item.team === "Valor"
+                      ? "#ef4444ff"
+                      : item.team === "Mystic"
+                      ? "#3b82f6ff"
+                      : item.team === "Instinct"
+                      ? "#ffc107"
+                      : "#9CA3AF";
                   return (
                     <View style={styles.itemRow}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setOnInvitedFriend(false);
-                          router.push(`/friends/${item.id}`);
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 10,
                         }}
                       >
-                        {/* Avatar */}
-                        <AvatarComponent
-                          avatar={item.avatar}
-                          username={item.username}
-                          plan={item.plan}
-                          width={48}
-                          height={48}
-                          borderRadius={999}
-                          fontsize={10}
-                        />
-                      </TouchableOpacity>
-                      <View style={{ flex: 1 }}>
-                        <Text
-                          style={{
-                            fontFamily: "KanitSemiBold",
-                            color: "#111827",
+                        <TouchableOpacity
+                          onPress={() => {
+                            setOnInvitedFriend(false);
+                            router.push(`/friends/${item.id}`);
                           }}
                         >
-                          {item.username}
-                        </Text>
-                        <Text
-                          style={{
-                            fontFamily: "KanitMedium",
-                            color: "#111827",
-                          }}
-                        >
-                          Level {item.level}
-                        </Text>
+                          {/* Avatar */}
+                          <AvatarComponent
+                            avatar={item.avatar}
+                            username={item.username}
+                            plan={item.plan}
+                            width={48}
+                            height={48}
+                            borderRadius={999}
+                            fontsize={10}
+                          />
+                        </TouchableOpacity>
+
+                        <View>
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Text
+                              style={{
+                                fontFamily: "KanitSemiBold",
+                                color: "#111827",
+                              }}
+                            >
+                              {item.username}
+                            </Text>
+                            <View
+                              style={[
+                                styles.levelBage,
+                                { backgroundColor: teamColor },
+                              ]}
+                            >
+                              <Text
+                                style={{
+                                  fontFamily: "KanitMedium",
+                                  color: "#ffffffff",
+                                }}
+                              >
+                                Level {item.level}
+                              </Text>
+                            </View>
+                          </View>
+
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: 8,
+                            }}
+                          >
+                            <Ionicons name="star" color="#dfaf11ff" />
+                            <Text
+                              style={{
+                                fontFamily: "KanitMedium",
+                                color: "#111827",
+                              }}
+                            >
+                              {item.rating_owner ? item.rating_owner : "-"}
+                            </Text>
+                          </View>
+                        </View>
                       </View>
 
                       {item.device_token && (
@@ -2834,17 +2925,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#fff",
     gap: 8,
+    flex: 1,
+    justifyContent: "space-between",
   },
   roomRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     marginBottom: 12,
+    flexWrap: "wrap",
   },
   roomBage: {
     backgroundColor: "#123123",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 6,
+  },
+  levelBage: {
+    padding: 2,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 4,
   },
 });

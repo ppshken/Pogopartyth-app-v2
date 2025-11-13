@@ -18,7 +18,7 @@ type Props = {
 
 export default function HowToJoinRoomModal({ visible, onClose }: Props) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       {/* แตะพื้นหลังเพื่อปิด */}
       <Pressable style={styles.overlay} onPress={onClose}>
         {/* กันไม่ให้แตะทะลุเนื้อหา */}
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   bulletDot: { color: "#111827", fontSize: 14, lineHeight: 20, fontFamily: "KanitBold" },
-  bulletText: { color: "#374151", fontSize: 14, flex: 1, lineHeight: 20, fontFamily: "KanitRegular" },
+  bulletText: { color: "#374151", fontSize: 14, flex: 1, lineHeight: 20, fontFamily: "KanitMedium" },
   closeBtn: {
     marginTop: 8,
     backgroundColor: "#111827",

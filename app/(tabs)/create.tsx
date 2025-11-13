@@ -22,6 +22,7 @@ import { TierStars } from "../../components/TierStars";
 import { showSnack } from "../../components/Snackbar";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { profile } from "../../lib/auth";
+import { BossImage } from "../../components/ฺBossImage";
 
 type RaidBoss = {
   raid_boss_id: number;
@@ -181,7 +182,6 @@ export default function CreateRoom() {
 
   useEffect(() => {
     loadBosses();
-    console.log("vip", vip);
   }, [loadBosses]);
 
   const refreshTimeSlots = async () => {
@@ -267,25 +267,14 @@ export default function CreateRoom() {
                 }}
               >
                 <View>
-                  <Image
-                    source={require("assets/background-wild-area 2025.png")}
-                    style={{
-                      position: "absolute",
-                      width: 52,
-                      height: 52,
-                      borderRadius: 8,
-                      opacity: 0.8,
-                      borderWidth: 2,
-                      borderColor: "#7b3281ff",
-                    }}
-                  />
-                  <Image
-                    source={{ uri: boss?.pokemon_image || FALLBACK }}
-                    style={{
-                      width: 52,
-                      height: 52,
-                      borderRadius: 8,
-                    }}
+                  <BossImage
+                    pokemon_image={boss?.pokemon_image}
+                    boss_type={boss?.type}
+                    width={52}
+                    height={52}
+                    borderRadius={8}
+                    iconheight={18}
+                    iconwidth={18}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -305,23 +294,28 @@ export default function CreateRoom() {
 
                     {/* Special Boss */}
                     {boss?.special ? (
-                      <View
-                        style={{
-                          alignItems: "center",
-                          backgroundColor: "#EFBF04",
-                          borderRadius: 4,
-                          paddingHorizontal: 6,
-                        }}
-                      >
-                        <Text
+                      <>
+                        <View
                           style={{
-                            color: "#666666",
-                            fontFamily: "KanitMedium",
+                            alignItems: "center",
+                            flexDirection: "row",
+                            backgroundColor: "#1bad23ff",
+                            borderRadius: 4,
+                            paddingHorizontal: 6,
+                            gap: 4,
                           }}
                         >
-                          VIP
-                        </Text>
-                      </View>
+                          <Ionicons name="paw" color="#ffffff" size={14} />
+                          <Text
+                            style={{
+                              color: "#ffffffff",
+                              fontFamily: "KanitMedium",
+                            }}
+                          >
+                            Special
+                          </Text>
+                        </View>
+                      </>
                     ) : null}
                   </View>
                   {!!boss && (
@@ -435,9 +429,26 @@ export default function CreateRoom() {
           </View>
 
           {/* VIP Zone */}
-          <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            disabled={vip}
+            onPress={() => router.push("/package/premium_plan")}
+          >
             {/* เลเวลขั้นต่ำ */}
             <View style={{ opacity: vip ? 1 : 0.3 }}>
+              <Text style={{ fontFamily: "KanitSemiBold", fontSize: 24 }}>
+                เฉพาะ VIP
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "KanitMedium",
+                  fontSize: 14,
+                  color: "#858585ff",
+                  marginBottom: 14,
+                }}
+              >
+                ผู้ใช้ระดับ VIP จะสามารถตั้งค่าห้อง เพิ่มเติมได้
+              </Text>
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
               >
@@ -603,6 +614,18 @@ export default function CreateRoom() {
                     style={[styles.dropdown, { fontFamily: "KanitRegular" }]}
                     placeholderTextColor="#9CA3AF"
                   />
+                  {passwordRoom && passwordRoom.length < 6 && (
+                    <Text
+                      style={{
+                        fontFamily: "KanitRegular",
+                        fontSize: 12,
+                        color: "red",
+                        marginLeft: 2,
+                      }}
+                    >
+                      อย่างน้อย 6 ตัวอักษร
+                    </Text>
+                  )}
 
                   <Text
                     style={{
@@ -619,7 +642,35 @@ export default function CreateRoom() {
                 </>
               )}
             </View>
-          </View>
+            {!vip && (
+              <View style={{ position: "absolute", left: 125, top: 160 }}>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <Text style={{ fontFamily: "KanitSemiBold" }}>ปลดล็อค</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                      backgroundColor: "#EFBF04",
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#666666",
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      Premium
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
 
           {/* Submit */}
           <TouchableOpacity
@@ -693,9 +744,11 @@ export default function CreateRoom() {
                 onSubmitEditing={loadBosses}
                 style={[styles.searchInput, { fontFamily: "KanitRegular" }]}
               />
-              <TouchableOpacity onPress={loadBosses}>
-                <Text style={styles.link}>ค้นหา</Text>
-              </TouchableOpacity>
+              {q ? (
+                <TouchableOpacity onPress={() => setQ("")}>
+                  <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+                </TouchableOpacity>
+              ) : null}
             </View>
 
             {loadingBoss ? (
@@ -725,16 +778,16 @@ export default function CreateRoom() {
                       ]}
                       disabled={bossVip}
                     >
-                      <Image
-                        source={{ uri: item.pokemon_image || FALLBACK }}
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 10,
-                          marginRight: 12,
-                          backgroundColor: "#F3F4F6",
-                        }}
+                      <BossImage
+                        pokemon_image={item?.pokemon_image}
+                        boss_type={item?.type}
+                        width={48}
+                        height={48}
+                        borderRadius={12}
+                        iconheight={18}
+                        iconwidth={18}
                       />
+
                       <View style={{ flex: 1 }}>
                         <View
                           style={{
@@ -759,23 +812,6 @@ export default function CreateRoom() {
                               <View
                                 style={{
                                   alignItems: "center",
-                                  backgroundColor: "#EFBF04",
-                                  borderRadius: 4,
-                                  paddingHorizontal: 6,
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    color: "#666666",
-                                    fontFamily: "KanitMedium",
-                                  }}
-                                >
-                                  VIP
-                                </Text>
-                              </View>
-                              <View
-                                style={{
-                                  alignItems: "center",
                                   flexDirection: "row",
                                   backgroundColor: "#1bad23ff",
                                   borderRadius: 4,
@@ -783,7 +819,11 @@ export default function CreateRoom() {
                                   gap: 4,
                                 }}
                               >
-                                <Ionicons name="paw" color="#ffffff" size={14} />
+                                <Ionicons
+                                  name="paw"
+                                  color="#ffffff"
+                                  size={14}
+                                />
                                 <Text
                                   style={{
                                     color: "#ffffffff",
@@ -1084,6 +1124,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 10,
     backgroundColor: "#fff",
+    gap: 12,
   },
 
   btnOutline: {

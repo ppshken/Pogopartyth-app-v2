@@ -29,6 +29,7 @@ type Room = {
   pokemon_image: string;
   boss: string;
   special: boolean;
+  boss_type: string;
   start_time: string; // "YYYY-MM-DD HH:mm:ss"
   status: string;
   current_members: number;
@@ -145,9 +146,9 @@ export default function RoomsIndex() {
           data={[{ id: 0, name: "ทั้งหมด", image: "" }, ...bossOptions]}
           keyExtractor={(b) => String(b.id)}
           horizontal
-          bounces={false}                 // iOS: ไม่เด้ง
-          alwaysBounceVertical={false}    // iOS: ไม่บังคับเด้ง
-          overScrollMode="never"          // Android: ปิด overscroll glow
+          bounces={false} // iOS: ไม่เด้ง
+          alwaysBounceVertical={false} // iOS: ไม่บังคับเด้ง
+          overScrollMode="never" // Android: ปิด overscroll glow
           showsHorizontalScrollIndicator={false}
           // ให้ content สูงเท่าบาร์ และจัดให้อยู่กลางแนวแกนตั้ง
           contentContainerStyle={styles.bossBarContent}
@@ -198,7 +199,7 @@ export default function RoomsIndex() {
           removeClippedSubviews={false} // กันการคำนวณความสูงแปลก ๆ บางเคส
         />
       </View>
-      
+
       {/* รายการห้อง */}
       <FlatList
         data={filtered}
@@ -209,9 +210,17 @@ export default function RoomsIndex() {
         }
         ListEmptyComponent={
           <Text
-            style={{ color: "#9CA3AF", textAlign: "center", marginTop: 24, fontSize: 16, fontFamily: "KanitMedium" }}
+            style={{
+              color: "#9CA3AF",
+              textAlign: "center",
+              marginTop: 24,
+              fontSize: 16,
+              fontFamily: "KanitMedium",
+            }}
           >
-            {q || selectedBossId ? "ไม่พบห้องที่ตรงกับตัวกรอง" : "ยังไม่มีห้องบอสในขณะนี้"}
+            {q || selectedBossId
+              ? "ไม่พบห้องที่ตรงกับตัวกรอง"
+              : "ยังไม่มีห้องบอสในขณะนี้"}
           </Text>
         }
         renderItem={({ item }) => (
@@ -243,7 +252,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
   },
-  searchInput: { flex: 1, color: "#111827", fontSize: 14, fontFamily: "KanitMedium" },
+  searchInput: {
+    flex: 1,
+    color: "#111827",
+    fontSize: 14,
+    fontFamily: "KanitMedium",
+  },
 
   // ✅ บาร์ตัวเลือก “สูงคงที่”
   bossBar: {
@@ -252,7 +266,7 @@ const styles = StyleSheet.create({
   },
   bossBarContent: {
     height: BAR_H, // ล็อกความสูงเท่าบาร์
-    paddingHorizontal: 16                             ,
+    paddingHorizontal: 16,
     gap: 8,
     alignItems: "center", // จัดชิปให้อยู่กลางแนวตั้งเสมอ
   },

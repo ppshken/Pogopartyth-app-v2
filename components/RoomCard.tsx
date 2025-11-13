@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TierStars } from "../components/TierStars";
+import { BossImage } from "../components/ฺBossImage";
 
 type Room = {
   id: number;
@@ -9,6 +10,7 @@ type Room = {
   pokemon_image: string;
   boss: string;
   special: boolean;
+  boss_type: string;
   start_time: string;
   status: string;
   current_members: number;
@@ -92,22 +94,26 @@ export function RoomCardMinimal({
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: is_joinedbg, borderColor: "#E5E7EB", opacity: isFull && !is_joined ? 0.4 : 1 }, // ✅ เพิ่มตรงนี้
+        {
+          backgroundColor: is_joinedbg,
+          borderColor: "#E5E7EB",
+          opacity: isFull && !is_joined ? 0.4 : 1,
+        }, // ✅ เพิ่มตรงนี้
         pressed && styles.pressed,
       ]}
       disabled={isFull && !is_joined}
     >
       {/* แสดงรูปบอส */}
-      <View>
-        <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
-        {room.lock_room && (
-          <Ionicons
-            name="bag"
-            size={16}
-            color="#3066dbff"
-            style={{ position: "absolute", right: 10, bottom: 0 }}
-          />
-        )}
+      <View style={styles.thumb}>
+        <BossImage
+          pokemon_image={room?.pokemon_image}
+          boss_type={room?.boss_type}
+          width={72}
+          height={72}
+          borderRadius={10}
+          iconheight={20}
+          iconwidth={20}
+        />
       </View>
 
       <View style={{ flex: 1 }}>
@@ -200,7 +206,25 @@ export function RoomCardMinimal({
                   },
                 ]}
               >
-                <Text style={[styles.statusText,{color: "#666666"}]}>VIP</Text>
+                <Text style={[styles.statusText, { color: "#666666" }]}>
+                  VIP
+                </Text>
+              </View>
+            )}
+
+            {room.lock_room && (
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: "#ebebebff",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                  },
+                ]}
+              >
+                <Ionicons name="bag" size={16} color="#3066dbff" />
               </View>
             )}
 
@@ -210,7 +234,7 @@ export function RoomCardMinimal({
           </View>
         </View>
       </View>
-      {/* VIP */}
+      {/* Special*/}
       {room.special ? (
         <View style={{ position: "absolute", top: 12, left: 0 }}>
           <View
@@ -247,10 +271,6 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.9 },
   thumb: {
-    width: 72,
-    height: 72,
-    borderRadius: 10,
-    backgroundColor: "#F3F4F6",
     marginRight: 12,
   },
   topRow: { flexDirection: "row", alignItems: "center" },

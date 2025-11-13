@@ -114,6 +114,7 @@ SELECT
   u.friend_code AS owner_friend_code,
   rb.pokemon_tier AS pokemon_tier,
   rb.special AS special,
+  rb.type AS boss_type,
   (SELECT COUNT(*) FROM user_raid_rooms ur WHERE ur.room_id = r.id) AS current_members,
   $selectIsJoined
 FROM raid_rooms r

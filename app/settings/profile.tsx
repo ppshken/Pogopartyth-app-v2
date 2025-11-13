@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: "#374151",
     fontSize: 14,
-    fontFamily: "KanitRegular",
+    fontFamily: "KanitMedium",
   },
   rowValue: { color: "#111827", fontFamily: "KanitSemiBold" },
 

@@ -42,6 +42,7 @@ $stmt = $db->prepare("
     u.level AS owner_level,
     u.device_token AS owner_device_token,
     rb.special AS special,
+    rb.type AS boss_type,
     (SELECT COUNT(*) FROM chat c WHERE c.raid_rooms_id = r.id) AS current_chat_messages
   FROM raid_rooms r
   JOIN users u ON u.id = r.owner_id
@@ -179,8 +180,9 @@ jsonResponse(true, [
     'raid_boss_id'    => (int)$room['raid_boss_id'],
     'boss'            => $room['boss'],
     'special'         => $room['special'],
+    'boss_type'       => $room['boss_type'],
     'start_time'      => $room['start_time'],
-    'pokemon_image'      => $room['pokemon_image'],
+    'pokemon_image'   => $room['pokemon_image'],
     'max_members'     => (int)$room['max_members'],
     'status'          => $room['status'],
     'owner'           => [
