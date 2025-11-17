@@ -135,7 +135,7 @@ export default function MyRaid() {
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>
-                  {isCreatedSection ? "ห้องที่สร้าง" : "ห้องที่เข้าร่วม"}
+                  {isCreatedSection ? "ห้องที่สร้าง" : "ห้องที่เข้าร่วม"} {data.length? `(${data.length})` : ""}
                 </Text>
               </View>
 

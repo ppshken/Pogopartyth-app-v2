@@ -235,7 +235,7 @@ export default function CreateRoom() {
       router.push(`/rooms/${room.id}`);
     } catch (e: any) {
       showSnack({
-        text: `สร้างห้องไม่สำเร็จ${e?.message ? ` : ${e.message}` : ""}`,
+        text: `${e?.message ? `${e.message}` : "ผิดพลาด : สร้างห้องไม่สำเร็จ"}`,
         variant: "error",
       });
     } finally {
@@ -437,7 +437,7 @@ export default function CreateRoom() {
             {/* เลเวลขั้นต่ำ */}
             <View style={{ opacity: vip ? 1 : 0.3 }}>
               <Text style={{ fontFamily: "KanitSemiBold", fontSize: 24 }}>
-                เฉพาะ VIP
+                เฉพาะ Premium
               </Text>
               <Text
                 style={{
@@ -447,7 +447,7 @@ export default function CreateRoom() {
                   marginBottom: 14,
                 }}
               >
-                ผู้ใช้ระดับ VIP จะสามารถตั้งค่าห้อง เพิ่มเติมได้
+                ผู้ใช้ระดับ Premium จะสามารถตั้งค่าห้อง เพิ่มเติมได้
               </Text>
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
@@ -468,7 +468,7 @@ export default function CreateRoom() {
                       fontFamily: "KanitMedium",
                     }}
                   >
-                    VIP
+                    Premium
                   </Text>
                 </View>
               </View>
@@ -533,7 +533,7 @@ export default function CreateRoom() {
                       fontFamily: "KanitMedium",
                     }}
                   >
-                    VIP
+                    Premium
                   </Text>
                 </View>
               </View>
@@ -587,7 +587,7 @@ export default function CreateRoom() {
                       fontFamily: "KanitMedium",
                     }}
                   >
-                    VIP
+                    Premium
                   </Text>
                 </View>
               </View>
@@ -768,6 +768,7 @@ export default function CreateRoom() {
                   return (
                     <TouchableOpacity
                       onPress={() => {
+                        if (bossVip) return router.push("/package/premium_plan");
                         setBoss(item);
                         setBossOpen(false);
                       }}
@@ -776,7 +777,7 @@ export default function CreateRoom() {
                         selected && { backgroundColor: "#e5ebf7ff" },
                         bossVip && { opacity: 0.3 },
                       ]}
-                      disabled={bossVip}
+                      
                     >
                       <BossImage
                         pokemon_image={item?.pokemon_image}

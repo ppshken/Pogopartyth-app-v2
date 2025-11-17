@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 type Props = {
   avatar?: string;
@@ -9,6 +10,7 @@ type Props = {
   height: number;
   borderRadius: number;
   fontsize: number;
+  iconsize?: number;
 };
 
 export function AvatarComponent({
@@ -19,8 +21,8 @@ export function AvatarComponent({
   height,
   borderRadius,
   fontsize,
+  iconsize,
 }: Props) {
-
   return (
     <View style={{ alignItems: "center", justifyContent: "center" }}>
       {avatar ? (
@@ -38,7 +40,8 @@ export function AvatarComponent({
           />
           {plan === "premium" && (
             <View style={styles.bage}>
-              <Text style={[styles.textbage,{fontSize: fontsize}]}>VIP</Text>
+              <Ionicons name="sparkles" size={iconsize} color="#666666" />
+              <Text style={[styles.textbage, { fontSize: fontsize }]}>Premium</Text>
             </View>
           )}
         </>
@@ -54,20 +57,15 @@ export function AvatarComponent({
 }
 
 const styles = StyleSheet.create({
-  avatarBorder: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   bage: {
+    flexDirection: "row",
+    alignItems: "center",
     position: "absolute",
-    paddingHorizontal: 8,
+    paddingHorizontal: 2,
     backgroundColor: "#EFBF04",
     borderRadius: 4,
     bottom: 0,
+    gap: 4,
   },
   textbage: {
     fontFamily: "KanitMedium",

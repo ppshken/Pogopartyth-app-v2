@@ -610,6 +610,7 @@ export default function RoomDetail() {
       setLoading(false);
     } catch (e: any) {
       showSnack({ text: e.message, variant: "error" });
+      await load();
     } finally {
       setLoading(false);
       setOnCooldown(false);
@@ -1042,7 +1043,7 @@ export default function RoomDetail() {
             {room.password_room && isMember && (
               <View style={[styles.roomBage, { backgroundColor: "#d6882eff" }]}>
                 <Text style={{ fontFamily: "KanitMedium", color: "#ffffffff" }}>
-                  {room.password_room}
+                  รหัส : {room.password_room}
                 </Text>
               </View>
             )}
@@ -1258,10 +1259,11 @@ export default function RoomDetail() {
                     avatar={m.avatar}
                     username={m.username}
                     plan={m.plan}
-                    width={32}
-                    height={32}
-                    borderRadius={16}
-                    fontsize={8}
+                    width={42}
+                    height={42}
+                    borderRadius={21}
+                    fontsize={9}
+                    iconsize={9}
                   />
 
                   <View style={{ flex: 1 }}>
@@ -1951,7 +1953,7 @@ export default function RoomDetail() {
                     color: "#666666",
                   }}
                 >
-                  VIP
+                  Premium
                 </Text>
               </View>
               <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
@@ -1987,6 +1989,17 @@ export default function RoomDetail() {
                 )}
               </TouchableOpacity>
             )}
+
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/package/premium_plan");
+              }}
+              style={[styles.modalBtn, { backgroundColor: "#EFBF04" }]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#414141ff" }]}>
+                สมัคร Premium
+              </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => {

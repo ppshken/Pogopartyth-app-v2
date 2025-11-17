@@ -179,6 +179,14 @@ export default function PremiumPlanScreen() {
               มองเห็นง่ายในหน้ารายการห้อง
             </Text>
           </View>
+
+          <View style={styles.row}>
+            <Dot premium />
+            <Text style={styles.text}>
+              <Text style={styles.textHighlight}>โปรไฟล์ ไอคอน VIP</Text>{" "}
+              โชว์ความเป็นสมาชิก Premium ของคุณ
+            </Text>
+          </View>
         </View>
 
         {/* Buy button */}

@@ -165,6 +165,7 @@ export default function FriendsScreen() {
           height={48}
           borderRadius={24}
           fontsize={10}
+          iconsize={10}
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>

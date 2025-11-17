@@ -112,6 +112,7 @@ SELECT
   u.username    AS owner_username,
   u.avatar      AS owner_avatar,
   u.friend_code AS owner_friend_code,
+  u.plan        AS owner_plan,
   rb.pokemon_tier AS pokemon_tier,
   rb.special AS special,
   rb.type AS boss_type,
@@ -122,7 +123,16 @@ LEFT JOIN users u ON u.id = r.owner_id
 LEFT JOIN raid_boss rb ON rb.id = r.raid_boss_id
 $joinJoined
 $where
-ORDER BY r.vip_only DESC, r.id ASC
+ORDER BY
+  CASE 
+    WHEN (SELECT COUNT(*) FROM user_raid_rooms ur2 WHERE ur2.room_id = r.id) >= r.max_members 
+      THEN 1 
+    ELSE 0 
+  END ASC,
+  u.plan DESC,
+  rb.special DESC,
+  rb.pokemon_tier DESC,
+  r.id DESC
 ";
 
 // โหมด all=1

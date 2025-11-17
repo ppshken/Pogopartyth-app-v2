@@ -207,7 +207,7 @@ export function RoomCardMinimal({
                 ]}
               >
                 <Text style={[styles.statusText, { color: "#666666" }]}>
-                  VIP
+                  Premium
                 </Text>
               </View>
             )}
