@@ -1266,7 +1266,7 @@ export default function RoomDetail() {
                     iconsize={9}
                   />
 
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, marginLeft: 4 }}>
                     <View
                       style={{
                         flexDirection: "row",
@@ -2475,9 +2475,6 @@ export default function RoomDetail() {
             {loadfriend ? (
               <View style={{ padding: 16, alignItems: "center" }}>
                 <ActivityIndicator />
-                <Text style={{ marginTop: 8, color: "#6B7280" }}>
-                  กำลังโหลด...
-                </Text>
               </View>
             ) : (
               <FlatList
@@ -2504,8 +2501,7 @@ export default function RoomDetail() {
                         }}
                       >
                         <TouchableOpacity
-                          onPress={() => {
-                            setOnInvitedFriend(false);
+                          onPress={() => {                          
                             router.push(`/friends/${item.id}`);
                           }}
                         >

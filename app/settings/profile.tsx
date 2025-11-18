@@ -30,7 +30,7 @@ type FullUser = {
   username: string;
   avatar: string;
   friend_code?: string | null;
-  team: string ;
+  team: string;
   level?: number;
   trainer_name?: string | null;
   created_at?: string | null;
@@ -119,69 +119,108 @@ export default function Profile() {
       refreshControl={<RefreshControl refreshing={false} onRefresh={load} />}
     >
       {/* Card: User */}
-      <View style={styles.card}>
-        {/* Avatar */}
-        <AvatarComponent
-          avatar={user.avatar}
-          username={user.username}
-          plan={user.plan}
-          width={80}
-          height={80}
-          borderRadius={40}
-          fontsize={14}
-        />
-
-        {/* Name + email */}
-        <View style={{ flex: 1 }}>
-          <Text style={styles.name} numberOfLines={1}>
-            {user?.username || "ไม่ระบุชื่อ"}
-          </Text>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {user.google_sub && (
-              <Image
-                source={require("assets/g-logo.png")}
-                style={{ width: 18, height: 18, marginRight: 8 }}
-              />
-            )}
-
-            <Text style={styles.email} numberOfLines={1}>
-              {user?.email || "-"}
-            </Text>
+      <View style={styles.cardheader}>
+        {user.plan === "premium" && (
+          <View style={{ alignItems: "center" }}>
+            <Image
+              source={require("assets/background_premium/background-premium.png")}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: 205,
+                top: 0,
+                borderRadius: 16,
+                opacity: 0.9,
+              }}
+            />
           </View>
+        )}
 
-          {/* Chips / quick actions */}
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 8,
-              justifyContent: "center",
-              marginTop: 8,
-            }}
-          >
-            <View style={[styles.badgeDark]}>
-              <Ionicons name="calendar-outline" size={14} color="#000000ff" />
-              <Text style={styles.badgeDarkText}>
-                {" เข้าร่วมเมื่อ "}
-                {user?.created_at ? user.created_at : "—"}
+        <View style={{ alignItems: "center", padding: 16 }}>
+          {/* Avatar */}
+          <AvatarComponent
+            avatar={user.avatar}
+            username={user.username}
+            plan={user.plan}
+            width={80}
+            height={80}
+            borderRadius={40}
+            fontsize={14}
+          />
+
+          {/* Name + email */}
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[
+                styles.name,
+                { color: user.plan === "premium" ? "#ffffff" : "#000000" },
+              ]}
+              numberOfLines={1}
+            >
+              {user?.username || "ไม่ระบุชื่อ"}
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {user.google_sub && (
+                <Image
+                  source={require("assets/Google__G__logo.png")}
+                  style={{ width: 18, height: 18, marginRight: 8 }}
+                />
+              )}
+
+              <Text
+                style={[
+                  styles.email,
+                  { color: user.plan === "premium" ? "#ffffff" : "#000000" },
+                ]}
+                numberOfLines={1}
+              >
+                {user?.email || "-"}
               </Text>
             </View>
-            {user?.trainer_name ? (
-              <View style={styles.badgeMuted}>
-                <Ionicons name="ribbon-outline" size={14} color="#111827" />
-                <Text style={styles.badgeMutedText}>
-                  {"  "}
-                  {user.trainer_name}
+
+            {/* Chips / quick actions */}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 8,
+                justifyContent: "center",
+                marginTop: 8,
+              }}
+            >
+              <View style={[styles.badgeDark]}>
+                <Ionicons
+                  name="calendar-outline"
+                  size={14}
+                  color={user.plan === "premium" ? "#ffffff" : "000000"}
+                />
+                <Text
+                  style={[
+                    styles.badgeDarkText,
+                    { color: user.plan === "premium" ? "#ffffff" : "#000000" },
+                  ]}
+                >
+                  {" เข้าร่วมเมื่อ "}
+                  {user?.created_at ? user.created_at : "—"}
                 </Text>
               </View>
-            ) : null}
+              {user?.trainer_name ? (
+                <View style={styles.badgeMuted}>
+                  <Ionicons name="ribbon-outline" size={14} color="#111827" />
+                  <Text style={styles.badgeMutedText}>
+                    {"  "}
+                    {user.trainer_name}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
       </View>
@@ -320,6 +359,19 @@ const styles = StyleSheet.create({
     color: "#111827",
     marginBottom: 12,
     fontFamily: "KanitBold",
+  },
+
+  cardheader: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    marginBottom: 12,
+    shadowColor: "rgba(16,24,40,0.06)",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
   },
 
   card: {

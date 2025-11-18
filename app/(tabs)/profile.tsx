@@ -144,68 +144,110 @@ export default function Profile() {
     >
       {/* Card: User */}
       <View style={styles.card}>
-        {/* Avatar */}
-        <AvatarComponent
-          avatar={user.avatar}
-          username={user.username}
-          plan={user.plan}
-          width={80}
-          height={80}
-          borderRadius={40}
-          fontsize={14}
-        />
-
-        {/* Name + email */}
-        <View style={{ flex: 1 }}>
-          <Text style={styles.name} numberOfLines={1}>
-            {user?.username || "ไม่ระบุชื่อ"}
-          </Text>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {user.google_sub && (
-              <Image
-                source={require("assets/g-logo.png")}
-                style={{ width: 18, height: 18, marginRight: 8 }}
-              />
-            )}
-
-            <Text style={styles.email} numberOfLines={1}>
-              {user?.email || "-"}
-            </Text>
+        {user.plan === "premium" && (
+          <View style={{ alignItems: "center" }}>
+            <Image
+              source={require("assets/background_premium/background-premium.png")}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: 205,
+                top: 0,
+                borderRadius: 16,
+                opacity: 0.9,
+              }}
+            />
           </View>
+        )}
 
-          {/* Chips / quick actions */}
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 8,
-              justifyContent: "center",
-              marginTop: 8,
-            }}
-          >
-            <View style={[styles.badgeDark]}>
-              <Ionicons name="calendar-outline" size={14} color="#000000ff" />
-              <Text style={styles.badgeDarkText}>
-                {" เข้าร่วมเมื่อ "}
-                {user?.created_at ? user.created_at : "—"}
+        <View style={{ alignItems: "center", padding: 16 }}>
+          {/* Avatar */}
+          <AvatarComponent
+            avatar={user.avatar}
+            username={user.username}
+            plan={user.plan}
+            width={80}
+            height={80}
+            borderRadius={40}
+            fontsize={14}
+          />
+
+          {/* Name + email */}
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[
+                styles.name,
+                { color: user.plan === "premium" ? "#ffffff" : "#000000" },
+              ]}
+              numberOfLines={1}
+            >
+              {user?.username || "ไม่ระบุชื่อ"}
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {user.google_sub && (
+                <Image
+                  source={require("assets/Google__G__logo.png")}
+                  style={{ width: 18, height: 18, marginRight: 8 }}
+                />
+              )}
+
+              <Text
+                style={[
+                  styles.email,
+                  { color: user.plan === "premium" ? "#ffffff" : "#000000" },
+                ]}
+                numberOfLines={1}
+              >
+                {user?.email || "-"}
               </Text>
             </View>
-            {user?.trainer_name ? (
-              <View style={styles.badgeMuted}>
-                <Ionicons name="ribbon-outline" size={14} color="#111827" />
-                <Text style={styles.badgeMutedText}>
-                  {"  "}
-                  {user.trainer_name}
+
+            {/* Chips / quick actions */}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 8,
+                justifyContent: "center",
+                marginTop: 8,
+              }}
+            >
+              <View style={[styles.badgeDark]}>
+                <Ionicons
+                  name="calendar-outline"
+                  size={14}
+                  color={user.plan === "premium" ? "#ffffff" : "000000"}
+                />
+                <Text
+                  style={[
+                    styles.badgeDarkText,
+                    {
+                      color:
+                        user.plan === "premium" ? "#ffffffff" : "#000000ff",
+                    },
+                  ]}
+                >
+                  {" เข้าร่วมเมื่อ "}
+                  {user?.created_at ? user.created_at : "—"}
                 </Text>
               </View>
-            ) : null}
+              {user?.trainer_name ? (
+                <View style={styles.badgeMuted}>
+                  <Ionicons name="ribbon-outline" size={14} color="#111827" />
+                  <Text style={styles.badgeMutedText}>
+                    {"  "}
+                    {user.trainer_name}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
       </View>
@@ -220,7 +262,7 @@ export default function Profile() {
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
-                marginBottom: 8,
+                marginTop: 8,
                 gap: 8,
                 borderBottomWidth: 1,
                 borderColor: "#e4e4e4ff",
@@ -308,7 +350,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "#111827",
     marginBottom: 12,
-    fontFamily: "KanitBold",
+    fontFamily: "KanitSemiBold",
   },
 
   card: {
@@ -316,8 +358,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E5E7EB",
-    padding: 16,
-    marginBottom: 12,
+    marginBottom: 16,
     shadowColor: "rgba(16,24,40,0.06)",
     shadowOpacity: 1,
     shadowRadius: 10,
@@ -435,7 +476,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E5E7EB",
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
     marginBottom: 12,
   },
   cardSection: {

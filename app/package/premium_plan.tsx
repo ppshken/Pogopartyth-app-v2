@@ -6,17 +6,28 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { UpgradePremium } from "@/lib/premium";
 
 export default function PremiumPlanScreen() {
   const router = useRouter();
 
-  const handleBuyPremium = () => {
-    // TODO: เปลี่ยน path ตามหน้า checkout จริงของคุณ
-    // เช่น router.push("/premium/checkout");
+  const [loading, setLoading] = React.useState(false);
+
+  const handleBuyPremium = async () => {
+    if (loading) return; // ป้องกันการกดซ้ำ
+    setLoading(true);
+    try {
+      await UpgradePremium(30); // สมัคร Premium 30 วัน
+      router.back();
+    } catch (error) {
+      console.error("Failed to upgrade to premium:", error);
+    }
     console.log("Go to premium checkout");
+    setLoading(false);
   };
 
   const handlePrivacy = () => {
@@ -107,7 +118,7 @@ export default function PremiumPlanScreen() {
             <Text style={styles.buyButtonTextPrice}>99 บาท / เดือน</Text>
           </View>
           <View style={styles.recommendBadge}>
-            <Ionicons name="star" size={14} color="#f59e0b"/>
+            <Ionicons name="star" size={14} color="#f59e0b" />
             <Text style={styles.recommendText}>แนะนำ</Text>
           </View>
         </View>
@@ -190,8 +201,16 @@ export default function PremiumPlanScreen() {
         </View>
 
         {/* Buy button */}
-        <TouchableOpacity style={styles.buyButton} onPress={handleBuyPremium}>
-          <Text style={styles.buyButtonText}>สมัคร Premium</Text>
+        <TouchableOpacity
+          style={[styles.buyButton, loading && { opacity: 0.6 }]}
+          onPress={handleBuyPremium}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#111827" />
+          ) : (
+            <Text style={styles.buyButtonText}>สมัคร Premium</Text>
+          )}
         </TouchableOpacity>
       </View>
 

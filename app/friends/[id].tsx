@@ -284,89 +284,106 @@ export default function Profile() {
       refreshControl={<RefreshControl refreshing={false} onRefresh={load} />}
     >
       {/* Card: User */}
-      <View style={styles.card}>
-        {/* Avatar */}
-        <AvatarComponent
-          avatar={user?.avatar}
-          username={user?.username}
-          plan={user?.plan}
-          width={80}
-          height={80}
-          borderRadius={40}
-          fontsize={16}
-          iconsize={16}
-        />
+      <View style={styles.cardHeader}>
+        {user?.plan === "premium" && (
+          <View style={{ alignItems: "center" }}>
+            <Image
+              source={require("assets/background_premium/background-premium.png")}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: 200,
+                top: 0,
+                borderRadius: 16,
+                opacity: 0.9,
+              }}
+            />
+          </View>
+        )}
+        <View style={{ padding: 16, alignItems: "center" }}>
+          {/* Avatar */}
+          <AvatarComponent
+            avatar={user?.avatar}
+            username={user?.username}
+            plan={user?.plan}
+            width={80}
+            height={80}
+            borderRadius={40}
+            fontsize={16}
+            iconsize={16}
+          />
 
-        {/* Name + email */}
-        <View style={{ flex: 1 }}>
-          <Text style={styles.name} numberOfLines={1}>
-            {user?.username || "ไม่ระบุชื่อ"}
-          </Text>
+          {/* Name + email */}
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.name,{color: user?.plan === "premium" ? "#ffffffff" : "#000000"}]} numberOfLines={1}>
+              {user?.username || "ไม่ระบุชื่อ"}
+            </Text>
 
-          {/* Chips / quick actions */}
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 8,
-              justifyContent: "center",
-            }}
-          >
-            {user?.trainer_name ? (
-              <View style={styles.badgeMuted}>
-                <Ionicons name="ribbon-outline" size={14} color="#111827" />
-                <Text style={styles.badgeMutedText}>
-                  {"  "}
-                  {user.trainer_name}
-                </Text>
-              </View>
-            ) : null}
+            {/* Chips / quick actions */}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 8,
+                justifyContent: "center",
+              }}
+            >
+              {user?.trainer_name ? (
+                <View style={styles.badgeMuted}>
+                  <Ionicons name="ribbon-outline" size={14} color="#111827" />
+                  <Text style={styles.badgeMutedText}>
+                    {"  "}
+                    {user.trainer_name}
+                  </Text>
+                </View>
+              ) : null}
 
-            {/* ปุ่มจัดการเพื่อน*/}
-            {is_me_addressee && statusFriend?.status === "pending" ? (
-              <TouchableOpacity
-                style={[styles.outlineBtnAdd, { backgroundColor: "#3B82F6" }]}
-                onPress={() => {
-                  setOnAccepted(true);
-                }}
-              >
-                {acting ? (
-                  <ActivityIndicator color="#ffffff" size="small" />
-                ) : (
-                  <>
-                    <Ionicons name="checkmark" size={16} color="#ffffffff" />
-                    <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.outlineBtnAdd,
-                  { backgroundColor: status_friend_color },
-                ]}
-                onPress={addfriend}
-                disabled={
-                  statusFriend?.status === "pending" ||
-                  statusFriend?.status === "accepted"
-                }
-              >
-                {acting ? (
-                  <ActivityIndicator color="#ffffff" size="small" />
-                ) : (
-                  <>
-                    <Ionicons
-                      name={status_friend_icon}
-                      size={16}
-                      color="#ffffffff"
-                    />
-                    <Text style={styles.outlineBtnAddText}>
-                      {status_friend_text}
-                    </Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            )}
+              {/* ปุ่มจัดการเพื่อน*/}
+              {is_me_addressee && statusFriend?.status === "pending" ? (
+                <TouchableOpacity
+                  style={[styles.outlineBtnAdd, { backgroundColor: "#3B82F6" }]}
+                  onPress={() => {
+                    setOnAccepted(true);
+                  }}
+                >
+                  {acting ? (
+                    <ActivityIndicator color="#ffffff" size="small" />
+                  ) : (
+                    <>
+                      <Ionicons name="checkmark" size={16} color="#ffffffff" />
+                      <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[
+                    styles.outlineBtnAdd,
+                    { backgroundColor: status_friend_color },
+                  ]}
+                  onPress={addfriend}
+                  disabled={
+                    statusFriend?.status === "pending" ||
+                    statusFriend?.status === "accepted"
+                  }
+                >
+                  {acting ? (
+                    <ActivityIndicator color="#ffffff" size="small" />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name={status_friend_icon}
+                        size={16}
+                        color="#ffffffff"
+                      />
+                      <Text style={styles.outlineBtnAddText}>
+                        {status_friend_text}
+                      </Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
       </View>
@@ -429,37 +446,39 @@ export default function Profile() {
 
         {/* ปุ่มการทำงาน */}
         {statusFriend?.friendship_id && (
-        <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
-          {/* ปุ่มแชท */}
-          <TouchableOpacity
-            style={[
-              styles.outlinechatBtn,
-              { opacity: !statusFriend?.friendship_id ? 0.5 : 1, paddingVertical: 10 },
-            ]}
-            onPress={openChat}
-            disabled={!statusFriend?.friendship_id}
-          >
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={16}
-              color="#ffffffff"
-            />
-            <Text style={styles.outlinechatBtnText}>แชท</Text>
-          </TouchableOpacity>
-
-          {/* ปุ่มคัดลอกรหัสเพิ่มเพื่อน */}
-          {statusFriend?.status === "accepted" && (
+          <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+            {/* ปุ่มแชท */}
             <TouchableOpacity
-              style={styles.outlineBtn}
-              onPress={onCopyFriendCode}
+              style={[
+                styles.outlinechatBtn,
+                {
+                  opacity: !statusFriend?.friendship_id ? 0.5 : 1,
+                  paddingVertical: 10,
+                },
+              ]}
+              onPress={openChat}
+              disabled={!statusFriend?.friendship_id}
             >
-              <Ionicons name="copy-outline" size={16} color="#111827" />
-              <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={16}
+                color="#ffffffff"
+              />
+              <Text style={styles.outlinechatBtnText}>แชท</Text>
             </TouchableOpacity>
-          )}
-        </View>          
-        )}
 
+            {/* ปุ่มคัดลอกรหัสเพิ่มเพื่อน */}
+            {statusFriend?.status === "accepted" && (
+              <TouchableOpacity
+                style={styles.outlineBtn}
+                onPress={onCopyFriendCode}
+              >
+                <Ionicons name="copy-outline" size={16} color="#111827" />
+                <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
       </View>
 
       {/* Modal: ยืนยันการรับเพื่อน */}
@@ -567,6 +586,14 @@ const styles = StyleSheet.create({
     fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 12,
+  },
+
+  cardHeader: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    marginBottom: 16,
   },
 
   card: {
