@@ -69,7 +69,6 @@ export default function RequestFriend() {
         limit: PAGE_SIZE,
       });
       const inbox = await getInbox_list();
-      console.log("inbox", inbox);
       setInboxItems(inbox);
       setHasMore(!!res.pagination?.has_more);
       setPage(res.pagination?.page || p);

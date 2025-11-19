@@ -19,7 +19,7 @@ try {
 
   $authUserId = authGuard();
 
-  // ---- รับพารามิเตอร์ ----
+  // ---- รับพาริเมตร ----
   $q     = trim((string)($_GET['q'] ?? ''));
   $page  = max(1, (int)($_GET['page'] ?? 1));
   $limit = (int)($_GET['limit'] ?? 20);
@@ -58,13 +58,17 @@ try {
   $total = (int)$stmt->fetchColumn();
 
   // ---- ดึงรายการ + เรตติ้งเฉลี่ยที่ได้รับในฐานะเจ้าของห้อง ----
-  // หมายเหตุ: ถ้ามีสถานะรีวิว ให้เติม AND r.status = 'approved'
+  // เพิ่มการ JOIN กับตาราง friendship เพื่อดูสถานะความเป็นเพื่อน
+  // หมายเหตุ: สมมติชื่อตาราง friendship มีคอลัมน์ (id, user_id, friend_id, status)
   $sql = "
     SELECT 
       u.id, u.username, u.email, u.avatar, u.friend_code, u.team, u.level, u.plan,
       -- ค่าเรตติ้งรวมต่อเจ้าของห้อง (จากรีวิวของแต่ละห้องที่เขาสร้าง)
       ROUND(ro.avg_rating, 2)   AS owner_avg_rating,
-      COALESCE(ro.cnt_rating,0) AS owner_rating_count
+      COALESCE(ro.cnt_rating,0) AS owner_rating_count,
+      -- ข้อมูลความเป็นเพื่อน (อาจเป็น NULL หากยังไม่เป็นเพื่อน)
+      f.id    AS friendship_id,
+      f.status AS friendship_status
     FROM users u
     LEFT JOIN (
       SELECT 
@@ -76,8 +80,14 @@ try {
       WHERE r.rating IS NOT NULL
       GROUP BY rr.owner_id
     ) ro ON ro.uid = u.id
+    LEFT JOIN friendships f
+      ON (
+           (f.requester_id = :me AND f.addressee_id = u.id)
+        OR (f.requester_id = u.id AND f.addressee_id = :me)
+      )
     $whereSql
-    ORDER BY u.username ASC
+    -- เรียงให้คนที่เป็นเพื่อน (status = 'accepted') ขึ้นมาก่อน แล้วตามด้วย username
+    ORDER BY (CASE WHEN COALESCE(f.status, '') = 'accepted' THEN 0 ELSE 1 END), u.username ASC
     LIMIT :limit OFFSET :offset
   ";
 
@@ -103,6 +113,10 @@ try {
     $avg  = $r['owner_avg_rating'] !== null ? (float)$r['owner_avg_rating'] : null;
     $cnt  = (int)$r['owner_rating_count'];
 
+    // แปลงสถานะความเป็นเพื่อนเป็น boolean
+    $friendship_status = isset($r['friendship_status']) ? $r['friendship_status'] : null;
+    $is_friend = ($friendship_status === 'accepted');
+
     $rows[] = [
       'id'                 => (int)$r['id'],
       'username'           => $r['username'],
@@ -111,7 +125,11 @@ try {
       'team'               => $r['team'],
       'level'              => (int)$r['level'],
       'plan'               => $r['plan'],
-      'rating_owner'       => (float)$r['owner_avg_rating'] ,
+      'rating_owner'       => $avg,
+      // ข้อมูลใหม่เกี่ยวกับความเป็นเพื่อน
+      'is_friend'          => $is_friend,
+      'friendship_status'  => $friendship_status,
+      'friendship_id'      => $r['friendship_id'] !== null ? (int)$r['friendship_id'] : null,
     ];
   }
 

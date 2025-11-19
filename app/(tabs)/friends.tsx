@@ -150,7 +150,7 @@ export default function FriendsScreen() {
           paddingHorizontal: 12,
           paddingVertical: 6,
           borderRadius: 14,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: item.is_friend ? "#dde9f5ff" : "#FFFFFF",
           borderWidth: 1,
           borderColor: "#E5E7EB",
           marginBottom: 12,

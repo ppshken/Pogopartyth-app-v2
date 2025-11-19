@@ -63,12 +63,6 @@ const menu = [
     icon: "alert-circle-outline",
     router: "/settings/feedback",
   },
-  {
-    id: 6,
-    menu: "บัญชี",
-    icon: "person-circle-outline",
-    router: "",
-  },
 ];
 
 export default function Profile() {

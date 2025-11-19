@@ -55,7 +55,7 @@ export default function Login() {
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
 
-  const [loginEmail, setLoginEmail] = useState(true);
+  const [loginEmail, setLoginEmail] = useState(false);
 
   // เส้นทาง
   const router = useRouter();
@@ -112,7 +112,6 @@ export default function Login() {
         device_token: expoPushToken.trim(),
       });
       await setAuth(user, token);
-      console.log("token", await AsyncStorage.getItem("token"));
       router.replace("/room_raid");
       showSnack({ text: "เข้าสู่ระบบสำเร็จ", variant: "success" });
     } catch (e: any) {

@@ -17,6 +17,7 @@ export type Friend = {
   plan: string;
   device_token: string;
   rating_owner?: number | null;
+  is_friend?: boolean;
   relation?: FriendRelation;
 };
 

@@ -105,7 +105,6 @@ export default function ChatScreen() {
         );
         await readMessage(friendship_id, OtherUserId);
         setChatTotal(res.chat_all);
-        console.log("chatAll", chat_total);
 
         if (res.items?.length) {
           setItems((prev) => mergeById(prev, res.items));

@@ -387,7 +387,6 @@ export default function RoomDetail() {
     try {
       const items = await getFriendAvailable({ q, room_id: roomId });
       setFriendsData(items);
-      console.log("loaded friends:", items);
     } catch (e: any) {
       showSnack({
         text: `ผิดพลาด${
@@ -444,9 +443,6 @@ export default function RoomDetail() {
           ...prev,
           [friend.id]: true, // <-- ใช้ friend.id เป็น key (ต้องแน่ใจว่ามี id)
         }));
-
-        console.log("loaded friends:", res);
-        console.log("token", friend.device_token);
       } catch (err: any) {
         Alert.alert("เชิญเพื่อนไม่สำเร็จ", err?.message || "ลองใหม่อีกครั้ง");
       } finally {

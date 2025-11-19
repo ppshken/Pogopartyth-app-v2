@@ -5,6 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 export function MessageItemFriend({ m }: { m: any }) {
+  const createdDate = new Date(m.created_at);
+  const now = new Date();
+
+  const isToday =
+    createdDate.getDate() === now.getDate() &&
+    createdDate.getMonth() === now.getMonth() &&
+    createdDate.getFullYear() === now.getFullYear();
+
   const currentUser = useAuth((s) => s.user);
   const isMe = m.user_id === currentUser?.id;
 
@@ -96,10 +104,18 @@ export function MessageItemFriend({ m }: { m: any }) {
               fontFamily: "KanitRegular",
             }}
           >
-            {new Date(m.created_at).toLocaleTimeString("th-TH", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {isToday
+              ? createdDate.toLocaleTimeString("th-TH", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }) // เงื่อนไขเป็นจริง (เป็นวันนี้): แสดง ชม:นาที
+              : createdDate.toLocaleDateString("th-TH", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
           </Text>
         </View>
       </View>

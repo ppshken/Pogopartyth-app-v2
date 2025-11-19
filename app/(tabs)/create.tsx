@@ -471,7 +471,7 @@ export default function CreateRoom() {
                       fontFamily: "KanitMedium",
                     }}
                   >
-                    VIP
+                    Premium
                   </Text>
                 </View>
               </View>
@@ -539,7 +539,7 @@ export default function CreateRoom() {
                       fontFamily: "KanitMedium",
                     }}
                   >
-                    VIP
+                    Premium
                   </Text>
                 </View>
               </View>
@@ -593,7 +593,7 @@ export default function CreateRoom() {
                       fontFamily: "KanitMedium",
                     }}
                   >
-                    VIP
+                    Premium
                   </Text>
                 </View>
               </View>
