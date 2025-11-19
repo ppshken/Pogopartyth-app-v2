@@ -428,100 +428,121 @@ export default function CreateRoom() {
             </Text>
           </View>
 
-            {/* VIP Zone */}
-            <View style={styles.card}>
-              {/* เลเวลขั้นต่ำ */}
-              <View style={{ opacity: vip ? 1 : 0.3 }}>
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-                >
-                  <Text style={styles.label}>เลเวลขั้นต่ำ</Text>
-                  <View
-                    style={{
-                      alignItems: "center",
-                      backgroundColor: "#EFBF04",
-                      borderRadius: 4,
-                      paddingHorizontal: 6,
-                      marginBottom: 8,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#666666",
-                        fontFamily: "KanitMedium",
-                      }}
-                    >
-                      VIP
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
-                >
-                  {MIN_LEVEL_OPTIONS.map((lv) => (
-                    <TouchableOpacity
-                      key={lv}
-                      style={[
-                        styles.mm_level,
-                        minLevel === lv && styles.mm_levelActive,
-                      ]}
-                      onPress={() => setMinLevel(lv)}
-                      disabled={!vip}
-                    >
-                      <Text
-                        style={{
-                          fontFamily: "KanitMedium",
-                          color: minLevel === lv ? "#fff" : "#111827",
-                        }}
-                      >
-                        {lv} {"+"}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+          {/* VIP Zone */}
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => {
+              router.push("/package/premium_plan");
+            }}
+            disabled={vip}
+          >
+            {/* เลเวลขั้นต่ำ */}
+            <View style={{ opacity: vip ? 1 : 0.3 }}>
+              <View style={{ marginBottom: 12 }}>
+                <Text style={{ fontFamily: "KanitMedium", fontSize: 24 }}>
+                  เฉพาะ Premium
+                </Text>
                 <Text
                   style={{
+                    fontFamily: "KanitMedium",
+                    fontSize: 14,
                     color: "#6B7280",
-                    marginTop: 6,
-                    marginBottom: 16,
-                    fontSize: 12,
-                    fontFamily: "KanitRegular",
                   }}
                 >
-                  เลเวล 20 - 80
+                  ผู้ใช้ระดับ Premium สามารถตั้งค่าเพิ่มเติมได้
                 </Text>
               </View>
-
-              {/* เฉพาะผู้ใช้ Premium */}
-              <View>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
+                <Text style={styles.label}>เลเวลขั้นต่ำ</Text>
                 <View
                   style={{
-                    flexDirection: "row",
                     alignItems: "center",
-                    gap: 8,
-                    opacity: vip ? 1 : 0.3,
+                    backgroundColor: "#EFBF04",
+                    borderRadius: 4,
+                    paddingHorizontal: 6,
+                    marginBottom: 8,
                   }}
                 >
-                  <Text style={styles.label}>เฉพาะผู้ใช้ Premium</Text>
-                  <View
+                  <Text
                     style={{
-                      alignItems: "center",
-                      backgroundColor: "#EFBF04",
-                      borderRadius: 4,
-                      paddingHorizontal: 6,
-                      marginBottom: 8,
+                      color: "#666666",
+                      fontFamily: "KanitMedium",
                     }}
+                  >
+                    VIP
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {MIN_LEVEL_OPTIONS.map((lv) => (
+                  <TouchableOpacity
+                    key={lv}
+                    style={[
+                      styles.mm_level,
+                      minLevel === lv && styles.mm_levelActive,
+                    ]}
+                    onPress={() => {
+                      if (minLevel === lv) setMinLevel(null);
+                      else setMinLevel(lv);
+                    }}
+                    disabled={!vip}
                   >
                     <Text
                       style={{
-                        color: "#666666",
                         fontFamily: "KanitMedium",
+                        color: minLevel === lv ? "#fff" : "#111827",
                       }}
                     >
-                      VIP
+                      {lv} {"+"}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text
+                style={{
+                  color: "#6B7280",
+                  marginTop: 6,
+                  marginBottom: 16,
+                  fontSize: 12,
+                  fontFamily: "KanitRegular",
+                }}
+              >
+                เลเวล 20 - 80
+              </Text>
+            </View>
+
+            {/* เฉพาะผู้ใช้ Premium */}
+            <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  opacity: vip ? 1 : 0.3,
+                }}
+              >
+                <Text style={styles.label}>เฉพาะผู้ใช้ Premium</Text>
+                <View
+                  style={{
+                    alignItems: "center",
+                    backgroundColor: "#EFBF04",
+                    borderRadius: 4,
+                    paddingHorizontal: 6,
+                    marginBottom: 8,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#666666",
+                      fontFamily: "KanitMedium",
+                    }}
+                  >
+                    VIP
+                  </Text>
                 </View>
+              </View>
 
               <View style={{ alignSelf: "flex-start" }}>
                 <Switch
@@ -546,36 +567,36 @@ export default function CreateRoom() {
               </Text>
             </View>
 
-              {/* ล็อคห้อง ระบุ รหัสผ่าน */}
-              <View>
+            {/* ล็อคห้อง ระบุ รหัสผ่าน */}
+            <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  opacity: vip ? 1 : 0.3,
+                }}
+              >
+                <Text style={styles.label}>ล็อคห้อง</Text>
                 <View
                   style={{
-                    flexDirection: "row",
                     alignItems: "center",
-                    gap: 8,
-                    opacity: vip ? 1 : 0.3,
+                    backgroundColor: "#EFBF04",
+                    borderRadius: 4,
+                    paddingHorizontal: 6,
+                    marginBottom: 8,
                   }}
                 >
-                  <Text style={styles.label}>ล็อคห้อง</Text>
-                  <View
+                  <Text
                     style={{
-                      alignItems: "center",
-                      backgroundColor: "#EFBF04",
-                      borderRadius: 4,
-                      paddingHorizontal: 6,
-                      marginBottom: 8,
+                      color: "#666666",
+                      fontFamily: "KanitMedium",
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "#666666",
-                        fontFamily: "KanitMedium",
-                      }}
-                    >
-                      VIP
-                    </Text>
-                  </View>
+                    VIP
+                  </Text>
                 </View>
+              </View>
 
               <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
                 <Switch
@@ -589,33 +610,45 @@ export default function CreateRoom() {
                 />
               </View>
 
-                {lockRoom && (
-                  <>
-                    <TextInput
-                      placeholder="ระบุรหัสผ่านห้อง"
-                      value={passwordRoom}
-                      secureTextEntry={true}
-                      onChangeText={setPasswordRoom}
-                      style={[styles.dropdown, { fontFamily: "KanitRegular" }]}
-                      placeholderTextColor="#9CA3AF"
-                    />
+              {lockRoom && (
+                <>
+                  <TextInput
+                    placeholder="ระบุรหัสผ่านห้อง"
+                    value={passwordRoom}
+                    secureTextEntry={true}
+                    onChangeText={setPasswordRoom}
+                    style={[styles.dropdown, { fontFamily: "KanitRegular" }]}
+                    placeholderTextColor="#9CA3AF"
+                  />
 
+                  {passwordRoom && passwordRoom.trim().length < 6 && (
                     <Text
                       style={{
-                        color: "#6B7280",
-                        marginTop: 6,
-                        marginBottom: 16,
+                        color: "#EF4444",
                         fontSize: 12,
-                        fontFamily: "KanitRegular",
-                        opacity: vip ? 1 : 0.3,
+                        fontFamily: "KanitMedium",
                       }}
                     >
-                      ระบุรหัสผ่านสำหรับห้อง อย่างน้อย 6 ตัวอักษร
+                      อย่างน้อย 6 ตัวอักษร
                     </Text>
-                  </>
-                )}
-              </View>
+                  )}
+
+                  <Text
+                    style={{
+                      color: "#6B7280",
+                      marginTop: 6,
+                      marginBottom: 16,
+                      fontSize: 12,
+                      fontFamily: "KanitRegular",
+                      opacity: vip ? 1 : 0.3,
+                    }}
+                  >
+                    ระบุรหัสผ่านสำหรับห้อง อย่างน้อย 6 ตัวอักษร
+                  </Text>
+                </>
+              )}
             </View>
+          </TouchableOpacity>
 
           {/* Submit */}
           <TouchableOpacity
@@ -713,7 +746,8 @@ export default function CreateRoom() {
                   return (
                     <TouchableOpacity
                       onPress={() => {
-                        if (bossVip) return router.push("/package/premium_plan");
+                        if (bossVip)
+                          return router.push("/package/premium_plan");
                         setBoss(item);
                         setBossOpen(false);
                       }}
@@ -722,7 +756,6 @@ export default function CreateRoom() {
                         selected && { backgroundColor: "#e5ebf7ff" },
                         bossVip && { opacity: 0.3 },
                       ]}
-                      
                     >
                       <BossImage
                         pokemon_image={item?.pokemon_image}
@@ -754,23 +787,32 @@ export default function CreateRoom() {
 
                           {/* Special Boss */}
                           {item?.special ? (
-                            <View
-                              style={{
-                                alignItems: "center",
-                                backgroundColor: "#EFBF04",
-                                borderRadius: 4,
-                                paddingHorizontal: 6,
-                              }}
-                            >
-                              <Text
+                            <>
+                              <View
                                 style={{
-                                  color: "#666666",
-                                  fontFamily: "KanitMedium",
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  backgroundColor: "#1bad23ff",
+                                  borderRadius: 4,
+                                  paddingHorizontal: 6,
+                                  gap: 4,
                                 }}
                               >
-                                VIP
-                              </Text>
-                            </View>
+                                <Ionicons
+                                  name="paw"
+                                  color="#ffffff"
+                                  size={14}
+                                />
+                                <Text
+                                  style={{
+                                    color: "#ffffffff",
+                                    fontFamily: "KanitMedium",
+                                  }}
+                                >
+                                  Special
+                                </Text>
+                              </View>
+                            </>
                           ) : null}
                         </View>
                         <View style={{ marginTop: 2 }}>
