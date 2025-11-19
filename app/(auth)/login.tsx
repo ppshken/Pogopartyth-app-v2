@@ -55,7 +55,7 @@ export default function Login() {
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
 
-  const [loginEmail, setLoginEmail] = useState(false);
+  const [loginEmail, setLoginEmail] = useState(true);
 
   // เส้นทาง
   const router = useRouter();
