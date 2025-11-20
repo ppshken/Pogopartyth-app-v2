@@ -222,6 +222,14 @@ export default function UserLogScreen() {
     []
   );
 
+  if (userId === null) {
+    return (
+      <View style={styles.container && { alignItems: "center" }}>
+        <ActivityIndicator style={{ marginTop: 20 }} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

@@ -487,7 +487,7 @@ export default function RoomDetail() {
   if (!data) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator size="small" color="#000000ff" />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -1425,7 +1425,7 @@ export default function RoomDetail() {
 
         {/* Log */}
         {isMember && (
-          <View style={styles.section}>
+          <View style={styles.sectionlog}>
             <View style={styles.lineRow}>
               <Text style={styles.sectionTitle}>ประวัติ ({logtotal})</Text>
             </View>
@@ -1441,10 +1441,10 @@ export default function RoomDetail() {
                       flexDirection: "row",
                       alignItems: "center",
                       gap: 4,
-                      marginBottom: 8,
                       borderBottomWidth: 1,
                       borderColor: "#f0f0f0ff",
                       paddingBottom: 8,
+                      paddingTop: 8,
                     }}
                   >
                     <TouchableOpacity
@@ -2675,6 +2675,17 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
   },
+
+  sectionlog: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 12,
+  },
+
   sectionTitle: {
     fontSize: 16,
     fontFamily: "KanitSemiBold",

@@ -12,7 +12,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import {
   getMessages,
   sendMessage,
@@ -43,41 +43,42 @@ export default function ChatScreen() {
   const [items, setItems] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
 
-  // จำนวนข้อความที่ “ดึงล่าสุด” (จะเพิ่มทีละ 5 เมื่อกดโหลดเพิ่มด้านบน)
-  const [limit, setLimit] = useState(15);
-
+  const [limit, setLimit] = useState(40);
   const [loadingSend, setLoadingSend] = useState(false);
-  const [loadingOlder, setLoadingOlder] = useState(false); // สถานะกดโหลดเพิ่ม
-  const [showLoadMoreTop, setShowLoadMoreTop] = useState(false); // แสดงปุ่มเมื่อถึงบนสุด
-
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [showLoadMoreTop, setShowLoadMoreTop] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
   const [chat_total, setChatTotal] = useState(0);
 
   const listRef = useRef<FlatList<ChatMessage>>(null);
   const firstOpenRef = useRef(true);
 
-  // โพลลิ่งของใหม่
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  // polling timer (React Native uses number)
+  const timer = useRef<number | null>(null);
   const sinceIdRef = useRef<number>(0);
 
-  // ตัวช่วยคุมสกอร์ล
-  const isPrependingRef = useRef(false); // กำลังเติม “ด้านบน” อยู่ไหม
-  const prevContentHeightRef = useRef(0); // ความสูง content ก่อนเติม
-  const lastScrollYRef = useRef(0); // ตำแหน่ง Y ล่าสุด
-  const shouldAutoScrollToEndRef = useRef(false); // ให้เลื่อนไปล่างเฉพาะกรณีมี “ของใหม่/เพิ่งส่ง”
-
-  // ใช้ตัดสินว่า “ตอนนี้อยู่ใกล้ก้นลิสต์ไหม” (เพื่อ auto-scroll เฉพาะตอนอยู่ล่าง)
+  // scroll helpers
+  const isPrependingRef = useRef(false);
+  const prevContentHeightRef = useRef(0);
+  const lastScrollYRef = useRef(0);
+  const shouldAutoScrollToEndRef = useRef(false);
   const isNearBottomRef = useRef(true);
 
-  // ✅ ตั้ง Header
   useEffect(() => {
     nav.setOptions?.({
       title: OtherUsername || "แชท",
       headerRight: () =>
         OtherAvatar ? (
-          <Image
-            source={{ uri: OtherAvatar }}
-            style={{ width: 32, height: 32, borderRadius: 15, marginLeft: 2 }}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              setUserMenu((prev) => !prev);
+            }}
+          >
+            <Image
+              source={{ uri: OtherAvatar }}
+              style={{ width: 32, height: 32, borderRadius: 15, marginLeft: 2 }}
+            />
+          </TouchableOpacity>
         ) : null,
     });
   }, [nav, OtherUsername, OtherAvatar]);
@@ -90,7 +91,6 @@ export default function ChatScreen() {
     return Array.from(map.values()).sort((a, b) => a.id - b.id);
   };
 
-  // โหลดข้อมูล (รองรับระบุ source + limitOverride)
   const load = useCallback(
     async (
       source: "init" | "poll" | "prepend" = "poll",
@@ -98,17 +98,14 @@ export default function ChatScreen() {
     ) => {
       try {
         const useLimit = limitOverride ?? limit;
-        const res = await getMessages(
-          friendship_id,
-          sinceIdRef.current || undefined,
-          useLimit
-        );
+        // ส่ง since id เฉพาะเมื่อมีค่ามากกว่า 0
+        const since = sinceIdRef.current > 0 ? sinceIdRef.current : undefined;
+        const res = await getMessages(friendship_id, since, useLimit);
         await readMessage(friendship_id, OtherUserId);
         setChatTotal(res.chat_all);
 
         if (res.items?.length) {
           setItems((prev) => mergeById(prev, res.items));
-          // อัปเดต sinceId เป็น next หรืออย่างน้อย max id ที่ได้มา
           const maxIncoming = Math.max(...res.items.map((m) => m.id));
           sinceIdRef.current = Math.max(
             sinceIdRef.current || 0,
@@ -116,48 +113,50 @@ export default function ChatScreen() {
             maxIncoming || 0
           );
 
-          // เฉพาะ init/poll เท่านั้นที่อนุญาตให้เด้งลงล่างอัตโนมัติ
           if (source !== "prepend" && isNearBottomRef.current) {
             shouldAutoScrollToEndRef.current = true;
           }
         }
-      } catch {
-        // ignore
+      } catch (err) {
+        // ถ้าต้องการแสดง error ให้ทำที่นี่
       }
     },
     [friendship_id, OtherUserId, limit]
   );
 
-  // โหลดครั้งแรก + โพลทุก 3 วิ
   useEffect(() => {
     sinceIdRef.current = 0;
     setItems([]);
-    shouldAutoScrollToEndRef.current = true; // ครั้งแรกให้เลื่อนไปล่าง
+    shouldAutoScrollToEndRef.current = true;
     load("init", limit);
 
-    if (timer.current) clearInterval(timer.current);
-    timer.current = setInterval(() => load("poll"), 5000);
+    if (timer.current) {
+      clearInterval(timer.current);
+      timer.current = null;
+    }
+    // poll ทุก 5 วิ (ถ้าต้องการเร็วขึ้น เปลี่ยนเป็น 3000)
+    timer.current = setInterval(() => {
+      load("poll");
+    }, 5000) as unknown as number;
+
     return () => {
       if (timer.current) clearInterval(timer.current);
       timer.current = null;
     };
   }, [friendship_id, limit, load]);
 
-  // ส่งข้อความ
   const onSend = async () => {
     const msgTxt = text.trim();
-    if (!msgTxt) return;
+    if (!msgTxt || loadingSend) return; // ป้องกันส่งซ้ำ
     try {
       setLoadingSend(true);
       const msg = await sendMessage(friendship_id, msgTxt);
       setItems((prev) => mergeById(prev, [msg]));
       sinceIdRef.current = Math.max(sinceIdRef.current || 0, msg.id);
       setText("");
-      // หลังส่งข้อความใหม่ → เลื่อนไปล่าง
+      // ตั้งธงให้ onContentSizeChange เลื่อนไปสุดเมื่อ content มา
       shouldAutoScrollToEndRef.current = true;
-      requestAnimationFrame(() =>
-        listRef.current?.scrollToEnd({ animated: true })
-      );
+      // **ไม่เรียก scrollToEnd ตรงนี้** — รอ onContentSizeChange จะปลอดภัยกว่า
     } catch (e: any) {
       showSnack({
         text: e?.message || "ส่งข้อความไม่สำเร็จ",
@@ -168,7 +167,6 @@ export default function ChatScreen() {
     }
   };
 
-  // ✅ เปิดหน้ามาครั้งแรก ให้เลื่อนลงล่างทันที (ครั้งเดียว)
   useEffect(() => {
     if (items.length && firstOpenRef.current) {
       requestAnimationFrame(() => {
@@ -178,27 +176,20 @@ export default function ChatScreen() {
     }
   }, [items.length]);
 
-  // ⛳️ แสดงปุ่มโหลดเพิ่มเมื่อถึงบนสุดจริง ๆ
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-
     lastScrollYRef.current = contentOffset.y;
+    const atTop = contentOffset.y <= 12;
+    setShowLoadMoreTop(atTop && !loadingOlder && items.length < chat_total);
 
-    // บนสุด?
-    const atTop = contentOffset.y <= 12; // threshold เล็กน้อย
-    setShowLoadMoreTop(atTop && !loadingOlder);
-
-    // อยู่ใกล้ก้นลิสต์ไหม (ใช้ตัดสินว่าจะ auto-scroll เมื่อมีข้อความใหม่ไหม)
-    const paddingToBottom = 48; // ยอมให้ห่างก้นลิสต์ได้นิดหน่อย
+    const paddingToBottom = 48;
     isNearBottomRef.current =
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom;
   };
 
-  // เมื่อ content เปลี่ยน (ทั้งตอนพรีเพนด์/ตอนมีของใหม่)
   const onContentSizeChange = (_w: number, h: number) => {
     if (isPrependingRef.current) {
-      // ✅ เคสเติมด้านบน: คงตำแหน่งเดิมด้วย delta
       const delta = h - prevContentHeightRef.current;
       if (delta > 0) {
         requestAnimationFrame(() => {
@@ -209,29 +200,24 @@ export default function ChatScreen() {
         });
       }
       isPrependingRef.current = false;
-      shouldAutoScrollToEndRef.current = false; // กันธงค้าง
+      shouldAutoScrollToEndRef.current = false;
     } else if (shouldAutoScrollToEndRef.current) {
-      // ✅ เคสมีของใหม่/เพิ่งส่ง: เลื่อนไปล่าง (เฉพาะถ้าเราใกล้ก้นลิสต์ก่อนหน้า)
       requestAnimationFrame(() => {
         listRef.current?.scrollToEnd({ animated: true });
       });
       shouldAutoScrollToEndRef.current = false;
     }
-    // อัปเดตความสูงล่าสุด
     prevContentHeightRef.current = h;
   };
 
-  // ▶️ กด “โหลดเพิ่มเติม” บนสุด → เพิ่ม limit แล้วดึงใหม่แบบ prepend
   const onPressLoadMoreTop = async () => {
     if (loadingOlder) return;
     setLoadingOlder(true);
-
-    // ตั้งธง: เรากำลังพรีเพนด์ ห้ามเด้งลงล่าง
     isPrependingRef.current = true;
     shouldAutoScrollToEndRef.current = false;
 
     const newLimit = limit + 5;
-    setLimit(newLimit); // อัปเดต state (ไม่ต้องรอ)
+    setLimit(newLimit);
     await load("prepend", newLimit);
 
     setLoadingOlder(false);
@@ -298,10 +284,8 @@ export default function ChatScreen() {
           scrollEventThrottle={16}
           initialNumToRender={20}
           windowSize={10}
-          removeClippedSubviews
         />
 
-        {/* แถบป้อนข้อความ */}
         <View
           style={{
             flexDirection: "row",
@@ -326,27 +310,80 @@ export default function ChatScreen() {
             }}
             onSubmitEditing={onSend}
             returnKeyType="send"
+            editable={!loadingSend}
           />
           <TouchableOpacity
             onPress={onSend}
+            disabled={loadingSend}
             style={{
               marginLeft: 8,
-              backgroundColor: "#2563EB",
+              backgroundColor: loadingSend ? "#9DBBF9" : "#2563EB",
               paddingHorizontal: 16,
               paddingVertical: 12,
               borderRadius: 10,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Text style={{ color: "#fff", fontWeight: "700" }}>
-              {loadingSend ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <Ionicons name="send" size={20} color="#fff" />
-              )}
-            </Text>
+            {loadingSend ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Ionicons name="send" size={20} color="#fff" />
+            )}
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Dropdown User Menu */}
+      {userMenu ? (
+        <View
+          style={{
+            backgroundColor: "#ffffffff",
+            width: 220,
+            height: "auto",
+            position: "absolute",
+            top: 2,
+            right: 11,
+            borderRadius: 12,
+            padding: 12,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              padding: 12,
+              backgroundColor: "#f5f5f5ff",
+              borderRadius: 8,
+              marginBottom: 8,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+            }}
+            onPress={() => router.push("/friends/" + OtherUserId)}
+          >
+            <Ionicons name="person" size={20} color="#111827" />
+            <Text style={{ fontFamily: "KanitSemiBold" }}>ดูโปรไฟล์</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              padding: 12,
+              backgroundColor: "#f5f5f5ff",
+              borderRadius: 8,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <Ionicons name="information" size={20} color="#111827" />
+            <Text style={{ fontFamily: "KanitSemiBold" }}>รายงาน</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </KeyboardAvoidingView>
   );
 }

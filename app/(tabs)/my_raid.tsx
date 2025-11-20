@@ -107,7 +107,7 @@ export default function MyRaid() {
   if (loading && !rooms.length) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size="small" color="#020202ff" />
+          <ActivityIndicator size="large" />
       </View>
     );
   }

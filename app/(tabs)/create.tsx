@@ -731,10 +731,7 @@ export default function CreateRoom() {
 
             {loadingBoss ? (
               <View style={{ padding: 16, alignItems: "center" }}>
-                <ActivityIndicator />
-                <Text style={{ marginTop: 8, color: "#6B7280" }}>
-                  กำลังโหลด...
-                </Text>
+                <ActivityIndicator size="large" />
               </View>
             ) : (
               <FlatList

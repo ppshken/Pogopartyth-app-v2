@@ -187,7 +187,7 @@ export default function Profile() {
             >
               {user.google_sub && (
                 <Image
-                  source={require("assets/Google__G__logo.png")}
+                  source={require("assets/google-logo.png")}
                   style={{ width: 18, height: 18, marginRight: 8 }}
                 />
               )}

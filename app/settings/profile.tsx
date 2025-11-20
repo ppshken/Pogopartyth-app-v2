@@ -106,7 +106,7 @@ export default function Profile() {
   if (!user) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="small" color="#020202ff" />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -169,7 +169,7 @@ export default function Profile() {
             >
               {user.google_sub && (
                 <Image
-                  source={require("assets/Google__G__logo.png")}
+                  source={require("assets/google-logo.png")}
                   style={{ width: 18, height: 18, marginRight: 8 }}
                 />
               )}

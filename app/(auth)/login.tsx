@@ -71,6 +71,19 @@ export default function Login() {
     });
   }, []);
 
+  // ===== เช็ค token ถ้า login แล้วข้ามหน้า =====
+  useEffect(() => {
+    (async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        setLoginEmail(false);
+        router.replace("/(tabs)/room_raid");
+      } else {
+        setLoginEmail(true);
+      }
+    })();
+  }, []);
+
   // ===== Email validate =====
   useEffect(() => {
     if (email.length === 0) setEmailError(null);
