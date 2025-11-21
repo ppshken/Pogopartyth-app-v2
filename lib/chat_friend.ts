@@ -11,10 +11,29 @@ export type ChatMessage = {
   created_at: string;
 };
 
-export async function getMessages(friendship_id: number, since_id?: number, limit = 5) {
-  const { data } = await api.get("/api/chat/friend/messages.php", { params: { friendship_id, since_id, limit } });
+// lib/chat_friend.ts
+
+export async function getMessages(friendship_id: number, since_id?: number, limit?: number, beforeId?: number) {
+  // เปลี่ยนตรง params: { ... before_id: beforeId }
+  const { data } = await api.get("/api/chat/friend/messages.php", {
+    params: {
+      friendship_id,
+      since_id,
+      limit,
+      before_id: beforeId // <--- ส่งไปหา Server ให้ใช้ชื่อนี้ (snake_case)
+    }
+  });
+
   if (!data.success) throw new Error(data.message || "Get messages failed");
-  return data.data as { items: ChatMessage[]; next_since_id: number; server_time: string; count: number; chat_all: number; };
+
+  return data.data as {
+    items: ChatMessage[];
+    next_since_id: number;
+    server_time: string;
+    count: number;
+    chat_all: number;
+    oldest_id?: number; // ใส่ ? เผื่อ server ไม่ส่งมา
+  };
 }
 
 export async function sendMessage(friendship_id: number, message: string) {

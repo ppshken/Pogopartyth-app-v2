@@ -340,6 +340,12 @@ export default function RoomDetail() {
         }`,
         variant: "error",
       });
+      Alert.alert("โหลดข้อมูลไม่สำเร็จ", "กลับไปหน้าหลัก", [
+        {
+          text: "ตกลง",
+          onPress: () => router.back(),
+        },
+      ]);
     } finally {
       setLoadingdata(false);
     }
@@ -561,16 +567,18 @@ export default function RoomDetail() {
   const checkPassword = async () => {
     if (passwordRoom === room.password_room) {
       setOnPassword(false);
+
+      // Check Level
       if (userlevel < room.min_level) {
-        // เวเวลมากกว่า ที่ห้องตั้งไว้
         setPasswordRoom("");
         showSnack({
           text: "ไม่สามารถเข้าร่วมได้ เวเวลไม่พอ",
           variant: "error",
         });
         return;
-      } else if (room.vip_only && !vip) {
-        // ถ้าห้องเฉพาะ VIP และ โปรไฟล์ ไม่เป็น VIP
+      }
+      // Check VIP
+      else if (room.vip_only && !vip) {
         setPasswordRoom("");
         showSnack({
           text: "เฉพาะผู้ใช้ VIP เท่านั้น",
@@ -578,6 +586,13 @@ export default function RoomDetail() {
         });
         return;
       }
+      // ✅ Check Special Boss (เพิ่มตรงนี้)
+      else if (room.special && !vip) {
+        setOnCooldown(true);
+        cooldown();
+        return;
+      }
+
       onJoinRoom();
       return;
     }
@@ -885,7 +900,9 @@ export default function RoomDetail() {
   const nonOwnerMembers = members.filter((m) => m.role !== "owner");
   const allAdded =
     nonOwnerMembers.length > 0 &&
-    nonOwnerMembers.every((m) => friendAdded[m.user_id]);
+    nonOwnerMembers.every(
+      (m) => friendAdded[m.user_id] ?? m.friend_ready === 1
+    );
   const joinFull = data.room.max_members === members.length && !isMember; // เข้าห้องเต็ม
   const joinFulled = data.room.max_members === members.length;
 
@@ -2497,7 +2514,7 @@ export default function RoomDetail() {
                         }}
                       >
                         <TouchableOpacity
-                          onPress={() => {                          
+                          onPress={() => {
                             router.push(`/friends/${item.id}`);
                           }}
                         >
@@ -2523,21 +2540,23 @@ export default function RoomDetail() {
                             >
                               {item.username}
                             </Text>
-                            <View
-                              style={[
-                                styles.levelBage,
-                                { backgroundColor: teamColor },
-                              ]}
+                          </View>
+
+                          <View
+                            style={[
+                              styles.levelBage,
+                              { backgroundColor: teamColor },
+                            ]}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontFamily: "KanitSemiBold",
+                                color: "#ffffffff",
+                              }}
                             >
-                              <Text
-                                style={{
-                                  fontFamily: "KanitMedium",
-                                  color: "#ffffffff",
-                                }}
-                              >
-                                Level {item.level}
-                              </Text>
-                            </View>
+                              Level {item.level}
+                            </Text>
                           </View>
 
                           <View
@@ -2959,7 +2978,8 @@ const styles = StyleSheet.create({
   },
   levelBage: {
     padding: 2,
-    paddingHorizontal: 4,
+    width: 55,
+    alignItems: "center",
     paddingVertical: 1,
     borderRadius: 4,
   },

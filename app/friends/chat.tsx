@@ -1,4 +1,11 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+// app/screens/chat.tsx
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -11,8 +18,10 @@ import {
   ActivityIndicator,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  AppState,
 } from "react-native";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useLocalSearchParams, router } from "expo-router";
 import {
   getMessages,
   sendMessage,
@@ -23,140 +32,244 @@ import { MessageItemFriend } from "../../components/MessageItemFriend";
 import { Ionicons } from "@expo/vector-icons";
 import { showSnack } from "../../components/Snackbar";
 
-type params = {
+type Params = {
   friendshipId: string;
   other_user_id: string;
   other_username: string;
   other_avatar: string;
 };
 
+type ListRow =
+  | { type: "date"; id: string; date: string }
+  | ({ type: "msg"; id: number } & ChatMessage);
+
 export default function ChatScreen() {
   const nav = useNavigation();
-
+  const isFocused = useIsFocused();
   const { friendshipId, other_user_id, other_username, other_avatar } =
-    useLocalSearchParams<params>();
+    useLocalSearchParams<Params>();
   const friendship_id = Number(friendshipId);
   const OtherUserId = Number(other_user_id);
-  const OtherUsername = String(other_username);
-  const OtherAvatar = String(other_avatar);
+  const OtherUsername = String(other_username || "แชท");
+  const OtherAvatar = String(other_avatar || "");
 
   const [items, setItems] = useState<ChatMessage[]>([]);
+  const [listRows, setListRows] = useState<ListRow[]>([]);
   const [text, setText] = useState("");
 
-  const [limit, setLimit] = useState(40);
+  // กำหนดลิมิตเริ่มต้นเป็น 20 แถว ตามที่ต้องการ
+  const [limit, setLimit] = useState(20);
+
   const [loadingSend, setLoadingSend] = useState(false);
-  const [loadingOlder, setLoadingOlder] = useState(false);
-  const [showLoadMoreTop, setShowLoadMoreTop] = useState(false);
-  const [userMenu, setUserMenu] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false); // สถานะโหลดข้อมูลเก่า
   const [chat_total, setChatTotal] = useState(0);
 
-  const listRef = useRef<FlatList<ChatMessage>>(null);
-  const firstOpenRef = useRef(true);
+  const listRef = useRef<FlatList<ListRow>>(null);
 
-  // polling timer (React Native uses number)
-  const timer = useRef<number | null>(null);
+  // ตัวแปรสำหรับ Polling และ Cursor
+  const timerRef = useRef<number | null>(null);
   const sinceIdRef = useRef<number>(0);
+  const oldestIdRef = useRef<number | null>(null); // เก็บ ID ที่เก่าที่สุดที่โหลดมาแล้ว
 
-  // scroll helpers
+  // ตัวช่วยจัดการตำแหน่ง Scroll (เมื่อโหลดข้อมูลเก่าเพิ่ม)
   const isPrependingRef = useRef(false);
   const prevContentHeightRef = useRef(0);
   const lastScrollYRef = useRef(0);
-  const shouldAutoScrollToEndRef = useRef(false);
-  const isNearBottomRef = useRef(true);
 
+  // App state
+  const appStateRef = useRef(AppState.currentState);
+
+  // ตั้งค่า Header
   useEffect(() => {
     nav.setOptions?.({
-      title: OtherUsername || "แชท",
+      title: OtherUsername,
       headerRight: () =>
         OtherAvatar ? (
-          <TouchableOpacity
-            onPress={() => {
-              setUserMenu((prev) => !prev);
-            }}
-          >
+          <TouchableOpacity onPress={() => setUserMenuVisible((p) => !p)}>
             <Image
               source={{ uri: OtherAvatar }}
-              style={{ width: 32, height: 32, borderRadius: 15, marginLeft: 2 }}
+              style={{ width: 32, height: 32, borderRadius: 16, marginLeft: 2 }}
             />
           </TouchableOpacity>
         ) : null,
     });
   }, [nav, OtherUsername, OtherAvatar]);
 
-  const mergeById = (prev: ChatMessage[], incoming: ChatMessage[]) => {
-    if (!incoming?.length) return prev;
-    const map = new Map<number, ChatMessage>();
-    for (const m of prev) map.set(m.id, m);
-    for (const m of incoming) map.set(m.id, m);
-    return Array.from(map.values()).sort((a, b) => a.id - b.id);
-  };
+  const [userMenuVisible, setUserMenuVisible] = useState(false);
 
-  const load = useCallback(
-    async (
-      source: "init" | "poll" | "prepend" = "poll",
-      limitOverride?: number
-    ) => {
-      try {
-        const useLimit = limitOverride ?? limit;
-        // ส่ง since id เฉพาะเมื่อมีค่ามากกว่า 0
-        const since = sinceIdRef.current > 0 ? sinceIdRef.current : undefined;
-        const res = await getMessages(friendship_id, since, useLimit);
-        await readMessage(friendship_id, OtherUserId);
-        setChatTotal(res.chat_all);
-
-        if (res.items?.length) {
-          setItems((prev) => mergeById(prev, res.items));
-          const maxIncoming = Math.max(...res.items.map((m) => m.id));
-          sinceIdRef.current = Math.max(
-            sinceIdRef.current || 0,
-            res.next_since_id || 0,
-            maxIncoming || 0
-          );
-
-          if (source !== "prepend" && isNearBottomRef.current) {
-            shouldAutoScrollToEndRef.current = true;
-          }
-        }
-      } catch (err) {
-        // ถ้าต้องการแสดง error ให้ทำที่นี่
+  // สร้างรายการแสดงผล (แทรกวันที่)
+  const buildRowsFromItems = useCallback((msgs: ChatMessage[]): ListRow[] => {
+    const out: ListRow[] = [];
+    let prevDate: string | null = null;
+    for (const m of msgs) {
+      const d = m.created_at ? m.created_at.slice(0, 10) : "";
+      if (d !== prevDate) {
+        out.push({ type: "date", id: `date-${d}`, date: d });
+        prevDate = d;
       }
+      out.push({ type: "msg", ...m });
+    }
+    return out;
+  }, []);
+
+  // รวมข้อความใหม่เข้ากับข้อความเดิม (กันซ้ำด้วย ID)
+  const mergeById = useCallback(
+    (prev: ChatMessage[], incoming: ChatMessage[]) => {
+      if (!incoming?.length) return prev;
+      const map = new Map<number, ChatMessage>();
+      for (const m of prev) map.set(m.id, m);
+      for (const m of incoming) map.set(m.id, m);
+      return Array.from(map.values()).sort((a, b) => a.id - b.id);
     },
-    [friendship_id, OtherUserId, limit]
+    []
   );
 
+  // ใน load function
+  const load = useCallback(
+    async (opts?: {
+      source?: "init" | "poll" | "prepend";
+      beforeId?: number;
+      sinceId?: number;
+      limit?: number;
+    }) => {
+      const source = opts?.source ?? "poll";
+      const useLimit = opts?.limit ?? limit;
+
+      try {
+        const before = opts?.beforeId;
+
+        // *** แก้ไขจุดนี้ ***
+        // ถ้ามี before (โหลดเก่า) ให้ since เป็น undefined
+        // ถ้าไม่มี before (โหลดใหม่/poll) ให้ใช้ค่าจาก ref หรือ opts
+        const since = before
+          ? undefined
+          : opts?.sinceId ??
+            (sinceIdRef.current > 0 ? sinceIdRef.current : undefined);
+
+        // เรียก API
+        const res = await getMessages(friendship_id, since, useLimit, before);
+
+        // อ่านข้อความฝั่งตรงข้ามเสมอเมื่อโหลด
+        await readMessage(friendship_id, OtherUserId);
+
+        // ... (โค้ดส่วน mark read เหมือนเดิม) ...
+
+        setChatTotal(res.chat_all ?? 0);
+
+        const incoming: ChatMessage[] = res.items ?? [];
+
+        if (incoming.length > 0) {
+          setItems((prev) => {
+            const next = mergeById(prev, incoming);
+
+            // อัปเดต sinceId (สำหรับ polling ของใหม่)
+            const maxIncoming = Math.max(...incoming.map((m) => m.id));
+            sinceIdRef.current = Math.max(
+              sinceIdRef.current || 0,
+              res.next_since_id || 0,
+              maxIncoming || 0
+            );
+
+            return next;
+          });
+
+          // *** แก้ไขการอัปเดต oldestIdRef ***
+          // หาค่า ID ที่น้อยที่สุดจาก incoming เพื่อใช้เป็นจุดโหลดครั้งถัดไป
+          const minIncoming = Math.min(...incoming.map((m) => m.id));
+
+          // อัปเดตถ้ายังไม่มีค่า หรือถ้าค่าใหม่น้อยกว่าค่าเดิม
+          if (
+            oldestIdRef.current === null ||
+            minIncoming < oldestIdRef.current
+          ) {
+            oldestIdRef.current = minIncoming;
+          }
+
+          // ถ้าไม่ใช่การโหลดเก่า ให้เลื่อนลงล่าง
+          if (source !== "prepend") {
+            setTimeout(() => {
+              listRef.current?.scrollToEnd({
+                animated: source === "init" ? false : true,
+              });
+            }, 200);
+          }
+        }
+
+        // Backup: ถ้า API ส่ง oldest_id มาโดยตรงให้ใช้ค่าจาก API
+        if (typeof res.oldest_id !== "undefined" && res.oldest_id !== null) {
+          oldestIdRef.current = res.oldest_id;
+        }
+      } catch (e: any) {
+        console.log("Load error", e);
+      }
+    },
+    [friendship_id, OtherUserId, limit, mergeById]
+  );
+
+  // โหลดครั้งแรก
   useEffect(() => {
     sinceIdRef.current = 0;
+    oldestIdRef.current = null;
     setItems([]);
-    shouldAutoScrollToEndRef.current = true;
-    load("init", limit);
+    setListRows([]);
+    // เริ่มต้นโหลด 20 แถว และกำหนด source เป็น init เพื่อให้ scroll ลงล่าง
+    load({ source: "init", limit: 20 });
 
-    if (timer.current) {
-      clearInterval(timer.current);
-      timer.current = null;
+    // ตั้งเวลา Polling
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (isFocused && appStateRef.current === "active") {
+      timerRef.current = setInterval(() => {
+        if (appStateRef.current !== "active" || !isFocused) return;
+        load({ source: "poll", sinceId: sinceIdRef.current, limit: 50 });
+      }, 5000) as unknown as number;
     }
-    // poll ทุก 5 วิ (ถ้าต้องการเร็วขึ้น เปลี่ยนเป็น 3000)
-    timer.current = setInterval(() => {
-      load("poll");
-    }, 5000) as unknown as number;
 
     return () => {
-      if (timer.current) clearInterval(timer.current);
-      timer.current = null;
+      if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [friendship_id, limit, load]);
+  }, [friendship_id, isFocused, load]);
 
-  const onSend = async () => {
+  // จัดการ Polling ตาม AppState
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (next) => {
+      appStateRef.current = next;
+      if (next !== "active") {
+        if (timerRef.current) clearInterval(timerRef.current);
+      } else {
+        if (isFocused && !timerRef.current) {
+          timerRef.current = setInterval(() => {
+            if (appStateRef.current !== "active" || !isFocused) return;
+            load({ source: "poll", sinceId: sinceIdRef.current, limit: 50 });
+          }, 5000) as unknown as number;
+        }
+      }
+    });
+    return () => sub.remove();
+  }, [isFocused, load]);
+
+  // แปลง Items เป็น Rows ทุกครั้งที่ข้อมูลเปลี่ยน
+  useEffect(() => {
+    const rows = buildRowsFromItems(items);
+    setListRows(rows);
+  }, [items, buildRowsFromItems]);
+
+  // ฟังก์ชันส่งข้อความ
+  const onSend = useCallback(async () => {
     const msgTxt = text.trim();
-    if (!msgTxt || loadingSend) return; // ป้องกันส่งซ้ำ
+    if (!msgTxt || loadingSend) return;
+    setLoadingSend(true);
     try {
-      setLoadingSend(true);
       const msg = await sendMessage(friendship_id, msgTxt);
-      setItems((prev) => mergeById(prev, [msg]));
-      sinceIdRef.current = Math.max(sinceIdRef.current || 0, msg.id);
+      setItems((prev) => {
+        const next = mergeById(prev, [msg]);
+        sinceIdRef.current = Math.max(sinceIdRef.current || 0, msg.id);
+        return next;
+      });
       setText("");
-      // ตั้งธงให้ onContentSizeChange เลื่อนไปสุดเมื่อ content มา
-      shouldAutoScrollToEndRef.current = true;
-      // **ไม่เรียก scrollToEnd ตรงนี้** — รอ onContentSizeChange จะปลอดภัยกว่า
+      // ส่งเสร็จเลื่อนลงล่างสุด
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToEnd({ animated: true });
+      });
     } catch (e: any) {
       showSnack({
         text: e?.message || "ส่งข้อความไม่สำเร็จ",
@@ -165,63 +278,143 @@ export default function ChatScreen() {
     } finally {
       setLoadingSend(false);
     }
-  };
+  }, [text, loadingSend, friendship_id, mergeById]);
 
-  useEffect(() => {
-    if (items.length && firstOpenRef.current) {
-      requestAnimationFrame(() => {
-        listRef.current?.scrollToEnd({ animated: false });
+  // ฟังก์ชันโหลดข้อมูลเก่าเพิ่มเมื่อกดปุ่ม
+  const loadOlder = useCallback(async () => {
+    if (loadingOlder) return;
+    // เช็คว่ามี ID อ้างอิงหรือไม่
+    if (!oldestIdRef.current) return;
+
+    setLoadingOlder(true);
+    isPrependingRef.current = true; // บอกระบบว่ากำลังแทรกข้างบน
+
+    try {
+      // โหลดเพิ่มทีละ 20 แถว (ใช้ beforeId คือตัวเก่าสุดที่มีปัจจุบัน)
+      await load({
+        source: "prepend",
+        beforeId: oldestIdRef.current,
+        limit: 20,
       });
-      firstOpenRef.current = false;
+    } finally {
+      setLoadingOlder(false);
     }
-  }, [items.length]);
+  }, [loadingOlder, load]);
 
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    lastScrollYRef.current = contentOffset.y;
-    const atTop = contentOffset.y <= 12;
-    setShowLoadMoreTop(atTop && !loadingOlder && items.length < chat_total);
-
-    const paddingToBottom = 48;
-    isNearBottomRef.current =
-      layoutMeasurement.height + contentOffset.y >=
-      contentSize.height - paddingToBottom;
-  };
-
-  const onContentSizeChange = (_w: number, h: number) => {
+  // จัดการตำแหน่ง Scroll เมื่อมีการแทรกข้อมูลด้านบน (สำหรับ Android/General)
+  const onContentSizeChange = useCallback((w: number, h: number) => {
     if (isPrependingRef.current) {
       const delta = h - prevContentHeightRef.current;
       if (delta > 0) {
-        requestAnimationFrame(() => {
-          listRef.current?.scrollToOffset({
-            offset: lastScrollYRef.current + delta,
-            animated: false,
-          });
+        // ปรับตำแหน่ง Scroll ลงมาชดเชยความสูงที่เพิ่มขึ้น เพื่อให้ดูเหมือนอยู่ที่เดิม
+        listRef.current?.scrollToOffset({
+          offset: lastScrollYRef.current + delta,
+          animated: false,
         });
       }
       isPrependingRef.current = false;
-      shouldAutoScrollToEndRef.current = false;
-    } else if (shouldAutoScrollToEndRef.current) {
-      requestAnimationFrame(() => {
-        listRef.current?.scrollToEnd({ animated: true });
-      });
-      shouldAutoScrollToEndRef.current = false;
     }
     prevContentHeightRef.current = h;
-  };
+  }, []);
 
-  const onPressLoadMoreTop = async () => {
-    if (loadingOlder) return;
-    setLoadingOlder(true);
-    isPrependingRef.current = true;
-    shouldAutoScrollToEndRef.current = false;
+  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    lastScrollYRef.current = e.nativeEvent.contentOffset.y;
+  }, []);
 
-    const newLimit = limit + 5;
-    setLimit(newLimit);
-    await load("prepend", newLimit);
+  // ส่วนหัวของ List (ปุ่มโหลดเพิ่มเติม)
+  const renderHeader = useMemo(() => {
+    // ถ้าไม่มีรายการ หรือ จำนวนรายการทั้งหมดเท่ากับที่มีอยู่แล้ว ไม่ต้องโชว์ปุ่ม
+    // (logic นี้อาจต้องปรับตาม API response ของคุณว่าบอก total มาแม่นยำแค่ไหน)
+    if (listRows.length === 0) return null;
+    if (listRows.filter((r) => r.type === "msg").length >= chat_total) {
+      return null;
+    }
+    return (
+      <View style={{ paddingVertical: 10, alignItems: "center" }}>
+        {loadingOlder ? (
+          <ActivityIndicator size="small" color="#2563EB" />
+        ) : (
+          <TouchableOpacity
+            onPress={loadOlder}
+            style={{
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              backgroundColor: "#E5E7EB",
+              borderRadius: 16,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "KanitMedium",
+                fontSize: 12,
+                color: "#4B5563",
+              }}
+            >
+              โหลดข้อความเพิ่มเติม
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }, [loadingOlder, loadOlder, listRows.length]);
 
-    setLoadingOlder(false);
-  };
+  const renderRow = useCallback(({ item }: { item: ListRow }) => {
+    if (item.type === "date") {
+      const display = (() => {
+        const today = new Date().toISOString().slice(0, 10);
+        const yesterday = new Date(Date.now() - 86400000)
+          .toISOString()
+          .slice(0, 10);
+
+        if (item.date === today) return "วันนี้";
+        if (item.date === yesterday) return "เมื่อวาน";
+
+        // --- แก้ไขตรงนี้ ---
+        // item.date ค่าเดิมคือ "2025-11-21" (ปี-เดือน-วัน)
+        const [year, month, day] = item.date.split("-");
+
+        // คืนค่าเป็น "21-11-2025" (วัน-เดือน-ปี)
+        return `${day}-${month}-${year}`;
+
+        // หมายเหตุ: ถ้าอยากได้เป็น พ.ศ. ให้ใช้บรรทัดนี้แทน:
+        // return `${day}-${month}-${parseInt(year) + 543}`;
+      })();
+
+      return (
+        <View
+          style={{ width: "100%", alignItems: "center", marginVertical: 8 }}
+        >
+          <View
+            style={{
+              backgroundColor: "#FFFFFF",
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: "#E5E7EB",
+              shadowColor: "#000",
+              shadowOpacity: 0.03,
+              elevation: 1,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "KanitSemiBold",
+                fontSize: 12,
+                color: "#374151",
+              }}
+            >
+              {display}
+            </Text>
+          </View>
+        </View>
+      );
+    } else {
+      return <MessageItemFriend m={item} />;
+    }
+  }, []);
+
+  const keyExtractor = useCallback((r: ListRow) => String(r.id), []);
 
   return (
     <KeyboardAvoidingView
@@ -230,68 +423,47 @@ export default function ChatScreen() {
       keyboardVerticalOffset={80}
     >
       <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
-        {showLoadMoreTop && items.length < chat_total ? (
-          <View
-            style={{
-              padding: 10,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={onPressLoadMoreTop}
-              activeOpacity={0.8}
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderColor: "#E5E7EB",
-                borderWidth: 1,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: 8,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              {loadingOlder ? (
-                <ActivityIndicator />
-              ) : (
-                <Ionicons
-                  name="arrow-up-circle-outline"
-                  size={18}
-                  color="#111827"
-                />
-              )}
-              <Text style={{ fontFamily: "KanitSemiBold", color: "#111827" }}>
-                โหลดข้อความเก่า
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : null}
-
         <FlatList
           ref={listRef}
-          data={items}
-          keyExtractor={(m) => String(m.id)}
-          renderItem={({ item }) => <MessageItemFriend m={item} />}
+          data={listRows}
+          keyExtractor={keyExtractor}
+          renderItem={renderRow}
+          // ใส่ Header เป็นปุ่มโหลดเพิ่มเติม
+          ListHeaderComponent={renderHeader}
+          ListFooterComponent={
+            !listRows ? (
+              <View style={{ paddingVertical: 12, alignItems: "center" }}>
+                <ActivityIndicator size="large" />
+              </View>
+            ) : null
+          }
           contentContainerStyle={{
             paddingBottom: 16,
             paddingTop: 8,
             paddingHorizontal: 12,
+            // เพิ่ม space เล็กน้อยเผื่อคีย์บอร์ดบัง
           }}
+          // ลบ onScroll ที่ใช้ Auto-load ออก เหลือแค่เก็บค่า Y
           onScroll={onScroll}
+          // Logic การคงตำแหน่ง Scroll
           onContentSizeChange={onContentSizeChange}
+          // สำหรับ iOS: ช่วยให้ Scroll ไม่กระโดดเมื่อเพิ่มของด้านบน
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+          }}
           scrollEventThrottle={16}
           initialNumToRender={20}
-          windowSize={10}
+          windowSize={9}
+          removeClippedSubviews={true}
         />
 
+        {/* Input Area (เหมือนเดิม) */}
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
             marginTop: 8,
-            marginBottom: 42,
+            marginBottom: Platform.OS === "ios" ? 42 : 16,
             marginHorizontal: 16,
           }}
         >
@@ -334,13 +506,12 @@ export default function ChatScreen() {
         </View>
       </View>
 
-      {/* Dropdown User Menu */}
-      {userMenu ? (
+      {/* User Menu (เหมือนเดิม) */}
+      {userMenuVisible ? (
         <View
           style={{
             backgroundColor: "#ffffffff",
             width: 220,
-            height: "auto",
             position: "absolute",
             top: 2,
             right: 11,

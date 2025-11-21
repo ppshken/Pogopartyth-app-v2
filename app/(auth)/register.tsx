@@ -97,115 +97,105 @@ export default function Register() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.centerContainer}
-        >
-          <View style={styles.wrap}>
-            {/* การ์ด: บัญชี */}
-            <View style={styles.card}>
-              {/* Header / คำโปรย ให้ฟีลเดียวกับหน้า Login */}
-              <View style={{ marginBottom: 30 }}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={styles.title}>สร้างบัญชีใหม่</Text>
-                </View>
-                <View style={styles.lineRow}>
-                  <Text style={styles.lineText}>
-                    ลงทะเบียนเพื่อเริ่มใช้งาน PogoPartyTH
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={styles.label}>อีเมล</Text>
-              <View style={styles.inputRow}>
-                <TextInput
-                  placeholder="your@example.com"
-                  placeholderTextColor="#9CA3AF"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  style={[styles.input, { paddingVertical: 2 }]}
-                  returnKeyType="done"
-                />
-              </View>
-              {!emailOk && !!email && (
-                <Text style={styles.errorText}>รูปแบบอีเมลไม่ถูกต้อง</Text>
-              )}
-
-              {/* ยอมรับเงื่อนไข */}
-              <TouchableOpacity
-                onPress={() => setAgreed((v) => !v)}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 18,
-                  gap: 10,
-                  paddingHorizontal: 2,
-                }}
-                activeOpacity={0.7}
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    agreed && { backgroundColor: ACCENT, borderColor: ACCENT },
-                  ]}
-                >
-                  {agreed ? (
-                    <Ionicons name="checkmark" size={14} color="#fff" />
-                  ) : null}
-                </View>
-                <Text style={styles.agreeText}>
-                  ฉันยอมรับ <Text style={styles.link}>ข้อตกลงการใช้งาน</Text>{" "}
-                  และ <Text style={styles.link}>นโยบายความเป็นส่วนตัว</Text>
-                </Text>
-              </TouchableOpacity>
-
-              {/* ปุ่มสมัคร */}
-              <TouchableOpacity
-                onPress={onRegister}
-                activeOpacity={0.9}
-                style={[styles.primaryBtn, !canSubmit && { opacity: 0.6 }]}
-                disabled={!canSubmit}
-              >
-                <View style={styles.primaryBtnInner}>
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.primaryBtnText}>สมัครสมาชิก</Text>
-                  )}
-                </View>
-              </TouchableOpacity>
-
-              {/* ลิงก์ไปหน้า Login */}
-              <View style={styles.bottomRow}>
-                <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>
-                  มีบัญชีอยู่แล้ว?
-                </Text>
-                <TouchableOpacity onPress={() => router.back()}>
-                  <Text style={styles.link}>เข้าสู่ระบบ</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      {/* การ์ด: บัญชี */}
+      <View style={styles.card}>
+        {/* Header / คำโปรย ให้ฟีลเดียวกับหน้า Login */}
+        <View style={{ marginBottom: 30 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={styles.title}>สร้างบัญชีใหม่</Text>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+          <View style={styles.lineRow}>
+            <Text style={styles.lineText}>
+              ลงทะเบียนเพื่อเริ่มใช้งาน PogoPartyTH
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.label}>อีเมล</Text>
+        <View style={styles.inputRow}>
+          <TextInput
+            placeholder="your@example.com"
+            placeholderTextColor="#9CA3AF"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            style={[styles.input, { paddingVertical: 2 }]}
+            returnKeyType="done"
+          />
+        </View>
+        {!emailOk && !!email && (
+          <Text style={styles.errorText}>รูปแบบอีเมลไม่ถูกต้อง</Text>
+        )}
+
+        {/* ยอมรับเงื่อนไข */}
+        <TouchableOpacity
+          onPress={() => setAgreed((v) => !v)}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: 18,
+            gap: 10,
+            paddingHorizontal: 2,
+          }}
+          activeOpacity={0.7}
+        >
+          <View
+            style={[
+              styles.checkbox,
+              agreed && { backgroundColor: ACCENT, borderColor: ACCENT },
+            ]}
+          >
+            {agreed ? (
+              <Ionicons name="checkmark" size={14} color="#fff" />
+            ) : null}
+          </View>
+          <Text style={styles.agreeText}>
+            ฉันยอมรับ <Text style={styles.link}>ข้อตกลงการใช้งาน</Text> และ{" "}
+            <Text style={styles.link}>นโยบายความเป็นส่วนตัว</Text>
+          </Text>
+        </TouchableOpacity>
+
+        {/* ปุ่มสมัคร */}
+        <TouchableOpacity
+          onPress={onRegister}
+          activeOpacity={0.9}
+          style={[styles.primaryBtn, !canSubmit && { opacity: 0.6 }]}
+          disabled={!canSubmit}
+        >
+          <View style={styles.primaryBtnInner}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.primaryBtnText}>สมัครสมาชิก</Text>
+            )}
+          </View>
+        </TouchableOpacity>
+
+        {/* ลิงก์ไปหน้า Login */}
+        <View style={styles.bottomRow}>
+          <Text style={{ color: TEXT_SUB, fontFamily: "KanitMedium" }}>
+            มีบัญชีอยู่แล้ว?
+          </Text>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.link}>เข้าสู่ระบบ</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  centerContainer: {
-    flexGrow: 1,
-    padding: 16,
-    alignItems: "center",
+  container: {
+    flex: 1,
+    backgroundColor: "#F7F8FA",
+    paddingHorizontal: 16,
   },
-  wrap: { width: "100%", maxWidth: 420 },
 
   card: {
     backgroundColor: CARD_BG,
@@ -218,6 +208,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
+    marginTop: 16,
   },
 
   title: {

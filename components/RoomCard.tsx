@@ -111,8 +111,8 @@ export function RoomCardMinimal({
           width={72}
           height={72}
           borderRadius={10}
-          iconheight={20}
-          iconwidth={20}
+          iconheight={30}
+          iconwidth={30}
         />
       </View>
 
@@ -303,6 +303,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    flexWrap: "wrap",
   },
   people: { flexDirection: "row", alignItems: "center" },
   metaText: { color: "#374151", fontSize: 12, fontFamily: "KanitSemiBold" },

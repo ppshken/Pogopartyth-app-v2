@@ -127,7 +127,7 @@ export default function Profile() {
               style={{
                 position: "absolute",
                 width: "100%",
-                height: 205,
+                height: 200,
                 top: 0,
                 borderRadius: 16,
                 opacity: 0.9,

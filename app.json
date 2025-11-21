@@ -3,12 +3,12 @@
     "owner": "kenzanaqq",
     "name": "PogopartyTH",
     "slug": "pogopartyth-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon": "./assets/pogopartyth.png",
     "userInterfaceStyle": "light",
     "scheme": "pogopartyth",
     "splash": {
-      "image": "./assets/open-app.png",
+      "image": "./assets/pogopartyth.png",
       "backgroundColor": "#ffdb74",
       "resizeMode": "contain"
     },

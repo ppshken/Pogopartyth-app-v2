@@ -209,19 +209,48 @@ export default function RoomsIndex() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListEmptyComponent={
-          <Text
-            style={{
-              color: "#9CA3AF",
-              textAlign: "center",
-              marginTop: 24,
-              fontSize: 16,
-              fontFamily: "KanitMedium",
-            }}
-          >
-            {q || selectedBossId
-              ? "ไม่พบห้องที่ตรงกับตัวกรอง"
-              : "ยังไม่มีห้องบอสในขณะนี้"}
-          </Text>
+          <View style={{ marginTop: 150, alignItems: "center" }}>
+            <Image
+              source={require("assets/raid.png")}
+              style={{ width: 100, height: 100, alignSelf: "center" }}
+              resizeMode="contain"
+            />
+            <Text
+              style={{
+                color: "#9CA3AF",
+                textAlign: "center",
+                fontSize: 16,
+                fontFamily: "KanitMedium",
+              }}
+            >
+              {q || selectedBossId
+                ? "ไม่พบห้องที่ตรงกับตัวกรอง"
+                : "ยังไม่มีห้องบอสในขณะนี้"}
+            </Text>
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#3c72e6ff",
+                width: 160,
+                padding: 12,
+                borderRadius: 8,
+                marginTop: 16,
+                alignSelf: "center",
+              }}
+              onPress={() => router.push("/(tabs)/create")}
+            >
+              <Text
+                style={{
+                  color: "#ffffffff",
+                  textAlign: "center",
+                  fontSize: 16,
+                  fontFamily: "KanitMedium",
+                }}
+              >
+                สร้างห้องบอสใหม่
+              </Text>
+            </TouchableOpacity>
+          </View>
         }
         renderItem={({ item }) => (
           <RoomCardMinimal

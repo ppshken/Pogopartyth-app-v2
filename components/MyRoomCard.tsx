@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { BossImage } from "../components/ฺBossImage";
 
 type MyRoom = {
   id: number;
   raid_boss_id: number;
   pokemon_image: string;
   boss: string;
+  boss_type: string;
   start_time: string;
   status: "active" | "closed" | "canceled" | "invited" | string;
   max_members: number;
@@ -88,7 +90,15 @@ export function MyRoomCard({
       onPress={onPress}
       activeOpacity={0.85}
     >
-      <Image source={{ uri: room.pokemon_image }} style={styles.thumb} />
+      <BossImage
+        pokemon_image={room.pokemon_image}
+        boss_type={room.boss_type}
+        width={72}
+        height={72}
+        borderRadius={10}
+        iconheight={30}
+        iconwidth={30}
+      />
       <View style={{ flex: 1 }}>
         <View style={styles.topRow}>
           <Text numberOfLines={1} style={styles.title}>

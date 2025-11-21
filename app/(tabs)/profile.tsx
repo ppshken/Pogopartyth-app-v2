@@ -16,6 +16,11 @@ import { useAuth } from "../../store/authStore";
 import { profile } from "../../lib/auth";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { AvatarComponent } from "../../components/Avatar";
+import Constants from "expo-constants"; // ✅ เพิ่มเพื่อดึง Version
+
+// ✅ Import รูปภาพรอไว้ข้างบน (Performance & Safety)
+const IMG_PREMIUM_BG = require("../../assets/background_premium/background-premium.png");
+const IMG_GOOGLE = require("../../assets/google-logo.png");
 
 type FullUser = {
   id: number;
@@ -67,95 +72,80 @@ const menu = [
 
 export default function Profile() {
   const router = useRouter();
-
-  const authUser = useAuth((s) => s.user) as any; // user จาก store (อาจยังไม่มี field เสริม)
+  const authUser = useAuth((s) => s.user) as any;
   const logout = useAuth((s) => s.clear);
 
   const [loading, setLoading] = useState(false);
-
   const [user, setUser] = useState<FullUser | null>(null);
+
+  // ดึงเลขเวอร์ชันจาก app.json
+  const appVersion = Constants.expoConfig?.version || "1.0.0";
 
   const load = useCallback(async () => {
     try {
-      const { user } = await profile(); // GET /api/auth/profile.php
+      const { user } = await profile();
       setUser(user as FullUser);
     } catch (e: any) {
-      // ถ้าเรียกไม่สำเร็จ fallback ใช้ user ใน store ไปก่อน
       setUser(authUser || null);
     }
   }, [authUser]);
 
   useEffect(() => {
-    // เริ่มจากข้อมูลใน store ก่อน ให้ UI ไม่ว่างเปล่า
     setUser(authUser || null);
-    // แล้วค่อยรีเฟรชจาก API
     load();
   }, [authUser, load]);
 
   useRefetchOnFocus(load, [load]);
 
   const onLogout = async () => {
-    try {
-      Alert.alert("ยืนยัน", "คุณต้องการออกจากระบบใช่หรือไม่?", [
-        {
-          text: "ยกเลิก",
-          style: "cancel",
-          onPress: () => setLoading(false),
+    Alert.alert("ยืนยัน", "คุณต้องการออกจากระบบใช่หรือไม่?", [
+      {
+        text: "ยกเลิก",
+        style: "cancel",
+        onPress: () => setLoading(false),
+      },
+      {
+        text: "ออกจากระบบ",
+        style: "destructive",
+        onPress: async () => {
+          if (loading) return;
+          setLoading(true);
+          try {
+            await logout();
+            // ✅ เปลี่ยนหน้าทันที ไม่ต้องรอ finally มา set loading false
+            router.replace("/(auth)/login");
+          } catch (error) {
+            console.log(error);
+            setLoading(false); // set false เฉพาะกรณี error (ยังอยู่หน้าเดิม)
+          }
         },
-        {
-          text: "ออกจากระบบ",
-          style: "destructive",
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await logout();
-              router.replace("/(auth)/login");
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]);
-    } catch (e) {
-      setLoading(false);
-    }
+      },
+    ]);
   };
 
   if (!user) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="small" color="#020202ff" />
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="small" color="#020202" />
       </View>
     );
   }
 
-  // UI
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: "#F9FAFB" }}
-      contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
       refreshControl={<RefreshControl refreshing={false} onRefresh={load} />}
     >
       {/* Card: User */}
       <View style={styles.card}>
         {user.plan === "premium" && (
           <View style={{ alignItems: "center" }}>
-            <Image
-              source={require("assets/background_premium/background-premium.png")}
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: 205,
-                top: 0,
-                borderRadius: 16,
-                opacity: 0.9,
-              }}
-            />
+            <Image source={IMG_PREMIUM_BG} style={styles.premiumBg} />
           </View>
         )}
 
         <View style={{ alignItems: "center", padding: 16 }}>
-          {/* Avatar */}
           <AvatarComponent
             avatar={user.avatar}
             username={user.username}
@@ -166,8 +156,7 @@ export default function Profile() {
             fontsize={14}
           />
 
-          {/* Name + email */}
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, marginTop: 12 }}>
             <Text
               style={[
                 styles.name,
@@ -178,20 +167,13 @@ export default function Profile() {
               {user?.username || "ไม่ระบุชื่อ"}
             </Text>
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <View style={styles.emailRow}>
               {user.google_sub && (
                 <Image
-                  source={require("assets/google-logo.png")}
+                  source={IMG_GOOGLE}
                   style={{ width: 18, height: 18, marginRight: 8 }}
                 />
               )}
-
               <Text
                 style={[
                   styles.email,
@@ -203,28 +185,18 @@ export default function Profile() {
               </Text>
             </View>
 
-            {/* Chips / quick actions */}
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                gap: 8,
-                justifyContent: "center",
-                marginTop: 8,
-              }}
-            >
-              <View style={[styles.badgeDark]}>
+            <View style={styles.badgeContainer}>
+              <View style={styles.badgeDark}>
                 <Ionicons
                   name="calendar-outline"
                   size={14}
-                  color={user.plan === "premium" ? "#ffffff" : "000000"}
+                  color={user.plan === "premium" ? "#ffffff" : "#000000"}
                 />
                 <Text
                   style={[
                     styles.badgeDarkText,
                     {
-                      color:
-                        user.plan === "premium" ? "#ffffffff" : "#000000ff",
+                      color: user.plan === "premium" ? "#ffffff" : "#000000",
                     },
                   ]}
                 >
@@ -236,7 +208,7 @@ export default function Profile() {
                 <View style={styles.badgeMuted}>
                   <Ionicons name="ribbon-outline" size={14} color="#111827" />
                   <Text style={styles.badgeMutedText}>
-                    {"  "}
+                    {" "}
                     {user.trainer_name}
                   </Text>
                 </View>
@@ -252,41 +224,20 @@ export default function Profile() {
         {menu.map((menuitem) => (
           <View style={styles.menuSection} key={menuitem.id}>
             <TouchableOpacity
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 8,
-                gap: 8,
-                borderBottomWidth: 1,
-                borderColor: "#e4e4e4ff",
-                paddingBottom: 8,
-              }}
+              style={styles.menuItemBtn}
               onPress={() => {
                 if (menuitem.router) {
-                  router.push(menuitem.router);
+                  router.push(menuitem.router as any);
                 }
               }}
             >
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: 4,
-                }}
-              >
-                <Ionicons name={menuitem.icon as any} size={24} />
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "KanitSemiBold",
-                    color: "#111827",
-                  }}
-                >
-                  {menuitem.menu}
-                </Text>
+              <View style={styles.menuItemLeft}>
+                <Ionicons
+                  name={menuitem.icon as any}
+                  size={24}
+                  color="#111827"
+                />
+                <Text style={styles.menuItemText}>{menuitem.menu}</Text>
               </View>
               <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
             </TouchableOpacity>
@@ -310,29 +261,10 @@ export default function Profile() {
             </>
           )}
         </TouchableOpacity>
-        <View>
-          <Text
-            style={{
-              color: "#9CA3AF",
-              fontSize: 12,
-              textAlign: "center",
-              marginTop: 12,
-              fontFamily: "KanitRegular",
-            }}
-          >
-            เวอร์ชัน 1.0.0
-          </Text>
-          <Text
-            style={{
-              color: "#9CA3AF",
-              fontSize: 12,
-              textAlign: "center",
-              marginTop: 4,
-              fontFamily: "KanitRegular",
-            }}
-          >
-            สร้างโดย PogoParty TH
-          </Text>
+
+        <View style={{ marginTop: 12 }}>
+          <Text style={styles.footNote}>เวอร์ชัน {appVersion}</Text>
+          <Text style={styles.footNote2}>สร้างโดย PogoParty TH</Text>
         </View>
       </View>
     </ScrollView>
@@ -340,12 +272,9 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  screenTitle: {
-    fontSize: 22,
-    color: "#111827",
-    marginBottom: 12,
-    fontFamily: "KanitSemiBold",
-  },
+  container: { flex: 1, backgroundColor: "#F9FAFB" },
+  contentContainer: { padding: 16, paddingBottom: 24 },
+  centerContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
 
   card: {
     backgroundColor: "#fff",
@@ -358,55 +287,49 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 1,
+    overflow: "hidden", // เพิ่มเพื่อให้ bg premium ตัดขอบตาม card
   },
-
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
-    alignSelf: "center",
+  premiumBg: {
+    position: "absolute",
+    width: "100%",
+    height: 210,
+    top: 0,
+    opacity: 0.9,
   },
-  avatarEmpty: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
-    backgroundColor: "#E5E7EB",
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  avatarLetter: { fontSize: 28, color: "#374151", fontFamily: "KanitBold" },
 
   name: {
     fontSize: 18,
-    color: "#111827",
     textAlign: "center",
     fontFamily: "KanitSemiBold",
   },
+  emailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
   email: {
     fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    marginTop: 2,
     fontFamily: "KanitRegular",
   },
-
+  badgeContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    justifyContent: "center",
+    marginTop: 8,
+  },
   badgeDark: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 4,
     paddingHorizontal: 10,
     paddingVertical: 2,
-    alignSelf: "flex-start",
   },
   badgeDarkText: {
     fontSize: 14,
     fontFamily: "KanitMedium",
-    color: "#000000ff",
   },
-
   badgeMuted: {
     flexDirection: "row",
     alignItems: "center",
@@ -414,7 +337,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    alignSelf: "flex-start",
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
@@ -423,47 +345,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "KanitSemiBold",
   },
-
-  cardTitle: {
-    fontSize: 18,
-    color: "#111827",
-    marginBottom: 14,
-    fontFamily: "KanitBold",
-  },
-
-  row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },
-  rowText: {
-    marginLeft: 8,
-    color: "#374151",
-    fontSize: 14,
-    fontFamily: "KanitRegular",
-  },
-  rowValue: { color: "#111827", fontFamily: "KanitSemiBold" },
-
-  outlineBtn: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#525252ff",
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: "#fff",
-  },
-  outlineBtnText: { color: "#111827", fontFamily: "KanitSemiBold" },
-
-  primaryBtn: {
-    marginTop: 10,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-  },
-  primaryBtnText: { color: "#fff", marginLeft: 6, fontFamily: "KanitSemiBold" },
 
   card_stats: {
     backgroundColor: "#fff",
@@ -474,38 +355,53 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     marginBottom: 12,
   },
-  cardSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    gap: 8,
+  cardTitle: {
+    fontSize: 18,
+    color: "#111827",
+    marginBottom: 14,
+    fontFamily: "KanitBold",
   },
   menuSection: {
+    borderBottomWidth: 1,
+    borderColor: "#F3F4F6", // สีเส้นจางลงหน่อย
+  },
+  menuItemBtn: {
     flexDirection: "row",
     alignItems: "center",
+    paddingVertical: 12,
     gap: 8,
   },
-  card_stats_detail: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    paddingVertical: 20,
-    borderRadius: 14,
+  menuItemLeft: {
     flex: 1,
+    flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 12,
+  },
+  menuItemText: {
+    fontSize: 14,
+    fontFamily: "KanitSemiBold",
+    color: "#111827",
   },
 
-  // เพิ่มสไตล์สำหรับบล็อกสถิติ (แทน inline fontWeight)
-  statLabel: { fontSize: 12, fontFamily: "KanitSemiBold", color: "#111827" },
-  statNumber: { fontSize: 12, fontFamily: "KanitBold", color: "#111827" },
+  primaryBtn: {
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+  },
+  primaryBtnText: {
+    color: "#fff",
+    marginLeft: 6,
+    fontFamily: "KanitSemiBold",
+  },
 
-  // footer ข้างล่าง
   footNote: {
     color: "#9CA3AF",
     fontSize: 12,
     textAlign: "center",
-    marginTop: 12,
     fontFamily: "KanitRegular",
   },
   footNote2: {

@@ -7,7 +7,6 @@ import {
   FlatList,
   StyleSheet,
   ScrollView,
-  Image,
   TextInput,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -17,7 +16,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { createRoom, RoomLog } from "../../lib/raid";
-import { getActiveRaidBosses } from "../../lib/raidBoss"; // << ใช้ API ที่สร้างไว้
+import { getActiveRaidBosses } from "../../lib/raidBoss";
 import { TierStars } from "../../components/TierStars";
 import { showSnack } from "../../components/Snackbar";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
@@ -37,10 +36,10 @@ type RaidBoss = {
   created_at: string;
 };
 
-const MIN_LEVEL_OPTIONS = [30, 40, 50, 60, 70];
+const colorbagevip = "#7d04efff";
+const colorbageviptext = "#ffc400ff";
 
-const FALLBACK =
-  "https://static.wikia.nocookie.net/pokemongo/images/5/55/Emblem_Raid.png/revision/latest?cb=20170907130239";
+const MIN_LEVEL_OPTIONS = [30, 40, 50, 60, 70];
 
 const MIN_HOUR = 5; // 05:00
 const MAX_HOUR = 23; // 23:00
@@ -67,9 +66,8 @@ function generateTimeSlots(now = new Date()): { label: string; date: Date }[] {
 
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
-  const earliestToday = new Date(today);
-  earliestToday.setHours(MIN_HOUR, 0, 0, 0);
 
+  // Logic เดิมของคุณโอเคแล้ว
   let start = ceilToStep(fiveLater, STEP_MIN);
   if (start.getHours() < MIN_HOUR) {
     start = new Date(today);
@@ -137,16 +135,16 @@ export default function CreateRoom() {
   const [note, setNote] = useState("");
 
   // VIP
-  // เลเวลขั้นต่ำ
   const [minLevel, setMinLevel] = useState<number | null>(null);
-  // เฉพาะ Premium
   const [vipOnly, setVipOnly] = useState(false);
-  // ล็อคห้อง
   const [lockRoom, setLockRoom] = useState(false);
   const [passwordRoom, setPasswordRoom] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const isPast = startAt.getTime() <= Date.now();
+
+  // เช็คเวลา (เผื่อเวลา Server/Client lag นิดหน่อย อาจจะให้ผ่านได้ถ้าเวลาเท่ากับปัจจุบัน)
+  const isPast = startAt.getTime() < Date.now();
+
   const canSubmit = !loading && !!boss && !isPast && max >= 2 && max <= 20;
 
   // โหลด บอส
@@ -161,6 +159,7 @@ export default function CreateRoom() {
         setVip(true);
       } else {
         setVip(false);
+        // Reset VIP settings if user is no longer premium
         setMinLevel(null);
         setLockRoom(false);
         setVipOnly(false);
@@ -176,7 +175,7 @@ export default function CreateRoom() {
     } finally {
       setLoadingBoss(false);
     }
-  }, [q, boss]);
+  }, [q]); // ✅ เอา boss ออกจาก dependency เพื่อป้องกัน loop
 
   useRefetchOnFocus(loadBosses, [loadBosses]);
 
@@ -211,10 +210,13 @@ export default function CreateRoom() {
     }
     try {
       setLoading(true);
+      // ตรวจสอบ boss อีกครั้งว่าไม่ null (ตาม logic canSubmit น่าจะไม่ null แล้ว)
+      if (!boss) return;
+
       const payload = {
         raid_boss_id: boss.raid_boss_id,
         pokemon_image: boss.pokemon_image,
-        boss: boss!.pokemon_name, // << ส่งชื่อบอสจาก API
+        boss: boss.pokemon_name,
         start_time: formatYmdHms(startAt),
         max_members: max,
         note: note.trim() || undefined,
@@ -439,8 +441,8 @@ export default function CreateRoom() {
             {/* เลเวลขั้นต่ำ */}
             <View style={{ opacity: vip ? 1 : 0.3 }}>
               <View style={{ marginBottom: 12 }}>
-                <Text style={{ fontFamily: "KanitMedium", fontSize: 24 }}>
-                  เฉพาะ Premium
+                <Text style={{ fontFamily: "KanitSemiBold", fontSize: 24 }}>
+                  เฉพาะ VIP
                 </Text>
                 <Text
                   style={{
@@ -456,24 +458,34 @@ export default function CreateRoom() {
                 style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
               >
                 <Text style={styles.label}>เลเวลขั้นต่ำ</Text>
-                <View
-                  style={{
-                    alignItems: "center",
-                    backgroundColor: "#EFBF04",
-                    borderRadius: 4,
-                    paddingHorizontal: 6,
-                    marginBottom: 8,
-                  }}
-                >
-                  <Text
+                {/* VIP Badge */}
+                {vip && (
+                  <View
                     style={{
-                      color: "#666666",
-                      fontFamily: "KanitMedium",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: colorbagevip,
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                      marginBottom: 8,
+                      gap: 4,
                     }}
                   >
-                    Premium
-                  </Text>
-                </View>
+                    <Ionicons
+                      name="sparkles"
+                      size={12}
+                      color={colorbageviptext}
+                    />
+                    <Text
+                      style={{
+                        color: colorbageviptext,
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      VIP
+                    </Text>
+                  </View>
+                )}
               </View>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 {MIN_LEVEL_OPTIONS.map((lv) => (
@@ -524,24 +536,34 @@ export default function CreateRoom() {
                 }}
               >
                 <Text style={styles.label}>เฉพาะผู้ใช้ Premium</Text>
-                <View
-                  style={{
-                    alignItems: "center",
-                    backgroundColor: "#EFBF04",
-                    borderRadius: 4,
-                    paddingHorizontal: 6,
-                    marginBottom: 8,
-                  }}
-                >
-                  <Text
+                {/* VIP Badge */}
+                {vip && (
+                  <View
                     style={{
-                      color: "#666666",
-                      fontFamily: "KanitMedium",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: colorbagevip,
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                      marginBottom: 8,
+                      gap: 4,
                     }}
                   >
-                    Premium
-                  </Text>
-                </View>
+                    <Ionicons
+                      name="sparkles"
+                      size={12}
+                      color={colorbageviptext}
+                    />
+                    <Text
+                      style={{
+                        color: colorbageviptext,
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      VIP
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <View style={{ alignSelf: "flex-start" }}>
@@ -550,6 +572,11 @@ export default function CreateRoom() {
                   value={vipOnly}
                   onValueChange={setVipOnly}
                   disabled={!vip}
+                  trackColor={{
+                    false: vip ? "#767577" : "#b5b4b6ff",
+                    true: "#b2dad6",
+                  }}
+                  thumbColor={vipOnly ? "#018375" : "#f4f3f4"}
                 />
               </View>
 
@@ -578,24 +605,34 @@ export default function CreateRoom() {
                 }}
               >
                 <Text style={styles.label}>ล็อคห้อง</Text>
-                <View
-                  style={{
-                    alignItems: "center",
-                    backgroundColor: "#EFBF04",
-                    borderRadius: 4,
-                    paddingHorizontal: 6,
-                    marginBottom: 8,
-                  }}
-                >
-                  <Text
+                {/* VIP Badge */}
+                {vip && (
+                  <View
                     style={{
-                      color: "#666666",
-                      fontFamily: "KanitMedium",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: colorbagevip,
+                      borderRadius: 4,
+                      paddingHorizontal: 6,
+                      marginBottom: 8,
+                      gap: 4,
                     }}
                   >
-                    Premium
-                  </Text>
-                </View>
+                    <Ionicons
+                      name="sparkles"
+                      size={12}
+                      color={colorbageviptext}
+                    />
+                    <Text
+                      style={{
+                        color: colorbageviptext,
+                        fontFamily: "KanitMedium",
+                      }}
+                    >
+                      VIP
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
@@ -607,6 +644,11 @@ export default function CreateRoom() {
                     if (!v) setPasswordRoom("");
                   }}
                   disabled={!vip}
+                  trackColor={{
+                    false: vip ? "#767577" : "#b5b4b6ff",
+                    true: "#b2dad6",
+                  }}
+                  thumbColor={lockRoom ? "#018375" : "#f4f3f4"}
                 />
               </View>
 
@@ -736,7 +778,8 @@ export default function CreateRoom() {
             ) : (
               <FlatList
                 data={bosses}
-                keyExtractor={(x) => String(x.pokemon_id) + x.pokemon_name}
+                // ✅ แก้ keyExtractor ใช้ ID ที่ไม่ซ้ำ
+                keyExtractor={(x) => String(x.raid_boss_id)}
                 renderItem={({ item }) => {
                   const selected = boss?.raid_boss_id === item.raid_boss_id;
                   const bossVip = !vip && !!item.special;
@@ -1046,6 +1089,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    color: "#111827",
   },
   textarea: {
     borderWidth: 1,

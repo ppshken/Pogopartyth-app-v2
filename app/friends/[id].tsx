@@ -309,8 +309,8 @@ export default function Profile() {
             width={80}
             height={80}
             borderRadius={40}
-            fontsize={16}
-            iconsize={16}
+            fontsize={14}
+            iconsize={14}
           />
 
           {/* Name + email */}

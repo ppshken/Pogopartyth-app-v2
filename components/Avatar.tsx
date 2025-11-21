@@ -26,7 +26,17 @@ export function AvatarComponent({
   return (
     <View style={{ alignItems: "center", justifyContent: "center" }}>
       {avatar ? (
-        <>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            width: width+4,
+            height: height+4,
+            borderWidth: 4,
+            borderColor: plan === "premium" ? "#ffc400ff" : "#ffffffff",
+            borderRadius: borderRadius + 2,
+          }}
+        >
           <Image
             source={{ uri: avatar }}
             style={[
@@ -40,11 +50,11 @@ export function AvatarComponent({
           />
           {plan === "premium" && (
             <View style={styles.bage}>
-              <Ionicons name="sparkles" size={iconsize} color="#666666" />
-              <Text style={[styles.textbage, { fontSize: fontsize }]}>Premium</Text>
+              <Ionicons name="sparkles" size={iconsize} color="#ffc400ff" />
+              <Text style={[styles.textbage, { fontSize: fontsize }]}>VIP</Text>
             </View>
           )}
-        </>
+        </View>
       ) : (
         <View style={styles.avatarEmpty}>
           <Text style={styles.avatarLetter}>
@@ -60,16 +70,18 @@ const styles = StyleSheet.create({
   bage: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     position: "absolute",
-    paddingHorizontal: 2,
-    backgroundColor: "#EFBF04",
+    width: "auto",
+    paddingHorizontal: 8,
+    backgroundColor: "#7d04efff",
     borderRadius: 4,
-    bottom: 0,
+    bottom: -4,
     gap: 4,
   },
   textbage: {
     fontFamily: "KanitMedium",
-    color: "#666666",
+    color: "#ffc400ff",
   },
   avatar: {
     marginBottom: 5,

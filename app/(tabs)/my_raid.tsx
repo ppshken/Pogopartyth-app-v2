@@ -21,6 +21,7 @@ type MyRoom = {
   raid_boss_id: number;
   pokemon_image: string;
   boss: string;
+  boss_type: string;
   start_time: string;
   status: "active" | "closed" | "canceled" | "invited" | string;
   max_members: number;

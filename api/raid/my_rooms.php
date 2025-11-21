@@ -52,12 +52,14 @@ $sql = "
     ur.role,
     u.username AS owner_username,
     u.avatar   AS owner_avatar,
+    rb.type AS boss_type,
     (
       SELECT COUNT(*) FROM user_raid_rooms ur2 WHERE ur2.room_id = r.id
     ) AS current_members
   FROM raid_rooms r
   JOIN user_raid_rooms ur ON ur.room_id = r.id
   JOIN users u ON u.id = r.owner_id
+  LEFT JOIN raid_boss rb ON rb.id = r.raid_boss_id
   WHERE ur.user_id = :uid
     AND r.status <> 'closed'
     AND r.status <> 'canceled'
@@ -84,6 +86,7 @@ $items = array_map(function(array $r) {
     'raid_boss_id'     => $r['raid_boss_id'],
     'pokemon_image'    => $r['pokemon_image'],
     'boss'             => $r['boss'],
+    'boss_type'        => $r['boss_type'],
     'start_time'       => $r['start_time'],
     'status'           => $r['status'],
     'max_members'      => $max,
