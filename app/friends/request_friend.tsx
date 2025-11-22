@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Modal,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -47,7 +48,13 @@ type Inbox = {
 
 const PAGE_SIZE = 20;
 
+// สร้าง Type สำหรับ Tab
+type TabType = "requests" | "inbox";
+
 export default function RequestFriend() {
+  // State สำหรับ Tab
+  const [activeTab, setActiveTab] = useState<TabType>("requests");
+
   const [items, setItems] = useState<PendingItem[]>([]);
   const [inboxitems, setInboxItems] = useState<Inbox[]>([]);
   const [page, setPage] = useState(1);
@@ -64,15 +71,19 @@ export default function RequestFriend() {
     try {
       if (!append) setLoading(true);
       setError(null);
-      const res = await GetPendingFriends({
-        page: p,
-        limit: PAGE_SIZE,
-      });
-      const inbox = await getInbox_list();
-      setInboxItems(inbox);
-      setHasMore(!!res.pagination?.has_more);
-      setPage(res.pagination?.page || p);
-      setItems((prev) => (append ? [...prev, ...res.list] : res.list));
+
+      // โหลดทั้งสองอย่างเพื่อให้ตัวเลข Badge อัปเดตเสมอ
+      const [resPending, resInbox] = await Promise.all([
+        GetPendingFriends({ page: p, limit: PAGE_SIZE }),
+        getInbox_list(),
+      ]);
+
+      setInboxItems(resInbox);
+      setHasMore(!!resPending.pagination?.has_more);
+      setPage(resPending.pagination?.page || p);
+      setItems((prev) =>
+        append ? [...prev, ...resPending.list] : resPending.list
+      );
     } catch (e: any) {
       setError(e?.message || "โหลดรายการไม่สำเร็จ");
     } finally {
@@ -81,7 +92,7 @@ export default function RequestFriend() {
     }
   }, []);
 
-  useRefetchOnFocus(load, [load]); // โหลดทุกครั้งที่เข้าหน้า
+  useRefetchOnFocus(load, [load]);
 
   useEffect(() => {
     load(1, false);
@@ -91,11 +102,15 @@ export default function RequestFriend() {
     setRefreshing(true);
     load(1, false);
   };
+
   const loadMore = () => {
-    if (!loading && hasMore) load(page + 1, true);
+    // Load more เฉพาะ Tab คำขอเพื่อน (เพราะ Inbox มักจะมาทีเดียวหมด หรือต้องทำ Pagination แยก)
+    if (activeTab === "requests" && !loading && hasMore) {
+      load(page + 1, true);
+    }
   };
 
-  // เปิดแชท
+  // ... (ฟังก์ชันเดิม openChat, accept, declin, formatCode คงไว้เหมือนเดิม) ...
   const openChat = async (inboxitems: Inbox) => {
     router.push({
       pathname: `/friends/chat`,
@@ -108,7 +123,6 @@ export default function RequestFriend() {
     });
   };
 
-  // รับเพื่อน
   const accept = async (requester_id: number) => {
     setLoadingAccept(true);
     try {
@@ -118,29 +132,21 @@ export default function RequestFriend() {
       setLoadingAccept(false);
       load();
     } catch (e: any) {
-      showSnack({
-        text: e?.message || "รับเพื่อนล้มเหลว",
-        variant: "error",
-      });
+      showSnack({ text: e?.message || "รับเพื่อนล้มเหลว", variant: "error" });
     } finally {
       setLoadingAccept(false);
       setOnmodal(false);
     }
   };
 
-  // ปฏิเสธ
   const declin = async (requester_id: number) => {
     setLoadingDeclin(true);
     try {
       await DeclineFriend(requester_id);
       showSnack({ text: "ปฏิเสธเพื่อนแล้วเรียบร้อย", variant: "success" });
-      setLoadingDeclin(false);
       load();
     } catch (e: any) {
-      showSnack({
-        text: e?.message || "ปฏิเสธล้มเหลว",
-        variant: "error",
-      });
+      showSnack({ text: e?.message || "ปฏิเสธล้มเหลว", variant: "error" });
     } finally {
       setLoadingDeclin(false);
     }
@@ -154,13 +160,13 @@ export default function RequestFriend() {
           .trim()
       : "-";
 
+  // ... (Row Components เดิม) ...
   const Row = ({ item }: { item: PendingItem }) => {
     const teamColors: Record<string, string> = {
-      Mystic: "#3B82F6", // น้ำเงิน
-      Valor: "#EF4444", // แดง
-      Instinct: "#FBBF24", // เหลือง
+      Mystic: "#3B82F6",
+      Valor: "#EF4444",
+      Instinct: "#FBBF24",
     };
-
     return (
       <TouchableOpacity
         style={s.card}
@@ -176,7 +182,6 @@ export default function RequestFriend() {
           }}
           style={s.avatar}
         />
-
         <View style={{ flex: 1 }}>
           <View
             style={{
@@ -187,33 +192,24 @@ export default function RequestFriend() {
             }}
           >
             <View
-              style={{
-                flexDirection: "row",
-                gap: 8,
-                alignItems: "center",
-              }}
+              style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
             >
               <Text style={s.username} numberOfLines={1}>
                 {item.username}
               </Text>
-              <View
-                style={[
-                  s.team,
-                  { backgroundColor: teamColors[item.team ?? ""] },
-                ]}
-              >
-                <Text style={s.metalevel}>Level {item.level}</Text>
-              </View>
+              {item.team && (
+                <View
+                  style={[s.team, { backgroundColor: teamColors[item.team] }]}
+                >
+                  <Text style={s.metalevel}>Lv {item.level}</Text>
+                </View>
+              )}
             </View>
             <Text style={s.timeago}>
               {minutesAgoTH(item.created_at as string)}
             </Text>
           </View>
-
-          <Text style={s.meta}>
-            Friend code - {formatCode(item.friend_code)}
-          </Text>
-
+          <Text style={s.meta}>Code: {formatCode(item.friend_code)}</Text>
           <View style={s.actions}>
             <TouchableOpacity
               style={[s.btn, s.primary]}
@@ -225,13 +221,12 @@ export default function RequestFriend() {
               <Ionicons name="checkmark" size={16} color="#fff" />
               <Text style={s.primaryText}>ยอมรับ</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[s.btn, s.ghost]}
               onPress={() => declin(item.requester_id)}
             >
               {loadingDeclin ? (
-                <ActivityIndicator size="small" color="#ffffff" />
+                <ActivityIndicator size="small" color="#111827" />
               ) : (
                 <>
                   <Ionicons name="close" size={16} color="#111827" />
@@ -246,12 +241,6 @@ export default function RequestFriend() {
   };
 
   const InboxRow = ({ item }: { item: Inbox }) => {
-    const teamColors: Record<string, string> = {
-      Mystic: "#3B82F6", // น้ำเงิน
-      Valor: "#EF4444", // แดง
-      Instinct: "#FBBF24", // เหลือง
-    };
-
     return (
       <TouchableOpacity style={s.card} onPress={() => openChat(item)}>
         <Image
@@ -273,104 +262,124 @@ export default function RequestFriend() {
               justifyContent: "space-between",
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 8,
-                alignItems: "center",
-              }}
-            >
-              <Text style={s.username} numberOfLines={1}>
-                {item.username}
-              </Text>
-            </View>
+            <Text style={s.username} numberOfLines={1}>
+              {item.username}
+            </Text>
             <Text style={s.timeago}>
               {minutesAgoTH(item.created_at as string)}
             </Text>
           </View>
-
-          <Text style={s.meta}>{item.message}</Text>
+          <Text style={s.meta} numberOfLines={2}>
+            {item.message}
+          </Text>
         </View>
       </TouchableOpacity>
     );
   };
 
+  // --- Render Tab Header ---
+  const renderTabs = () => (
+    <View style={s.tabContainer}>
+      <TouchableOpacity
+        style={[s.tabBtn, activeTab === "requests" && s.tabBtnActive]}
+        onPress={() => setActiveTab("requests")}
+      >
+        <Text style={[s.tabText, activeTab === "requests" && s.tabTextActive]}>
+          คำขอเพื่อน
+        </Text>
+        {items.length > 0 && (
+          <View style={s.badge}>
+            <Text style={s.badgeText}>
+              {items.length > 99 ? "99+" : items.length}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[s.tabBtn, activeTab === "inbox" && s.tabBtnActive]}
+        onPress={() => setActiveTab("inbox")}
+      >
+        <Text style={[s.tabText, activeTab === "inbox" && s.tabTextActive]}>
+          ข้อความ
+        </Text>
+        {inboxitems.length > 0 && (
+          <View style={s.badge}>
+            <Text style={s.badgeText}>
+              {inboxitems.length > 99 ? "99+" : inboxitems.length}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={s.container}>
+      {/* Tab Header */}
+      {renderTabs()}
+
       {error && (
         <TouchableOpacity style={s.errorBox} onPress={() => load(1, false)}>
           <Ionicons name="warning-outline" size={16} color="#991B1B" />
           <Text style={s.errorText}>{error} — แตะเพื่อลองใหม่</Text>
         </TouchableOpacity>
       )}
-      <View style={{ marginLeft: 14, marginTop: 14, marginBottom: 14 }}>
-        <Text style={{ fontFamily: "KanitSemiBold", fontSize: 18 }}>
-          คำขอเป็นเพื่อน {items.length > 0 ? `(${items.length})` : null}
-        </Text>
+
+      {/* Content Area */}
+      <View style={{ flex: 1 }}>
+        {activeTab === "requests" ? (
+          <FlatList
+            data={items}
+            keyExtractor={(it) => String(it.request_id)}
+            renderItem={Row}
+            ListEmptyComponent={
+              !loading ? (
+                <View style={s.emptyContainer}>
+                  <Ionicons name="people-outline" size={48} color="#9CA3AF" />
+                  <Text style={s.emptyText}>ยังไม่มีคำขอเป็นเพื่อน</Text>
+                </View>
+              ) : null
+            }
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={s.listContent}
+            onEndReachedThreshold={0.2}
+            onEndReached={loadMore}
+            ListFooterComponent={
+              loading ? <ActivityIndicator style={{ margin: 20 }} /> : null
+            }
+          />
+        ) : (
+          <FlatList
+            data={inboxitems}
+            keyExtractor={(it) => String(it.username + it.created_at)}
+            renderItem={InboxRow}
+            ListEmptyComponent={
+              !loading ? (
+                <View style={s.emptyContainer}>
+                  <Ionicons
+                    name="chatbubble-ellipses-outline"
+                    size={48}
+                    color="#9CA3AF"
+                  />
+                  <Text style={s.emptyText}>ยังไม่มีข้อความใหม่</Text>
+                </View>
+              ) : null
+            }
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={s.listContent}
+            ListFooterComponent={
+              loading ? <ActivityIndicator style={{ margin: 20 }} /> : null
+            }
+          />
+        )}
       </View>
 
-      <View>
-        <FlatList
-          data={items}
-          keyExtractor={(it) => String(it.request_id)}
-          renderItem={Row}
-          ListEmptyComponent={
-            !loading ? (
-              <View>
-                <Text style={{ fontFamily: "KanitMedium", color: "#9CA3AF" }}>
-                  ยังไม่มีคำขอเป็นเพื่อน
-                </Text>
-              </View>
-            ) : null
-          }
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 24 }}
-          onEndReachedThreshold={0.2}
-          onEndReached={loadMore}
-          ListFooterComponent={
-            loading && items.length > 0 ? (
-              <View style={{ paddingVertical: 12, alignItems: "center" }}>
-                <ActivityIndicator />
-              </View>
-            ) : null
-          }
-        />
-      </View>
-
-      <View style={{ marginLeft: 14, marginTop: 14, marginBottom: 14 }}>
-        <Text style={{ fontFamily: "KanitSemiBold", fontSize: 18 }}>
-          ข้อความ {inboxitems.length > 0 ? `(${inboxitems.length})` : null}
-        </Text>
-      </View>
-
-      <View>
-        <FlatList
-          data={inboxitems}
-          keyExtractor={(it) => String(it.username)}
-          renderItem={InboxRow}
-          ListEmptyComponent={
-            !loading ? (
-              <View>
-                <Text style={{ fontFamily: "KanitMedium", color: "#9CA3AF" }}>
-                  ยังไม่มีข้อความใหม่
-                </Text>
-              </View>
-            ) : null
-          }
-          contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 24 }}
-          ListFooterComponent={
-            loading && inboxitems.length > 0 ? (
-              <View style={{ paddingVertical: 12, alignItems: "center" }}>
-                <ActivityIndicator />
-              </View>
-            ) : null
-          }
-        />
-      </View>
-
-      {/* Modal: ยืนยันการรับเพื่อน */}
+      {/* Modal */}
       <Modal
         visible={onModal}
         transparent
@@ -381,9 +390,7 @@ export default function RequestFriend() {
           <View style={s.modalCard}>
             <Text style={s.modalTitle}>ยืนยันการรับเพื่อน ?</Text>
             <TouchableOpacity
-              onPress={() => {
-                accept(selected);
-              }}
+              onPress={() => accept(selected)}
               style={[s.modalBtn, { backgroundColor: "#3B82F6" }]}
             >
               {loadingAccept ? (
@@ -407,24 +414,73 @@ export default function RequestFriend() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#F8FAFC" },
-  search: {
+  // Tabs Styles
+  tabContainer: {
     flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "#fff",
-    margin: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    height: 44,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
   },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+    flexDirection: "row",
+    gap: 6,
+  },
+  tabBtnActive: {
+    borderBottomColor: "#3B82F6",
+  },
+  tabText: {
+    fontFamily: "KanitMedium",
+    fontSize: 16,
+    color: "#6B7280",
+  },
+  tabTextActive: {
+    color: "#3B82F6",
+    fontFamily: "KanitSemiBold",
+  },
+  badge: {
+    backgroundColor: "#EF4444",
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontFamily: "KanitSemiBold",
+  },
+  // List Styles
+  listContent: {
+    padding: 14,
+    paddingBottom: 30,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 60,
+    gap: 10,
+  },
+  emptyText: {
+    fontFamily: "KanitMedium",
+    color: "#9CA3AF",
+    fontSize: 16,
+  },
+  // Existing Styles
   errorBox: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FEF2F2",
     borderColor: "#FECACA",
     borderWidth: 1,
-    marginHorizontal: 12,
+    margin: 12,
     borderRadius: 10,
     padding: 10,
   },
@@ -438,6 +494,11 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   avatar: {
     width: 52,
@@ -445,24 +506,27 @@ const s = StyleSheet.create({
     borderRadius: 26,
     backgroundColor: "#E5E7EB",
   },
-  username: { fontFamily: "KanitSemiBold", fontSize: 16, color: "#111827" },
-  timeago: { fontFamily: "KanitMedium", fontSize: 12, color: "#56595eff" },
-  team: {
-    padding: 2,
-    paddingHorizontal: 4,
-    borderRadius: 4,
-  },
-  metalevel: {
+  username: {
     fontFamily: "KanitSemiBold",
-    fontSize: 12,
-    color: "#ffffffff",
+    fontSize: 16,
+    color: "#111827",
+    flexShrink: 1,
   },
+  timeago: { fontFamily: "KanitMedium", fontSize: 12, color: "#9CA3AF" },
+  team: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginLeft: 6,
+  },
+  metalevel: { fontFamily: "KanitSemiBold", fontSize: 10, color: "#fff" },
   meta: {
     fontFamily: "KanitMedium",
     color: "#6B7280",
     marginTop: 2,
+    fontSize: 13,
   },
-  actions: { flexDirection: "row", gap: 8, marginTop: 10 },
+  actions: { flexDirection: "row", gap: 8, marginTop: 12 },
   btn: {
     flexDirection: "row",
     alignItems: "center",
@@ -470,6 +534,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
+    flex: 1,
+    justifyContent: "center",
   },
   primary: { backgroundColor: "#3B82F6" },
   primaryText: { color: "#fff", fontFamily: "KanitSemiBold" },
@@ -478,40 +544,32 @@ const s = StyleSheet.create({
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
   },
   modalCard: {
     width: "100%",
-    maxWidth: 420,
+    maxWidth: 320,
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
+    padding: 20,
+    alignItems: "center",
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "KanitSemiBold",
     color: "#111827",
-    marginBottom: 12,
-    textAlign: "center",
+    marginBottom: 20,
   },
   modalBtn: {
-    marginTop: 8,
+    width: "100%",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
+    marginBottom: 10,
   },
-  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 14 },
-  modalCancel: {
-    backgroundColor: "#F3F4F6",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-  },
+  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 16 },
+  modalCancel: { backgroundColor: "#F3F4F6", marginTop: 0, marginBottom: 0 },
 });

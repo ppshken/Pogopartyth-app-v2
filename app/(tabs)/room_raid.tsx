@@ -210,11 +210,6 @@ export default function RoomsIndex() {
         }
         ListEmptyComponent={
           <View style={{ marginTop: 150, alignItems: "center" }}>
-            <Image
-              source={require("assets/raid.png")}
-              style={{ width: 100, height: 100, alignSelf: "center" }}
-              resizeMode="contain"
-            />
             <Text
               style={{
                 color: "#9CA3AF",
@@ -230,7 +225,7 @@ export default function RoomsIndex() {
 
             <TouchableOpacity
               style={{
-                backgroundColor: "#3c72e6ff",
+                backgroundColor: "#191919ff",
                 width: 160,
                 padding: 12,
                 borderRadius: 8,
