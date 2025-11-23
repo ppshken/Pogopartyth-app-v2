@@ -23,6 +23,7 @@ import { showSnack } from "../../components/Snackbar";
 import { router } from "expo-router";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PendingItem = {
   request_id: number;
@@ -44,6 +45,7 @@ type Inbox = {
   avatar?: string | null;
   message: string;
   created_at: string;
+  status: string;
 };
 
 const PAGE_SIZE = 20;
@@ -67,6 +69,20 @@ export default function RequestFriend() {
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const [userId, setUserId] = useState<number | null>(null);
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const user = await AsyncStorage.getItem("user");
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setUserId(parsedUser.id);
+      }
+    };
+    fetchUserId();
+  }, []);
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
   const load = useCallback(async (p = 1, append = false) => {
     try {
       if (!append) setLoading(true);
@@ -78,7 +94,8 @@ export default function RequestFriend() {
         getInbox_list(),
       ]);
 
-      setInboxItems(resInbox);
+      setInboxItems(resInbox.list);
+      setUnreadCount(resInbox.counts.unread_messages || 0);
       setHasMore(!!resPending.pagination?.has_more);
       setPage(resPending.pagination?.page || p);
       setItems((prev) =>
@@ -242,7 +259,7 @@ export default function RequestFriend() {
 
   const InboxRow = ({ item }: { item: Inbox }) => {
     return (
-      <TouchableOpacity style={s.card} onPress={() => openChat(item)}>
+      <TouchableOpacity style={s.cardInbox} onPress={() => openChat(item)}>
         <Image
           source={{
             uri:
@@ -253,7 +270,12 @@ export default function RequestFriend() {
           }}
           style={s.avatar}
         />
-        <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            opacity: item.status === "send" && item.sender !== userId ? 1 : 0.3,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -270,7 +292,7 @@ export default function RequestFriend() {
             </Text>
           </View>
           <Text style={s.meta} numberOfLines={2}>
-            {item.message}
+            {item.sender !== userId ? item.message : `คุณ : ${item.message}`}
           </Text>
         </View>
       </TouchableOpacity>
@@ -303,10 +325,10 @@ export default function RequestFriend() {
         <Text style={[s.tabText, activeTab === "inbox" && s.tabTextActive]}>
           ข้อความ
         </Text>
-        {inboxitems.length > 0 && (
+        {unreadCount > 0 && (
           <View style={s.badge}>
             <Text style={s.badgeText}>
-              {inboxitems.length > 99 ? "99+" : inboxitems.length}
+              {unreadCount > 99 ? "99+" : unreadCount}
             </Text>
           </View>
         )}
@@ -445,16 +467,16 @@ const s = StyleSheet.create({
   },
   badge: {
     backgroundColor: "#EF4444",
-    borderRadius: 10,
+    borderRadius: 14,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    minWidth: 20,
+    minWidth: 22,
     alignItems: "center",
     justifyContent: "center",
   },
   badgeText: {
     color: "#fff",
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "KanitSemiBold",
   },
   // List Styles
@@ -500,6 +522,16 @@ const s = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+
+  cardInbox: {
+    flexDirection: "row",
+    gap: 12,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
+  },
+
   avatar: {
     width: 52,
     height: 52,

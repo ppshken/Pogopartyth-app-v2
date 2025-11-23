@@ -50,13 +50,13 @@ try {
     UPDATE chat_friends
     SET status = 'read'
     WHERE friendship_id = :fs
-        AND sender = :sd
+        AND sender <> :u
         AND status = 'send'
     ";
     $stmt = $db->prepare($sql);
     $stmt->execute([
     ':fs'    => $friendshipId,
-    ':sd'    => $sender,
+    ':u'    => $userId,
     ]);
 
   $affected = $stmt->rowCount();

@@ -154,6 +154,7 @@ export default function Profile() {
             height={80}
             borderRadius={40}
             fontsize={14}
+            iconsize={14}
           />
 
           <View style={{ flex: 1, marginTop: 12 }}>
@@ -292,7 +293,7 @@ const styles = StyleSheet.create({
   premiumBg: {
     position: "absolute",
     width: "100%",
-    height: 210,
+    height: 212,
     top: 0,
     opacity: 0.9,
   },

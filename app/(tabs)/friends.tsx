@@ -202,7 +202,7 @@ export default function FriendsScreen() {
               </View>
             </View>
 
-            <View style={[styles.rowCenterGap, { marginTop: 2 }]}>
+            <View style={[styles.rowCenterGap, { marginTop: 0 }]}>
               {item.rating_owner ? (
                 <>
                   <Ionicons name="star" size={14} color="#FBBF24" />
@@ -380,8 +380,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
+    backgroundColor: "#ffffffff",
     borderColor: "#E5E7EB",
     marginBottom: 12,
     alignItems: "center",
@@ -411,11 +410,11 @@ const styles = StyleSheet.create({
   subTextBlack: {
     color: "#000000",
     fontFamily: "KanitMedium",
-    marginTop: 2,
+    marginTop: 0,
   },
   subTextGray: {
     color: "#6B7280",
-    marginTop: 2,
+    marginTop: 0,
     fontFamily: "KanitMedium",
   },
 });

@@ -49,7 +49,7 @@ import { AvatarComponent } from "../../components/Avatar";
 import { logTypeColor, iconType } from "@/hooks/logTypeColor";
 import { countdown } from "@/function/countdown";
 import { profile } from "../../lib/auth";
-import { BossImage } from "../../components/ฺBossImage";
+import { BossImage } from "../../components/BossImage";
 
 type Member = {
   user_id: number;
@@ -584,6 +584,7 @@ export default function RoomDetail() {
           text: "เฉพาะผู้ใช้ VIP เท่านั้น",
           variant: "error",
         });
+        router.push("/package/premium_plan");
         return;
       }
       // ✅ Check Special Boss (เพิ่มตรงนี้)
@@ -1026,9 +1027,10 @@ export default function RoomDetail() {
 
             {/* เฉพาะ VIP */}
             {room.vip_only && (
-              <View style={[styles.roomBage, { backgroundColor: "#EFBF04" }]}>
-                <Text style={{ fontFamily: "KanitMedium", color: "#666666" }}>
-                  เฉพาะ Premium
+              <View style={[styles.roomBage, { backgroundColor: "#7d04efff", flexDirection: "row", gap: 4, alignItems: "center" }]}>
+                <Ionicons name="sparkles" size={12} color="#ffc400ff" />
+                <Text style={{ fontFamily: "KanitMedium", color: "#ffc400ff" }}>
+                  เฉพาะ VIP
                 </Text>
               </View>
             )}

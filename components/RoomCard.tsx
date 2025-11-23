@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TierStars } from "../components/TierStars";
-import { BossImage } from "../components/ฺBossImage";
+import { BossImage } from "./BossImage";
 
 type Room = {
   id: number;
@@ -93,7 +93,7 @@ export function RoomCardMinimal({
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
-        styles.card,
+        styles.cardList,
         {
           backgroundColor: is_joinedbg,
           borderColor: "#E5E7EB",
@@ -199,15 +199,16 @@ export function RoomCardMinimal({
                 style={[
                   styles.statusBadge,
                   {
-                    backgroundColor: "#EFBF04",
+                    backgroundColor: "#7d04efff",
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 4,
                   },
                 ]}
               >
-                <Text style={[styles.statusText, { color: "#666666" }]}>
-                  Premium
+                <Ionicons name="sparkles" size={12} color="#ffc400ff" />
+                <Text style={[styles.statusText, { color: "#ffc400ff" }]}>
+                  VIP
                 </Text>
               </View>
             )}
@@ -269,6 +270,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     alignItems: "center",
   },
+
+  cardList: {
+    flexDirection: "row",
+    paddingLeft: 10,
+    paddingRight: 12,
+    paddingVertical: 8,
+    borderRadius: 14,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+
   pressed: { opacity: 0.9 },
   thumb: {
     marginRight: 12,

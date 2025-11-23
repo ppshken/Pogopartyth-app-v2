@@ -87,7 +87,7 @@ try {
       )
     $whereSql
     -- เรียงให้คนที่เป็นเพื่อน (status = 'accepted') ขึ้นมาก่อน แล้วตามด้วย username
-    ORDER BY (CASE WHEN COALESCE(f.status, '') = 'accepted' THEN 0 ELSE 1 END), u.username ASC
+    ORDER BY (CASE WHEN COALESCE(f.status, '') = 'accepted' THEN 0 ELSE 1 END),owner_avg_rating DESC, u.username ASC
     LIMIT :limit OFFSET :offset
   ";
 

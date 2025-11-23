@@ -21,7 +21,7 @@ import { TierStars } from "../../components/TierStars";
 import { showSnack } from "../../components/Snackbar";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { profile } from "../../lib/auth";
-import { BossImage } from "../../components/ฺBossImage";
+import { BossImage } from "../../components/BossImage";
 
 type RaidBoss = {
   raid_boss_id: number;

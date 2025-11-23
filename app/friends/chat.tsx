@@ -149,9 +149,6 @@ export default function ChatScreen() {
         // เรียก API
         const res = await getMessages(friendship_id, since, useLimit, before);
 
-        // อ่านข้อความฝั่งตรงข้ามเสมอเมื่อโหลด
-        await readMessage(friendship_id, OtherUserId);
-
         // ... (โค้ดส่วน mark read เหมือนเดิม) ...
 
         setChatTotal(res.chat_all ?? 0);
@@ -206,6 +203,14 @@ export default function ChatScreen() {
     [friendship_id, OtherUserId, limit, mergeById]
   );
 
+  const ReadMessages = useCallback(async () => {
+    try {
+      await readMessage(friendship_id, OtherUserId);
+    } catch (e: any) {
+      console.log("Read message error", e);
+    }
+  }, [friendship_id, OtherUserId]);
+
   // โหลดครั้งแรก
   useEffect(() => {
     sinceIdRef.current = 0;
@@ -213,6 +218,7 @@ export default function ChatScreen() {
     setItems([]);
     setListRows([]);
     // เริ่มต้นโหลด 20 แถว และกำหนด source เป็น init เพื่อให้ scroll ลงล่าง
+    ReadMessages();
     load({ source: "init", limit: 20 });
 
     // ตั้งเวลา Polling

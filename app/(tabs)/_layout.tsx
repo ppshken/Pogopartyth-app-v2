@@ -18,7 +18,7 @@ export default function TabsLayout() {
       const total = Array.isArray(res?.list) ? res.list.length : 0; // นับจำนวน แบบ list
 
       const inbox = await getInbox_list();
-      const inboxtotal = inbox.length;
+      const inboxtotal = inbox.counts.unread_messages;
 
       setBadge(total + inboxtotal);
     } catch (e) {

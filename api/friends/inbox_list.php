@@ -14,9 +14,7 @@ try {
 
   $page       = (int)($_GET['page'] ?? 1);
   $limit      = (int)($_GET['limit'] ?? 50);
-  $sinceId    = isset($_GET['since_id']) ? (int)$_GET['since_id'] : null;
-  $friendship = isset($_GET['friendship_id']) ? (int)$_GET['friendship_id'] : null;
-
+  
   if ($page < 1) $page = 1;
   if ($limit < 1) $limit = 1;
   if ($limit > 200) $limit = 200;
@@ -25,29 +23,49 @@ try {
   $db = pdo();
   $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-  // -------- WHERE base --------
-  $where = [
-    "cf.status = 'send'",
-    "cf.sender <> :me",                              // ต้องไม่ใช่เราส่งเอง
-    "(f.requester_id = :me OR f.addressee_id = :me)" // ต้องเป็นเพื่อนกับเรา
-  ];
-  $params = [':me' => $meId];
+  // ---------------------------------------------------------
+  // 1. หาจำนวนข้อความที่ยังไม่ได้อ่าน (Unread Messages Count)
+  // เฉพาะข้อความที่ "คนอื่นส่งหาเรา" และสถานะเป็น 'sent' (ยังไม่อ่าน)
+  // ---------------------------------------------------------
+  $sqlUnreadMsg = "
+    SELECT COUNT(DISTINCT cf.friendship_id) 
+    FROM chat_friends cf
+    JOIN friendships f ON f.id = cf.friendship_id
+    WHERE (f.requester_id = :me OR f.addressee_id = :me)
+      AND cf.sender <> :me 
+      AND cf.status = 'send'
+    LIMIT 1
+  ";
+  $stmtUnread = $db->prepare($sqlUnreadMsg);
+  $stmtUnread->execute([':me' => $meId]);
+  $totalUnreadMessages = (int)$stmtUnread->fetchColumn();
 
-  if ($sinceId !== null && $sinceId > 0) {
-    // ดึงเฉพาะที่ใหม่กว่า id นี้ (มีผลต่อการเลือก "ล่าสุดต่อ sender" ด้วย)
-    $where[] = "cf.id > :since_id";
-    $params[':since_id'] = $sinceId;
-  }
-  if ($friendship !== null && $friendship > 0) {
-    $where[] = "cf.friendship_id = :fid";
-    $params[':fid'] = $friendship;
-  }
-  $whereSql = implode(' AND ', $where);
+  // ---------------------------------------------------------
+  // 2. หาจำนวนคำขอเป็นเพื่อน (Pending Friend Requests Count)
+  // เฉพาะคำขอที่ส่งมาหาเรา (addressee = :me) และสถานะ pending
+  // ---------------------------------------------------------
+  $sqlFriendReq = "
+    SELECT COUNT(*) 
+    FROM friendships 
+    WHERE addressee_id = :me 
+      AND status = 'pending'
+  ";
+  $stmtReq = $db->prepare($sqlFriendReq);
+  $stmtReq->execute([':me' => $meId]);
+  $totalFriendRequests = (int)$stmtReq->fetchColumn();
 
-  // -------- Query หลัก: เลือก "แถวล่าสุดต่อ sender" --------
-  // ใช้ window function เพื่อจัดอันดับภายในแต่ละ sender ตาม cf.id DESC แล้วเอา rn = 1
-  $sql = "
-    WITH latest_per_sender AS (
+
+  // ---------------------------------------------------------
+  // 3. ดึงรายการ Inbox (ล่าสุดต่อ Friendship)
+  // ---------------------------------------------------------
+  
+  // Logic: 
+  // 1. Join ตารางเพื่อน เพื่อดูว่าเป็นเพื่อนกับเราไหม
+  // 2. ใช้ Window Function (ROW_NUMBER) แบ่งกลุ่มตาม friendship_id แล้วเรียงตามเวลาล่าสุด
+  // 3. ไม่สนว่าใครเป็นคนส่ง (sender) เอาข้อความล่าสุดมาแสดงเสมอ
+  
+  $sqlList = "
+    WITH RankedChats AS (
       SELECT
         cf.id,
         cf.friendship_id,
@@ -55,62 +73,68 @@ try {
         cf.message,
         cf.status,
         cf.created_at,
-        ROW_NUMBER() OVER (PARTITION BY cf.sender ORDER BY cf.id DESC) AS rn
+        f.requester_id,
+        f.addressee_id,
+        ROW_NUMBER() OVER (PARTITION BY cf.friendship_id ORDER BY cf.id DESC) AS rn
       FROM chat_friends AS cf
       JOIN friendships AS f ON f.id = cf.friendship_id
-      WHERE {$whereSql}
+      WHERE (f.requester_id = :me OR f.addressee_id = :me)
     )
     SELECT
-      lps.id,
-      lps.friendship_id,
-      lps.sender,
+      rc.id,
+      rc.friendship_id,
+      rc.sender,
+      rc.message,
+      rc.status,
+      rc.created_at,
+      u.id AS other_user_id,
       u.username,
-      u.avatar,
-      lps.message,
-      lps.status,
-      lps.created_at
-    FROM latest_per_sender AS lps
-    JOIN users AS u ON u.id = lps.sender
-    WHERE lps.rn = 1
-    ORDER BY lps.id DESC
+      u.avatar
+    FROM RankedChats AS rc
+    -- Join เพื่อเอาข้อมูลของ 'อีกฝ่าย' (คู่สนทนา)
+    JOIN users AS u ON u.id = CASE 
+        WHEN rc.requester_id = :me THEN rc.addressee_id 
+        ELSE rc.requester_id 
+    END
+    WHERE rc.rn = 1
+    ORDER BY rc.created_at DESC
     LIMIT :limit OFFSET :offset
   ";
 
-  $stmt = $db->prepare($sql);
-  foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v, PDO::PARAM_INT);
-  }
+  $stmt = $db->prepare($sqlList);
+  $stmt->bindValue(':me',     $meId,   PDO::PARAM_INT);
   $stmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
   $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
   $stmt->execute();
   $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-  // -------- นับจำนวน sender ทั้งหมด (เพื่อ pagination แบบราย sender) --------
-  // นับ distinct sender ภายใต้เงื่อนไขเดียวกัน
-  $countSql = "
-    SELECT COUNT(DISTINCT cf.sender) AS total_senders
+  // นับจำนวนห้องแชททั้งหมด (สำหรับการแบ่งหน้า)
+  $sqlCountChat = "
+    SELECT COUNT(DISTINCT cf.friendship_id)
     FROM chat_friends AS cf
     JOIN friendships AS f ON f.id = cf.friendship_id
-    WHERE {$whereSql}
+    WHERE (f.requester_id = :me OR f.addressee_id = :me)
+    AND f.status = 'accepted'
   ";
-  $cStmt = $db->prepare($countSql);
-  foreach ($params as $k => $v) {
-    $cStmt->bindValue($k, $v, PDO::PARAM_INT);
-  }
-  $cStmt->execute();
-  $total = (int)$cStmt->fetchColumn();
+  $stmtCount = $db->prepare($sqlCountChat);
+  $stmtCount->execute([':me' => $meId]);
+  $totalChats = (int)$stmtCount->fetchColumn();
 
-  $hasMore = ($offset + count($list)) < $total;
+  $hasMore = ($offset + count($list)) < $totalChats;
 
   jsonResponse(true, [
-    'list' => $list, // ✅ 1 แถวต่อ sender (เป็นข้อความล่าสุดของ sender นั้น)
+    'list' => $list,
+    'counts' => [
+        'unread_messages' => $totalUnreadMessages, // ข้อความที่ยังไม่อ่าน
+        'friend_requests' => $totalFriendRequests, // คำขอเป็นเพื่อนที่รอตอบรับ
+    ],
     'pagination' => [
       'page'     => $page,
       'limit'    => $limit,
-      'total'    => $total,   // จำนวน sender ทั้งหมดที่เข้าเงื่อนไข
+      'total'    => $totalChats,
       'has_more' => $hasMore,
     ],
-  ], 'โหลดกล่องขาเข้า (ล่าสุดต่อ sender) สำเร็จ', 200);
+  ], 'โหลด Inbox สำเร็จ', 200);
 
 } catch (Throwable $e) {
   jsonResponse(false, null, 'server error: ' . $e->getMessage(), 500);

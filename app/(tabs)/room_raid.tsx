@@ -204,7 +204,7 @@ export default function RoomsIndex() {
       <FlatList
         data={filtered}
         keyExtractor={(it) => String(it.id)}
-        contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+        contentContainerStyle={{ paddingLeft: 16, paddingRight: 16, paddingBottom: 24 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -300,14 +300,13 @@ const styles = StyleSheet.create({
     height: CHIP_H, // ล็อกความสูงชิป
     paddingHorizontal: 10,
     borderRadius: 8,
-    borderWidth: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     backgroundColor: "#FFFFFF",
   },
   bossChipIdle: { borderColor: "#E5E7EB" },
-  bossChipActive: { borderColor: "#111827", backgroundColor: "#E5E7EB" },
+  bossChipActive: { borderColor: "#eaeaeaff", backgroundColor: "#dde9f5ff" },
 
   bossImg: {
     width: 28,

@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useState,
   useLayoutEffect,
+  use,
 } from "react";
 import {
   View,
@@ -95,24 +96,31 @@ export default function Profile() {
     });
   }, [navigation]);
 
-  // โหลดข้อมูลเพื่อน
+  // ฟังก์ชันโหลดข้อมูล
   const load = useCallback(async () => {
+    if (!userId || isNaN(userId)) {
+      Alert.alert("ข้อผิดพลาด", "ไม่พบข้อมูลผู้ใช้งานนี้", [
+        { text: "ตกลง", onPress: () => router.back() },
+      ]);
+      return;
+    }
+
     try {
       setLoading(true);
-      const { user, rating_owner, status_friend, is_me_addressee } =
-        await getFriendProfile(userId);
-      setUser(user as FullUser);
-      setRat(rating_owner as RatingOwner);
-      setStatusFriend(status_friend as StatusFriend);
-      setIs_me_addressee(is_me_addressee);
+      const res = await getFriendProfile(userId);
+      setUser(res.user as FullUser);
+      setRat(res.rating_owner as RatingOwner);
+      setStatusFriend(res.status_friend as StatusFriend);
+      setIs_me_addressee(res.is_me_addressee);
     } catch (e) {
-      Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ");
+      console.log(e);
+      Alert.alert("โหลดโปรไฟล์ไม่สำเร็จ", "กรุณาลองใหม่อีกครั้ง");
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, router]);
 
-  // โหลดครั้งแรก + ตั้งชื่อหัวห้อง = ชื่อโปรไฟล์
+  // โหลดข้อมูลตอนเข้า screen
   useEffect(() => {
     load();
   }, [load]);
@@ -268,7 +276,7 @@ export default function Profile() {
     const digits = v.replace(/\D/g, "").slice(0, 12);
     return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // XXXX XXXX XXXX
   }
-  if (loading) {
+  if (loading && !user) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
@@ -288,11 +296,11 @@ export default function Profile() {
         {user?.plan === "premium" && (
           <View style={{ alignItems: "center" }}>
             <Image
-              source={require("assets/background_premium/background-premium.png")}
+              source={require("../../assets/background_premium/background-premium.png")}
               style={{
                 position: "absolute",
                 width: "100%",
-                height: 200,
+                height: 192,
                 top: 0,
                 borderRadius: 16,
                 opacity: 0.9,
@@ -315,7 +323,13 @@ export default function Profile() {
 
           {/* Name + email */}
           <View style={{ flex: 1 }}>
-            <Text style={[styles.name,{color: user?.plan === "premium" ? "#ffffffff" : "#000000"}]} numberOfLines={1}>
+            <Text
+              style={[
+                styles.name,
+                { color: user?.plan === "premium" ? "#ffffffff" : "#000000" },
+              ]}
+              numberOfLines={1}
+            >
               {user?.username || "ไม่ระบุชื่อ"}
             </Text>
 

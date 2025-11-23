@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { BossImage } from "../components/ฺBossImage";
+import { BossImage } from "./BossImage";
 
 type MyRoom = {
   id: number;
@@ -167,10 +167,9 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     gap: 12,
-    padding: 12,
+    padding: 10,
     borderRadius: 14,
     backgroundColor: "#FFFFFF",
-    borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 12,
   },

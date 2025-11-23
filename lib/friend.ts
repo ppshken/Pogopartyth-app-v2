@@ -187,5 +187,5 @@ export async function getInbox_list() {
     throw new Error(json?.message || "โหลดข้อความไม่สำเร็จ");
   }
   // เซิร์ฟเวอร์ส่งกลับใน data.list ไม่ใช่ data.items
-  return (json.data?.list ?? []);
+  return (json.data ?? []);
 }

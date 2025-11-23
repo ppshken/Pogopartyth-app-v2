@@ -39,7 +39,13 @@ $sql = "
     CAST(ru.avg_rating AS DECIMAL(10,2)) AS rating_owner,
     CASE
       WHEN u.friend_code IS NOT NULL AND u.friend_code <> ''
-      THEN CONCAT(SUBSTRING(REPLACE(u.friend_code, ' ', ''),1,4), '-****-****')
+      THEN CONCAT(
+          SUBSTRING(REPLACE(u.friend_code, ' ', ''), 1, 4), 
+          '-', 
+          SUBSTRING(REPLACE(u.friend_code, ' ', ''), 5, 4), 
+          '-', 
+          SUBSTRING(REPLACE(u.friend_code, ' ', ''), 9, 4)
+      )
       ELSE NULL
     END AS friend_code_masked
   FROM friendships f
@@ -56,7 +62,7 @@ $sql = "
     AND f.status = 'accepted'
     AND u.setup_status = 'yes'
     {$filter}
-  ORDER BY u.username
+  ORDER BY rating_owner DESC, u.username ASC
   LIMIT {$limit} OFFSET {$offset}
 ";
 $stmt = $db->prepare($sql);
