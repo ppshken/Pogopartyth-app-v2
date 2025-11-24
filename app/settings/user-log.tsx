@@ -295,7 +295,6 @@ const styles = StyleSheet.create({
   row: {
     backgroundColor: CARD_BG,
     borderRadius: 14,
-    borderWidth: 1,
     borderColor: BORDER,
     padding: 12,
     flexDirection: "row",

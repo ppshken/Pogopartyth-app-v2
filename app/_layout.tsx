@@ -16,6 +16,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 
 // ✅ ป้องกัน Splash Screen หายไปเอง จนกว่าเราจะสั่ง
@@ -234,7 +235,7 @@ export default function Layout() {
 }
 
 // เพิ่ม Stylesheet เพื่อความสะอาดของโค้ด
-const styles = {
+const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     justifyContent: "center" as const,
@@ -277,4 +278,4 @@ const styles = {
     fontFamily: "KanitSemiBold",
     color: "#111827",
   },
-};
+});

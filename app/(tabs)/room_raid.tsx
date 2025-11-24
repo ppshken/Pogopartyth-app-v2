@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   // ✅ ชิปคงที่ ไม่เด้ง
   bossChip: {
     height: CHIP_H, // ล็อกความสูงชิป
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     borderRadius: 8,
     flexDirection: "row",
     alignItems: "center",
