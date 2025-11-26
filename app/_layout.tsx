@@ -9,6 +9,7 @@ import { SnackHost } from "../components/Snackbar";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import * as Font from "expo-font"; // ✅ ใช้ loadAsync แบบ manual เพื่อคุม flow ได้ดีกว่า
+import { Events, getEvents } from "@/lib/events";
 import {
   Modal,
   View,
@@ -25,7 +26,9 @@ SplashScreen.preventAutoHideAsync();
 export default function Layout() {
   const [appIsReady, setAppIsReady] = useState(false); // เช็คความพร้อมของแอป
   const [onupdate, setOnupdate] = useState(false);
+
   const [onEvent, setOnEvent] = useState(false);
+  const [eventData, setEventData] = useState<Events>();
 
   // ✅ 1. โหลดทุกอย่าง (Fonts + Auth) ก่อนเริ่มแอป
   useEffect(() => {
@@ -45,13 +48,16 @@ export default function Layout() {
 
         if (token) {
           api.defaults.headers.common.Authorization = `Bearer ${token}`;
-          setOnEvent(false); // ตัวอย่าง: เปิด Modal Event เมื่อ login แล้ว
-          console.log("✅ Token restored");
+
+          // ดึง Events
+          const events = await getEvents();
+
+          if (events) {
+            // ✅ เช็คว่ามีข้อมูลจริงค่อย set
+            setEventData(events);
+            setOnEvent(true);
+          }
         } else {
-          // ถ้าไม่มี Token ให้เด้งไปหน้า Login
-          // หมายเหตุ: การใช้ router.replace ใน Root Layout ต้องระวัง
-          // แต่ถ้าทำในนี้คือทำหลังจาก appIsReady ก็พอไหว
-          // ทางที่ดีควรใช้ Redirect component ใน index.tsx แทน
           setTimeout(() => router.replace("/(auth)/login"), 100);
         }
       } catch (e) {
@@ -188,6 +194,10 @@ export default function Layout() {
             name="friends/chat"
             options={{ title: "แชท", headerShown: true }}
           />
+          <Stack.Screen
+            name="events/[id]"
+            options={{ title: "รายละเอียดอีเวนท์", headerShown: true }}
+          />
 
           <Stack.Screen
             name="package/premium_plan"
@@ -212,14 +222,28 @@ export default function Layout() {
           {/* ... (Code Modal Event เหมือนเดิม) ... */}
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                Pokémon GO ไวลด์แอเรีย: ทั่วโลก
-              </Text>
+              <Text style={styles.modalTitle}>{eventData?.title}</Text>
               <Image
-                source={{ uri: "https://lh3.googleusercontent.com/..." }} // แนะนำให้ใช้รูปจริงหรือ local asset
+                source={{ uri: eventData?.image }} // แนะนำให้ใช้รูปจริงหรือ local asset
                 style={styles.eventImage}
               />
-              <Text style={styles.modalDesc}>รายละเอียดกิจกรรม...</Text>
+              <Text style={[styles.modalDesc,{color: "#5c5c5cff"}]}>{eventData?.created_at}</Text>
+              <Text style={styles.modalDesc}>{eventData?.description}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  router.push("events/events");
+                  setOnEvent(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.modalDesc,
+                    { color: "#2636ccff", fontFamily: "KanitSemiBold" },
+                  ]}
+                >
+                  ดูอีเวนท์ทั้งหมด
+                </Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setOnEvent(false)}
                 style={styles.closeBtn}

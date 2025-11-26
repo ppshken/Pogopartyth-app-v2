@@ -26,7 +26,7 @@ import { getFriendProfile } from "../../lib/user"; // ⬅️ API โปรไฟ
 import { showSnack } from "../../components/Snackbar";
 import { useRouter, useNavigation } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
-import { AddFriend, AcceptFriend } from "../../lib/friend";
+import { AddFriend, AcceptFriend, DeclineFriend } from "../../lib/friend";
 import { createReport } from "../../lib/reports";
 import { AvatarComponent } from "../../components/Avatar";
 
@@ -71,6 +71,7 @@ export default function Profile() {
   const [is_me_addressee, setIs_me_addressee] = useState(false);
 
   const [onAccepted, setOnAccepted] = useState(false);
+  const [onDecline, setOnDecline] = useState(false);
   const [onReport, setOnReport] = useState(false);
 
   // ภายใน component เดิมของคุณ
@@ -161,6 +162,26 @@ export default function Profile() {
     } finally {
       setActing(false);
       setOnAccepted(false);
+    }
+  };
+
+  // ปฏิเสธคำขอเพื่อน
+  const declineFriend = async () => {
+    if (acting) return;
+    try {
+      setActing(true);
+      const { message } = await DeclineFriend(userId); // true = ปฏิเสธ
+      setOnDecline(false);
+      showSnack({ text: message, variant: "success" });
+      await load(); // รีเฟรชสถานะโปรไฟล์
+    } catch (e: any) {
+      showSnack({
+        text: e?.message || "ปฏิเสธคำขอไม่สำเร็จ",
+        variant: "error",
+      });
+    } finally {
+      setActing(false);
+      setOnDecline(false);
     }
   };
 
@@ -354,21 +375,49 @@ export default function Profile() {
 
               {/* ปุ่มจัดการเพื่อน*/}
               {is_me_addressee && statusFriend?.status === "pending" ? (
-                <TouchableOpacity
-                  style={[styles.outlineBtnAdd, { backgroundColor: "#3B82F6" }]}
-                  onPress={() => {
-                    setOnAccepted(true);
-                  }}
-                >
-                  {acting ? (
-                    <ActivityIndicator color="#ffffff" size="small" />
-                  ) : (
-                    <>
-                      <Ionicons name="checkmark" size={16} color="#ffffffff" />
-                      <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
-                    </>
-                  )}
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity
+                    style={[
+                      styles.outlineBtnAdd,
+                      { backgroundColor: "#3B82F6" },
+                    ]}
+                    onPress={() => {
+                      setOnAccepted(true);
+                    }}
+                  >
+                    {acting ? (
+                      <ActivityIndicator color="#ffffff" size="small" />
+                    ) : (
+                      <>
+                        <Ionicons
+                          name="checkmark"
+                          size={16}
+                          color="#ffffffff"
+                        />
+                        <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.outlineBtnAdd, styles.ghost]}
+                    onPress={() => {
+                      setOnDecline(true);
+                    }}
+                  >
+                    {acting ? (
+                      <ActivityIndicator color="#ffffff" size="small" />
+                    ) : (
+                      <>
+                        <Ionicons name="close" size={16} color="#111827ff" />
+                        <Text
+                          style={[styles.outlineBtnAddText, styles.ghostText]}
+                        >
+                          ปฏิเสธ
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </>
               ) : (
                 <TouchableOpacity
                   style={[
@@ -527,7 +576,39 @@ export default function Profile() {
         </View>
       </Modal>
 
-      {/* Modal: ยืนยันการรับเพื่อน */}
+      {/* Modal: ปฏิเสธคำขอ */}
+      <Modal
+        visible={onDecline}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnDecline(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>ปฏิเสธคำขอเพื่อน ?</Text>
+            <TouchableOpacity
+              onPress={declineFriend}
+              style={[styles.modalBtn, { backgroundColor: "#f63b3bff" }]}
+            >
+              {acting ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.modalBtnText}>ปฏิเสธ</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setOnDecline(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: รายงานผู้ใช้งาน */}
       <Modal
         visible={onReport}
         transparent
@@ -858,4 +939,6 @@ const styles = StyleSheet.create({
     fontFamily: "KanitSemiBold",
     fontSize: 14,
   },
+  ghost: { backgroundColor: "#F3F4F6" },
+  ghostText: { color: "#111827", fontFamily: "KanitSemiBold" },
 });

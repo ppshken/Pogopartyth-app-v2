@@ -392,15 +392,9 @@ export default function ChatScreen() {
         >
           <View
             style={{
-              backgroundColor: "#FFFFFF",
               paddingHorizontal: 12,
               paddingVertical: 6,
               borderRadius: 8,
-              borderWidth: 1,
-              borderColor: "#E5E7EB",
-              shadowColor: "#000",
-              shadowOpacity: 0.03,
-              elevation: 1,
             }}
           >
             <Text
@@ -488,7 +482,6 @@ export default function ChatScreen() {
             }}
             onSubmitEditing={onSend}
             returnKeyType="send"
-            editable={!loadingSend}
           />
           <TouchableOpacity
             onPress={onSend}

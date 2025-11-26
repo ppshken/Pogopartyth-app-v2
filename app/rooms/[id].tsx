@@ -1027,7 +1027,17 @@ export default function RoomDetail() {
 
             {/* เฉพาะ VIP */}
             {room.vip_only && (
-              <View style={[styles.roomBage, { backgroundColor: "#7d04efff", flexDirection: "row", gap: 4, alignItems: "center" }]}>
+              <View
+                style={[
+                  styles.roomBage,
+                  {
+                    backgroundColor: "#7d04efff",
+                    flexDirection: "row",
+                    gap: 4,
+                    alignItems: "center",
+                  },
+                ]}
+              >
                 <Ionicons name="sparkles" size={12} color="#ffc400ff" />
                 <Text style={{ fontFamily: "KanitMedium", color: "#ffc400ff" }}>
                   เฉพาะ VIP
@@ -1504,6 +1514,7 @@ export default function RoomDetail() {
                       <View
                         style={{
                           flexDirection: "row",
+                          flexWrap: "wrap",
                           alignItems: "center",
                           gap: 8,
                         }}

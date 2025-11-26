@@ -110,7 +110,9 @@ try {
         : $r['friend_code'];
     }
 
-    $avg  = $r['owner_avg_rating'] !== null ? (float)$r['owner_avg_rating'] : null;
+    $avg = $r['owner_avg_rating'] !== null 
+    ? number_format((float)$r['owner_avg_rating'], 2, '.', '') 
+    : null;
     $cnt  = (int)$r['owner_rating_count'];
 
     // แปลงสถานะความเป็นเพื่อนเป็น boolean

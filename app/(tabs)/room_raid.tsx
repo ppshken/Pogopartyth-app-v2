@@ -56,14 +56,24 @@ export default function RoomsIndex() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => setHowto(true)}
-          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
-          accessibilityRole="button"
-          accessibilityLabel="วิธีการใช้งาน"
-        >
-          <Ionicons name="help-circle-outline" size={22} color="#111827" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={() => router.push("/events/events")}
+            style={{ paddingRight: 12, paddingVertical: 6 }}
+            accessibilityRole="button"
+            accessibilityLabel="อีเวนท์"
+          >
+            <Ionicons name="calendar-outline" size={22} color="#111827" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setHowto(true)}
+            style={{ paddingRight: 12, paddingVertical: 6 }}
+            accessibilityRole="button"
+            accessibilityLabel="วิธีการใช้งาน"
+          >
+            <Ionicons name="help-circle-outline" size={26} color="#111827" />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation]);
@@ -204,17 +214,23 @@ export default function RoomsIndex() {
       <FlatList
         data={filtered}
         keyExtractor={(it) => String(it.id)}
-        contentContainerStyle={{ paddingLeft: 16, paddingRight: 16, paddingBottom: 24 }}
+        contentContainerStyle={{
+          paddingLeft: 16,
+          paddingRight: 16,
+          paddingBottom: 24,
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListEmptyComponent={
           <View style={{ marginTop: 150, alignItems: "center" }}>
+            <Ionicons name="paw-outline" size={48} color="#9CA3AF" />
             <Text
               style={{
                 color: "#9CA3AF",
                 textAlign: "center",
                 fontSize: 16,
+                marginTop: 16,
                 fontFamily: "KanitMedium",
               }}
             >

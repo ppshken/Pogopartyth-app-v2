@@ -28,6 +28,7 @@ type LogItem = {
   room_id: number | null;
   user_id: number;
   type: "join" | "leave" | "review" | string;
+  target: string | null;
   description: string;
   created_at: string; // "YYYY-MM-DD HH:mm:ss"
   username: string | null;
@@ -176,6 +177,21 @@ export default function UserLogScreen() {
           ? "#e0ae50ff"
           : "#000000";
 
+      const type_name =
+        item.type === "create"
+          ? "สร้างห้อง"
+          : item.type === "join"
+          ? "เข้าร่วมห้อง"
+          : item.type === "invite"
+          ? "เชิญเพื่อน"
+          : item.type === "leave"
+          ? "ออกจากห้อง"
+          : item.type === "cancel"
+          ? "ยกเลิกห้อง"
+          : item.type === "review"
+          ? "รีวิวห้อง"
+          : "กิจกรรม";
+
       return (
         <TouchableOpacity
           activeOpacity={0.8}
@@ -195,15 +211,27 @@ export default function UserLogScreen() {
                 <View
                   style={[styles.typeBadge, { backgroundColor: type_color }]}
                 >
-                  <Text style={styles.typeText}>{item.type}</Text>
+                  <Text style={styles.typeText}>{type_name}</Text>
                 </View>
                 <Text style={styles.descText}>#{item.room_id}</Text>
               </View>
               <Text style={styles.timeText}>{ago}</Text>
             </View>
-            <Text style={styles.descText} numberOfLines={2}>
-              {desc}
-            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+                flexWrap: "wrap",
+              }}
+            >
+              <Text style={styles.descText} numberOfLines={2}>
+                {desc}
+              </Text>
+              <Text style={styles.targetText} numberOfLines={2}>
+                {item.target ? `- ${item.target}` : null}
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
       );
@@ -321,6 +349,7 @@ const styles = StyleSheet.create({
 
   timeText: { color: TEXT_SUB, fontSize: 12, fontFamily: "KanitRegular" },
   descText: { color: TEXT_MAIN, fontSize: 14, fontFamily: "KanitMedium" },
+  targetText: { color: TEXT_MAIN, fontSize: 14, fontFamily: "KanitSemiBold" },
 
   roomPill: {
     marginTop: 8,

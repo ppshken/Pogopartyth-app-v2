@@ -55,7 +55,7 @@ type TabType = "requests" | "inbox";
 
 export default function RequestFriend() {
   // State สำหรับ Tab
-  const [activeTab, setActiveTab] = useState<TabType>("requests");
+  const [activeTab, setActiveTab] = useState<TabType>("inbox");
 
   const [items, setItems] = useState<PendingItem[]>([]);
   const [inboxitems, setInboxItems] = useState<Inbox[]>([]);
@@ -273,7 +273,7 @@ export default function RequestFriend() {
         <View
           style={{
             flex: 1,
-            opacity: item.status === "send" && item.sender !== userId ? 1 : 0.3,
+            opacity: item.status === "send" && item.sender !== userId ? 1 : 0.5,
           }}
         >
           <View
@@ -303,22 +303,6 @@ export default function RequestFriend() {
   const renderTabs = () => (
     <View style={s.tabContainer}>
       <TouchableOpacity
-        style={[s.tabBtn, activeTab === "requests" && s.tabBtnActive]}
-        onPress={() => setActiveTab("requests")}
-      >
-        <Text style={[s.tabText, activeTab === "requests" && s.tabTextActive]}>
-          คำขอเพื่อน
-        </Text>
-        {items.length > 0 && (
-          <View style={s.badge}>
-            <Text style={s.badgeText}>
-              {items.length > 99 ? "99+" : items.length}
-            </Text>
-          </View>
-        )}
-      </TouchableOpacity>
-
-      <TouchableOpacity
         style={[s.tabBtn, activeTab === "inbox" && s.tabBtnActive]}
         onPress={() => setActiveTab("inbox")}
       >
@@ -329,6 +313,22 @@ export default function RequestFriend() {
           <View style={s.badge}>
             <Text style={s.badgeText}>
               {unreadCount > 99 ? "99+" : unreadCount}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[s.tabBtn, activeTab === "requests" && s.tabBtnActive]}
+        onPress={() => setActiveTab("requests")}
+      >
+        <Text style={[s.tabText, activeTab === "requests" && s.tabTextActive]}>
+          คำขอเพื่อน
+        </Text>
+        {items.length > 0 && (
+          <View style={s.badge}>
+            <Text style={s.badgeText}>
+              {items.length > 99 ? "99+" : items.length}
             </Text>
           </View>
         )}
@@ -513,14 +513,7 @@ const s = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 14,
     padding: 12,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
   },
 
   cardInbox: {

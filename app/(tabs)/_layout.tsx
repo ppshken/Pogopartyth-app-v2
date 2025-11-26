@@ -59,7 +59,7 @@ export default function TabsLayout() {
 
         // ✅ ตั้ง badge ต่อแท็บแบบไดนามิก (แสดง 99+ ถ้าเยอะ)
         tabBarBadgeStyle: {
-          backgroundColor: "#ef4444",
+          backgroundColor: "#EF4444",
           minWidth: 18,
           height: 18,
           lineHeight: 18,
@@ -99,7 +99,11 @@ export default function TabsLayout() {
             <>
               <TouchableOpacity
                 onPress={() => router.push("friends/request_friend")}
-                style={{ paddingHorizontal: 0, paddingVertical: 6, marginRight: 12 }}
+                style={{
+                  paddingHorizontal: 0,
+                  paddingVertical: 6,
+                  marginRight: 12,
+                }}
                 accessibilityRole="button"
                 accessibilityLabel="รายงานผู้ใช้งาน"
               >

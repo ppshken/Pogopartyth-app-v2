@@ -42,7 +42,7 @@ const colorbageviptext = "#ffc400ff";
 const MIN_LEVEL_OPTIONS = [30, 40, 50, 60, 70];
 
 const MIN_HOUR = 5; // 05:00
-const MAX_HOUR = 23; // 23:00
+const MAX_HOUR = 16; // 23:00
 const STEP_MIN = 5; // step 5 นาที
 
 const pad = (n: number) => n.toString().padStart(2, "0");
@@ -62,39 +62,29 @@ function ceilToStep(date: Date, stepMin: number) {
 
 function generateTimeSlots(now = new Date()): { label: string; date: Date }[] {
   const slots: { label: string; date: Date }[] = [];
+
+  // 1. หาเวลาเริ่ม: ปัจจุบัน + 5 นาที (แล้วปัดเศษขึ้นตาม Step)
   const fiveLater = new Date(now.getTime() + 5 * 60 * 1000);
-
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-
-  // Logic เดิมของคุณโอเคแล้ว
   let start = ceilToStep(fiveLater, STEP_MIN);
-  if (start.getHours() < MIN_HOUR) {
-    start = new Date(today);
-    start.setHours(MIN_HOUR, 0, 0, 0);
-  }
 
-  const todayEnd = new Date(today);
-  todayEnd.setHours(MAX_HOUR, 0, 0, 0);
+  // 2. หาเวลาสิ้นสุด: ปัจจุบัน + 50 นาที
+  const end = new Date(now.getTime() + 50 * 60 * 1000);
 
-  const useTomorrow = start.getTime() > todayEnd.getTime();
-  const baseDay = new Date(today);
-  if (useTomorrow) baseDay.setDate(baseDay.getDate() + 1);
+  // 3. วนลูปสร้าง Slot
+  const cursor = new Date(start);
 
-  const begin = new Date(baseDay);
-  if (useTomorrow) begin.setHours(MIN_HOUR, 0, 0, 0);
-  else begin.setTime(start.getTime());
-
-  const end = new Date(baseDay);
-  end.setHours(MAX_HOUR, 0, 0, 0);
-
-  const cursor = new Date(begin);
+  // ตราบใดที่เวลายังไม่เกินเวลาสิ้นสุด
   while (cursor.getTime() <= end.getTime()) {
     const hh = pad(cursor.getHours());
     const mm = pad(cursor.getMinutes());
+
+    // ใส่ label ตาม format เวลา
     slots.push({ label: `${hh}:${mm}`, date: new Date(cursor) });
+
+    // ขยับไปทีละ Step (5 นาที)
     cursor.setMinutes(cursor.getMinutes() + STEP_MIN);
   }
+
   return slots;
 }
 
