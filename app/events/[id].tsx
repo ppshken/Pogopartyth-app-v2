@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
-import { useLocalSearchParams, Stack, router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { getEventById, Events } from "../../lib/events";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -17,11 +17,12 @@ const { width } = Dimensions.get("window");
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams(); // รับ id และ title (ถ้าส่งมา)
   const [event, setEvent] = useState<Events | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchEvent() {
       if (!id) return;
+      setLoading(true);
       try {
         // แปลง id เป็น string
         const eventId = Array.isArray(id) ? id[0] : id;
@@ -37,12 +38,10 @@ export default function EventDetailScreen() {
     fetchEvent();
   }, [id]);
 
-  if (!event) {
+  if (loading && !event) {
     return (
       <View style={styles.errorContainer}>
-        <Ionicons name="alert-circle-outline" size={64} color="#EF4444" />
-        <Text style={styles.errorText}>ไม่พบข้อมูลกิจกรรมนี้</Text>
-        <Text style={styles.subErrorText}>อาจถูกลบไปแล้วหรือระบบขัดข้อง</Text>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -55,7 +54,9 @@ export default function EventDetailScreen() {
       >
         {/* รูปภาพขนาดใหญ่ */}
         <Image
-          source={{ uri: event.image || "https://via.placeholder.com/600x400" }}
+          source={{
+            uri: event?.image || "https://via.placeholder.com/600x400",
+          }}
           style={styles.image}
           resizeMode="cover"
         />
@@ -66,7 +67,7 @@ export default function EventDetailScreen() {
             <View style={styles.badge}>
               <Text style={styles.badgeText}>News</Text>
             </View>
-            {event.created_at && (
+            {event?.created_at && (
               <Text style={styles.dateText}>
                 {/* ตัวอย่าง format วันที่ */}
                 {new Date(event.created_at).toLocaleDateString("th-TH", {
@@ -79,18 +80,23 @@ export default function EventDetailScreen() {
           </View>
 
           {/* หัวข้อ */}
-          <Text style={styles.title}>{event.title}</Text>
+          <Text style={styles.title}>{event?.title}</Text>
 
           <View style={styles.divider} />
 
           {/* เนื้อหา */}
-          <Text style={styles.description}>{event.description}</Text>
+          <Text style={styles.description}>{event?.description}</Text>
 
           {/* ส่วนของผู้เขียน (Optional) */}
           <View style={styles.authorContainer}>
             <Text style={styles.authorLabel}>โพสต์โดย:</Text>
-            <Image source={{uri: event.creator_avatar}} style={styles.avatar} />
-            <Text style={styles.authorName}>{event.created_by || "Admin"}</Text>
+            <Image
+              source={{ uri: event?.creator_avatar }}
+              style={styles.avatar}
+            />
+            <Text style={styles.authorName}>
+              {event?.created_by || "Admin"}
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -201,10 +207,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#4B5563",
   },
-  avatar : {
+  avatar: {
     width: 20,
     height: 20,
     borderRadius: 4,
     marginRight: 4,
-  }
+  },
 });
