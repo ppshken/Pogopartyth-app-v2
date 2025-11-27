@@ -165,7 +165,7 @@ export function RoomCardMinimal({
                 style={[
                   styles.statusBadge,
                   {
-                    backgroundColor: "#6b3ab9ff",
+                    backgroundColor: "#3a86b9ff",
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 4,

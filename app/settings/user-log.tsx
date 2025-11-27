@@ -174,7 +174,7 @@ export default function UserLogScreen() {
           : item.type === "cancel"
           ? "#e2555cff"
           : item.type === "review"
-          ? "#e0ae50ff"
+          ? "#e07950ff"
           : "#000000";
 
       const type_name =
@@ -292,7 +292,7 @@ export default function UserLogScreen() {
         ListFooterComponent={
           loading && items.length > 0 ? (
             <View style={styles.footerLoading}>
-              <ActivityIndicator />
+              <ActivityIndicator size="large" />
               <Text style={styles.footerText}>กำลังโหลด...</Text>
             </View>
           ) : null

@@ -63,7 +63,7 @@ export default function RoomsIndex() {
             accessibilityRole="button"
             accessibilityLabel="อีเวนท์"
           >
-            <Ionicons name="calendar-outline" size={22} color="#111827" />
+            <Ionicons name="calendar" size={22} color="#2f60a0ff" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setHowto(true)}
@@ -71,7 +71,7 @@ export default function RoomsIndex() {
             accessibilityRole="button"
             accessibilityLabel="วิธีการใช้งาน"
           >
-            <Ionicons name="help-circle-outline" size={26} color="#111827" />
+            <Ionicons name="help-circle" size={26} color="#2f60a0ff" />
           </TouchableOpacity>
         </View>
       ),
@@ -271,6 +271,12 @@ export default function RoomsIndex() {
         )}
       />
       <HowToJoinRoomModal visible={howto} onClose={() => setHowto(false)} />
+      <View style={styles.noties}>
+        <Text style={styles.notiestext}>
+          สรุปอีเวนต์: ช่วงเวลาแห่งศึกชี้ชะตา ระยะเวลา: 25 - 30 พ.ย. 2025 (10.00
+          - 20.00 น.) ไฮไลท์สำคัญ: - เปิดตัว เคลดิโอ (ร่างแน่วแน่)
+        </Text>
+      </View>
     </View>
   );
 }
@@ -337,5 +343,19 @@ const styles = StyleSheet.create({
     fontFamily: "KanitSemiBold",
     lineHeight: 16, // ฟิกบรรทัด กันสูงเปลี่ยน
     maxWidth: 110, // กันชื่อยาวห่อบรรทัด
+  },
+
+  noties: {
+    backgroundColor: "#2f60a0ff",
+    height: "auto",
+    bottom: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notiestext: {
+    color: "#ffffff",
+    fontFamily: "KanitMedium",
   },
 });

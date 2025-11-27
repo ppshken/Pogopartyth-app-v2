@@ -41,31 +41,36 @@ const menu = [
   {
     id: 1,
     menu: "ดูโปรไฟล์",
-    icon: "person-outline",
+    icon: "person",
+    icon_color: "#00a55bff",
     router: "/settings/profile",
   },
   {
     id: 2,
     menu: "ตั้งค่าโปรไฟล์",
-    icon: "people-outline",
+    icon: "people",
+    icon_color: "#00b9b9ff",
     router: "/settings/profile-edit",
   },
   {
     id: 3,
     menu: "ประวัติ",
-    icon: "archive-outline",
+    icon: "archive",
+    icon_color: "#005c8aff",
     router: "/settings/user-log",
   },
   {
     id: 4,
     menu: "ตั้งค่าแอพ",
-    icon: "settings-outline",
+    icon: "settings",
+    icon_color: "#273dbbff",
     router: "/settings/setting-app",
   },
   {
     id: 5,
     menu: "Feedback",
-    icon: "alert-circle-outline",
+    icon: "alert-circle",
+    icon_color: "#8400dbff",
     router: "/settings/feedback",
   },
 ];
@@ -233,11 +238,13 @@ export default function Profile() {
               }}
             >
               <View style={styles.menuItemLeft}>
-                <Ionicons
-                  name={menuitem.icon as any}
-                  size={24}
-                  color="#111827"
-                />
+                <View style={{backgroundColor: menuitem.icon_color, padding: 6, borderRadius: 8}}>
+                  <Ionicons
+                    name={menuitem.icon as any}
+                    size={18}
+                    color="#ffffffff"
+                  />
+                </View>
                 <Text style={styles.menuItemText}>{menuitem.menu}</Text>
               </View>
               <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />

@@ -89,7 +89,8 @@ try {
       rc.created_at,
       u.id AS other_user_id,
       u.username,
-      u.avatar
+      u.avatar,
+      u.plan
     FROM RankedChats AS rc
     -- Join เพื่อเอาข้อมูลของ 'อีกฝ่าย' (คู่สนทนา)
     JOIN users AS u ON u.id = CASE 

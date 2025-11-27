@@ -84,7 +84,7 @@ export default function EventsScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" />
         </View>
       ) : (
         <FlatList
@@ -142,13 +142,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardDate: {
-    fontFamily: "KanitRegular",
+    fontFamily: "KanitMedium",
     fontSize: 12,
     color: "#6B7280",
     marginBottom: 8,
   },
   cardDesc: {
-    fontFamily: "KanitRegular",
+    fontFamily: "KanitMedium",
     fontSize: 14,
     color: "#4B5563",
     lineHeight: 22,

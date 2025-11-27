@@ -51,7 +51,7 @@ export default function TabsLayout() {
           marginBottom: 8,
           fontFamily: "KanitSemiBold",
         },
-        tabBarActiveTintColor: "#000000ff",
+        tabBarActiveTintColor: "#2f60a0ff",
         tabBarInactiveTintColor: "#6b7280ff",
         tabBarStyle: { paddingBottom: 8, height: 85 },
         tabBarLabelStyle: { fontSize: 13, fontFamily: "KanitSemiBold" },

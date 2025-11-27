@@ -1284,8 +1284,8 @@ export default function RoomDetail() {
                     avatar={m.avatar}
                     username={m.username}
                     plan={m.plan}
-                    width={42}
-                    height={42}
+                    width={35}
+                    height={35}
                     borderRadius={21}
                     fontsize={9}
                     iconsize={9}
@@ -1454,7 +1454,12 @@ export default function RoomDetail() {
 
         {/* Log */}
         {isMember && (
-          <View style={styles.sectionlog}>
+          <View
+            style={[
+              styles.sectionlog,
+              { paddingBottom: loglimit < logtotal ? 14 : 0 },
+            ]}
+          >
             <View style={styles.lineRow}>
               <Text style={styles.sectionTitle}>ประวัติ ({logtotal})</Text>
             </View>
@@ -2764,7 +2769,7 @@ const styles = StyleSheet.create({
   outlineBtnText: { color: "#ffffffff", fontFamily: "KanitSemiBold" },
 
   memberItem: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f8f8f8ff",
     flexDirection: "row",
     alignItems: "center",
     padding: 8,

@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   dateText: {
     color: "#6B7280",
     fontSize: 13,
-    fontFamily: "KanitRegular",
+    fontFamily: "KanitMedium",
   },
   title: {
     fontSize: 22,
@@ -183,8 +183,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   description: {
-    fontSize: 16,
-    fontFamily: "KanitRegular",
+    fontSize: 14,
+    fontFamily: "KanitMedium",
     color: "#374151",
     lineHeight: 26, // ระยะห่างบรรทัดให้อ่านง่าย
   },

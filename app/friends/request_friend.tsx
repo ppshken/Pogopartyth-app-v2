@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   Modal,
-  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -24,6 +23,7 @@ import { router } from "expo-router";
 import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AvatarComponent } from "@/components/Avatar";
 
 type PendingItem = {
   request_id: number;
@@ -42,10 +42,11 @@ type Inbox = {
   friendship_id: number;
   sender: number;
   username: string;
-  avatar?: string | null;
+  avatar: string;
   message: string;
   created_at: string;
   status: string;
+  plan: string;
 };
 
 const PAGE_SIZE = 20;
@@ -66,6 +67,7 @@ export default function RequestFriend() {
   const [loadingDeclin, setLoadingDeclin] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [onModal, setOnmodal] = useState(false);
+  const [onDecline, setOnDecline] = useState(false);
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -166,6 +168,7 @@ export default function RequestFriend() {
       showSnack({ text: e?.message || "ปฏิเสธล้มเหลว", variant: "error" });
     } finally {
       setLoadingDeclin(false);
+      setOnDecline(false);
     }
   };
 
@@ -240,16 +243,13 @@ export default function RequestFriend() {
             </TouchableOpacity>
             <TouchableOpacity
               style={[s.btn, s.ghost]}
-              onPress={() => declin(item.requester_id)}
+              onPress={() => {
+                setSelected(item.requester_id);
+                setOnDecline(true);
+              }}
             >
-              {loadingDeclin ? (
-                <ActivityIndicator size="small" color="#111827" />
-              ) : (
-                <>
-                  <Ionicons name="close" size={16} color="#111827" />
-                  <Text style={s.ghostText}>ปฏิเสธ</Text>
-                </>
-              )}
+              <Ionicons name="close" size={16} color="#111827" />
+              <Text style={s.ghostText}>ปฏิเสธ</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -260,15 +260,15 @@ export default function RequestFriend() {
   const InboxRow = ({ item }: { item: Inbox }) => {
     return (
       <TouchableOpacity style={s.cardInbox} onPress={() => openChat(item)}>
-        <Image
-          source={{
-            uri:
-              item.avatar ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                item.username
-              )}`,
-          }}
-          style={s.avatar}
+        <AvatarComponent
+          avatar={item.avatar}
+          username={item.username}
+          plan={item.plan}
+          width={48}
+          height={48}
+          borderRadius={24}
+          fontsize={10}
+          iconsize={10}
         />
         <View
           style={{
@@ -430,6 +430,35 @@ export default function RequestFriend() {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={onDecline}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnDecline(false)}
+      >
+        <View style={s.modalOverlay}>
+          <View style={s.modalCard}>
+            <Text style={s.modalTitle}>ปฏิเสธคำขอเพื่อน ?</Text>
+            <TouchableOpacity
+              onPress={() => declin(selected)}
+              style={[s.modalBtn, { backgroundColor: "#f6413bff" }]}
+            >
+              {loadingDeclin ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={s.modalBtnText}>ยืนยัน</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setOnDecline(false)}
+              style={[s.modalBtn, s.modalCancel]}
+            >
+              <Text style={[s.modalBtnText, { color: "#111827" }]}>ยกเลิก</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -519,7 +548,7 @@ const s = StyleSheet.create({
   cardInbox: {
     flexDirection: "row",
     gap: 12,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#ffffffff",
     borderRadius: 14,
     padding: 12,
     marginBottom: 12,
@@ -576,14 +605,16 @@ const s = StyleSheet.create({
   },
   modalCard: {
     width: "100%",
-    maxWidth: 320,
+    maxWidth: 420,
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
     alignItems: "center",
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "KanitSemiBold",
     color: "#111827",
     marginBottom: 20,
@@ -595,6 +626,6 @@ const s = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 16 },
+  modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 14 },
   modalCancel: { backgroundColor: "#F3F4F6", marginTop: 0, marginBottom: 0 },
 });

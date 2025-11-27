@@ -204,7 +204,9 @@ export default function Profile() {
                 <Text
                   style={[
                     styles.badgeDarkText,
-                    { color: user.plan === "premium" ? "#d6d6d6ff" : "#000000" },
+                    {
+                      color: user.plan === "premium" ? "#d6d6d6ff" : "#000000",
+                    },
                   ]}
                 >
                   {" เข้าร่วมเมื่อ "}
@@ -281,24 +283,18 @@ export default function Profile() {
           </View>
         </View>
 
-        {/* ปุ่มคัดลอก Friend Code กับ ห้องของฉัน 
+        {/* ปุ่มคัดลอก Friend Code กับ ห้องของฉัน */}
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           <TouchableOpacity
             style={styles.outlineBtn}
             onPress={onCopyFriendCode}
           >
             <Ionicons name="copy-outline" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>คัดลอก รหัสเพิ่มเพื่อน</Text>
+            <Text style={styles.outlineBtnText}>
+              คัดลอก รหัสเพิ่มเพื่อนของฉัน
+            </Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.outlineBtn}
-            onPress={() => router.push("/my_raid")}
-          >
-            <Ionicons name="invert-mode" size={16} color="#111827" />
-            <Text style={styles.outlineBtnText}>ห้องของฉัน</Text>
-          </TouchableOpacity>
-        </View>*/}
+        </View>
       </View>
 
       {/* รายงาน สถิติการเข้าร่วม รีวิว */}

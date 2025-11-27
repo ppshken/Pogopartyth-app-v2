@@ -227,7 +227,9 @@ export default function Layout() {
                 source={{ uri: eventData?.image }} // แนะนำให้ใช้รูปจริงหรือ local asset
                 style={styles.eventImage}
               />
-              <Text style={[styles.modalDesc,{color: "#5c5c5cff"}]}>{eventData?.created_at}</Text>
+              <Text style={[styles.modalDesc, { color: "#5c5c5cff" }]}>
+                {eventData?.created_at}
+              </Text>
               <Text style={styles.modalDesc}>{eventData?.description}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -253,6 +255,7 @@ export default function Layout() {
             </View>
           </View>
         </Modal>
+
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
@@ -287,8 +290,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   modalDesc: {
-    color: "#000",
-    fontFamily: "KanitRegular",
+    color: "#353535ff",
+    fontFamily: "KanitMedium",
     marginBottom: 12,
   },
   closeBtn: {

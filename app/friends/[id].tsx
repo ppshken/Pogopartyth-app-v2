@@ -376,6 +376,7 @@ export default function Profile() {
               {/* ปุ่มจัดการเพื่อน*/}
               {is_me_addressee && statusFriend?.status === "pending" ? (
                 <>
+                  {/* ปุ่มยอมรับ*/}
                   <TouchableOpacity
                     style={[
                       styles.outlineBtnAdd,
@@ -385,37 +386,21 @@ export default function Profile() {
                       setOnAccepted(true);
                     }}
                   >
-                    {acting ? (
-                      <ActivityIndicator color="#ffffff" size="small" />
-                    ) : (
-                      <>
-                        <Ionicons
-                          name="checkmark"
-                          size={16}
-                          color="#ffffffff"
-                        />
-                        <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
-                      </>
-                    )}
+                    <Ionicons name="checkmark" size={16} color="#ffffffff" />
+                    <Text style={styles.outlineBtnAddText}>ยอมรับ</Text>
                   </TouchableOpacity>
+
+                  {/* ปุ่มปฏิเสธ*/}
                   <TouchableOpacity
                     style={[styles.outlineBtnAdd, styles.ghost]}
                     onPress={() => {
                       setOnDecline(true);
                     }}
                   >
-                    {acting ? (
-                      <ActivityIndicator color="#ffffff" size="small" />
-                    ) : (
-                      <>
-                        <Ionicons name="close" size={16} color="#111827ff" />
-                        <Text
-                          style={[styles.outlineBtnAddText, styles.ghostText]}
-                        >
-                          ปฏิเสธ
-                        </Text>
-                      </>
-                    )}
+                    <Ionicons name="close" size={16} color="#111827ff" />
+                    <Text style={[styles.outlineBtnAddText, styles.ghostText]}>
+                      ปฏิเสธ
+                    </Text>
                   </TouchableOpacity>
                 </>
               ) : (
@@ -553,7 +538,7 @@ export default function Profile() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>ต้องการรับเพื่อน ?</Text>
+            <Text style={styles.modalTitle}>ยืนยันการรับเพื่อน ?</Text>
             <TouchableOpacity
               onPress={acceptFriend}
               style={[styles.modalBtn, { backgroundColor: "#3B82F6" }]}
@@ -891,7 +876,6 @@ const styles = StyleSheet.create({
   modalBtnText: { color: "#fff", fontFamily: "KanitSemiBold", fontSize: 14 },
   modalCancel: {
     backgroundColor: "#F3F4F6",
-    borderWidth: 1,
     borderColor: "#E5E7EB",
   },
 

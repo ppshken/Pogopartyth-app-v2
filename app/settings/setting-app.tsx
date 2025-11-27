@@ -144,8 +144,6 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
     marginBottom: 12,
   },
   label: { fontSize: 16, fontFamily: "KanitSemiBold", color: "#111827" },
