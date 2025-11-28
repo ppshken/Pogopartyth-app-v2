@@ -152,6 +152,7 @@ export default function ChatScreen() {
             }}
             onSubmitEditing={onSend}
             returnKeyType="send"
+            multiline={true}
           />
           <TouchableOpacity
             onPress={onSend}

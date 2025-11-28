@@ -9,7 +9,6 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Keyboard,
 } from "react-native";
 import { Friend, searchFriends, listMyFriends } from "../../lib/friend";
 import { useRouter } from "expo-router";

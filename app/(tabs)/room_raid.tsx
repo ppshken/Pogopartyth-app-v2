@@ -53,6 +53,8 @@ export default function RoomsIndex() {
   const navigation = useNavigation();
   const [howto, setHowto] = useState(false);
 
+  const [modalannouncement, setModalannouncement] = useState(true);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -271,12 +273,15 @@ export default function RoomsIndex() {
         )}
       />
       <HowToJoinRoomModal visible={howto} onClose={() => setHowto(false)} />
-      <View style={styles.noties}>
-        <Text style={styles.notiestext}>
-          สรุปอีเวนต์: ช่วงเวลาแห่งศึกชี้ชะตา ระยะเวลา: 25 - 30 พ.ย. 2025 (10.00
-          - 20.00 น.) ไฮไลท์สำคัญ: - เปิดตัว เคลดิโอ (ร่างแน่วแน่)
-        </Text>
-      </View>
+      {modalannouncement && (
+        <View style={styles.noties}>
+          <Text style={styles.notiestext}>
+            {" "}
+            สรุปอีเวนต์: ช่วงเวลาแห่งศึกชี้ชะตา ระยะเวลา: 25 - 30 พ.ย. 2025
+            (10.00 - 20.00 น.) ไฮไลท์สำคัญ: - เปิดตัว เคลดิโอ (ร่างแน่วแน่)
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

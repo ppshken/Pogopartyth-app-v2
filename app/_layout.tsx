@@ -25,8 +25,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   const [appIsReady, setAppIsReady] = useState(false); // เช็คความพร้อมของแอป
-  const [onupdate, setOnupdate] = useState(false);
-
+  const [onUpdate, setOnUpdate] = useState(false);
   const [onEvent, setOnEvent] = useState(false);
   const [eventData, setEventData] = useState<Events>();
 
@@ -212,7 +211,7 @@ export default function Layout() {
         <SnackHost />
 
         {/* Update Modal */}
-        <Modal visible={onupdate} transparent animationType="fade">
+        <Modal visible={onUpdate} transparent animationType="fade">
           {/* ... (Code Modal Update เหมือนเดิม) ... */}
           {/* เพื่อความกระชับ ผมละไว้ แต่คุณสามารถแปะโค้ดเดิมกลับมาได้เลยครับ */}
         </Modal>
@@ -255,7 +254,6 @@ export default function Layout() {
             </View>
           </View>
         </Modal>
-
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

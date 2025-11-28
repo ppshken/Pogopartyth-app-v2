@@ -730,7 +730,9 @@ export default function RoomDetail() {
       const payloadLog = {
         room_id: room.id,
         type: "cancel",
-        target: "",
+        target: cancelOther
+          ? cancelCustomReason.trim()
+          : selectedCancel?.reasoncancel || "",
         description: "ยกเลิกห้อง",
       };
       await RoomLog(payloadLog);

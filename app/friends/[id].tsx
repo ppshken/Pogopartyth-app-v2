@@ -20,6 +20,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { openPokemonGo } from "../../lib/openpokemongo";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { getFriendProfile } from "../../lib/user"; // ⬅️ API โปรไฟล์ (อยู่ด้านล่างคำตอบ)
@@ -29,6 +30,10 @@ import { useLocalSearchParams } from "expo-router";
 import { AddFriend, AcceptFriend, DeclineFriend } from "../../lib/friend";
 import { createReport } from "../../lib/reports";
 import { AvatarComponent } from "../../components/Avatar";
+import { RoomLog } from "../../lib/raid";
+
+const PokemonGoIcon =
+  "https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk"; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
 
 type FullUser = {
   id: number;
@@ -73,6 +78,7 @@ export default function Profile() {
   const [onAccepted, setOnAccepted] = useState(false);
   const [onDecline, setOnDecline] = useState(false);
   const [onReport, setOnReport] = useState(false);
+  const [onAdded, setOnAdded] = useState(false);
 
   // ภายใน component เดิมของคุณ
   const [acting, setActing] = useState(false); // กันกดซ้ำระหว่างยิง API
@@ -133,6 +139,7 @@ export default function Profile() {
       setActing(true);
       const { message } = await AddFriend(userId);
       showSnack({ text: message, variant: "success" });
+      setOnAdded(true);
       await load(); // รีโหลดสถานะโปรไฟล์/เพื่อน
     } catch (e: any) {
       // แสดงข้อความจาก server เช่น "เป็นเพื่อนกันอยู่แล้ว", "อีกฝ่ายส่งคำขอมาแล้ว กรุณากดตอบรับ"
@@ -521,7 +528,7 @@ export default function Profile() {
                 style={styles.outlineBtn}
                 onPress={onCopyFriendCode}
               >
-                <Ionicons name="copy-outline" size={16} color="#111827" />
+                <Ionicons name="copy-outline" size={16} color="#ffffffff" />
                 <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
               </TouchableOpacity>
             )}
@@ -587,6 +594,56 @@ export default function Profile() {
             >
               <Text style={[styles.modalBtnText, { color: "#111827" }]}>
                 ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: ปฏิเสธคำขอ */}
+      <Modal
+        visible={onAdded}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOnAdded(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>
+              คัดลอกรหัสเพิ่มเพื่อน และเพิ่มเพื่อนในเกม
+            </Text>
+            <Text style={styles.modalFriendCode}>
+              {statusFriend?.status === "pending"
+                ? formatFriendCode(user?.friend_code || "-")
+                : "-"}
+            </Text>
+            <TouchableOpacity
+              onPress={onCopyFriendCode}
+              style={[styles.modalBtn, { backgroundColor: "#3973beff" }]}
+            >
+              <Text style={styles.modalBtnText}>คัดลอกรหัสเพิ่มเพื่อน</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={openPokemonGo}
+              style={[styles.modalBtn, { backgroundColor: "#d34228ff" }]}
+            >
+              <Image
+                source={{ uri: PokemonGoIcon }}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginRight: 6,
+                  borderRadius: 4,
+                }}
+              />
+              <Text style={styles.modalBtnText}>เปิด Pokemon Go</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setOnAdded(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                เสร็จสิ้น?
               </Text>
             </TouchableOpacity>
           </View>
@@ -758,18 +815,16 @@ const styles = StyleSheet.create({
 
   outlineBtn: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#111827",
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#fff",
+    backgroundColor: "#3973beff",
   },
   outlineBtnText: {
-    color: "#111827",
+    color: "#ffffffff",
     fontFamily: "KanitSemiBold",
     fontSize: 14,
   },
@@ -861,6 +916,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "KanitSemiBold",
     color: "#111827",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  modalFriendCode: {
+    fontSize: 26,
+    fontFamily: "KanitMedium",
+    color: "#333333ff",
     marginBottom: 12,
     textAlign: "center",
   },

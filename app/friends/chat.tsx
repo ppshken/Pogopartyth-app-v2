@@ -461,7 +461,7 @@ export default function ChatScreen() {
         <View
           style={{
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "flex-end",
             marginTop: 8,
             marginBottom: Platform.OS === "ios" ? 42 : 16,
             marginHorizontal: 16,
@@ -482,6 +482,7 @@ export default function ChatScreen() {
             }}
             onSubmitEditing={onSend}
             returnKeyType="send"
+            multiline={true}
           />
           <TouchableOpacity
             onPress={onSend}
