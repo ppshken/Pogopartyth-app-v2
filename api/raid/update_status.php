@@ -122,7 +122,7 @@ try {
 
   $pushResult = null;
 
-  // ถ้าหัวห้อง set เป็น invited → แจ้งเตือนทุกคนในห้อง
+  // ถ้าหัวห้อง set เป็น invited → แจ้งเตือนทุกคนในห้องไม่นับหัวห้อง
   if ($newStatus === 'invited') {
     // ดึงรายชื่อ token ของสมาชิกในห้อง (รวมเจ้าของด้วยก็ได้)
     $tokStmt = $db->prepare("
@@ -130,11 +130,12 @@ try {
       FROM user_raid_rooms urr
       JOIN users u ON u.id = urr.user_id
       WHERE urr.room_id = :r
+        AND u.id <> :uid
         AND u.noti_status = 'on'
         AND u.device_token IS NOT NULL
         AND u.device_token <> ''
     ");
-    $tokStmt->execute([':r' => $roomId]);
+    $tokStmt->execute([':r' => $roomId, ':uid' => $userId]);
     $tokens = array_column($tokStmt->fetchAll(PDO::FETCH_ASSOC), 'device_token');
 
     // สร้างข้อความ

@@ -187,7 +187,9 @@ export default function FriendsScreen() {
             iconsize={10}
           />
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <View style={[styles.rowCenterGap, {justifyContent: "space-between"}]}>
+            <View
+              style={[styles.rowCenterGap, { justifyContent: "space-between" }]}
+            >
               <Text style={styles.itemName}>{item.username}</Text>
               <View
                 style={[
@@ -197,7 +199,7 @@ export default function FriendsScreen() {
                   },
                 ]}
               >
-                <Text style={styles.teamText}>Level {item.level}</Text>
+                <Text style={styles.teamText}>เลเวล {item.level}</Text>
               </View>
             </View>
 

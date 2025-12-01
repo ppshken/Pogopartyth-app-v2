@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
 } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,6 +23,7 @@ import { listRooms } from "../../lib/raid";
 import { RoomCardMinimal } from "../../components/RoomCard";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import HowToJoinRoomModal from "../../components/HowToJoinRoomModal";
+import { systemConfig } from "@/lib/system_config";
 
 type Room = {
   id: number;
@@ -53,7 +55,10 @@ export default function RoomsIndex() {
   const navigation = useNavigation();
   const [howto, setHowto] = useState(false);
 
-  const [modalannouncement, setModalannouncement] = useState(true);
+  const [modalannouncement, setModalannouncement] = useState(false);
+  const [announcement_title, setAnnouncement_title] = useState("");
+  const [announcement_body, setAnnouncement_body] = useState("");
+  const [announcement_link, setAnnouncement_link] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -82,8 +87,17 @@ export default function RoomsIndex() {
 
   const load = useCallback(async () => {
     try {
+      const system = await systemConfig();
+      if (system.announcement.show) {
+        setModalannouncement(true);
+        setAnnouncement_title(system.announcement.title);
+        setAnnouncement_body(system.announcement.body);
+        setAnnouncement_link(system.announcement.link);
+      }
       const res = await listRooms({ status: "active", page: 1, limit: 100 });
       setItems(res.items || res.rooms || []);
+    } catch {
+      Alert.alert("โหลดข้อมูลไม่สำเร็จ");
     } finally {
       setRefreshing(false);
     }
@@ -274,12 +288,9 @@ export default function RoomsIndex() {
       />
       <HowToJoinRoomModal visible={howto} onClose={() => setHowto(false)} />
       {modalannouncement && (
-        <View style={styles.noties}>
-          <Text style={styles.notiestext}>
-            {" "}
-            สรุปอีเวนต์: ช่วงเวลาแห่งศึกชี้ชะตา ระยะเวลา: 25 - 30 พ.ย. 2025
-            (10.00 - 20.00 น.) ไฮไลท์สำคัญ: - เปิดตัว เคลดิโอ (ร่างแน่วแน่)
-          </Text>
+        <View style={styles.notice}>
+          <Text style={styles.noticetitle}>{announcement_title || "-"}</Text>
+          <Text style={styles.noticetext}>{announcement_body || "-"}</Text>
         </View>
       )}
     </View>
@@ -350,16 +361,22 @@ const styles = StyleSheet.create({
     maxWidth: 110, // กันชื่อยาวห่อบรรทัด
   },
 
-  noties: {
+  notice: {
     backgroundColor: "#2f60a0ff",
     height: "auto",
     bottom: 0,
     paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
   },
-  notiestext: {
+  noticetitle: {
+    color: "#ffffff",
+    fontFamily: "KanitSemiBold",
+    fontSize: 16,
+    alignSelf: "flex-start",
+  },
+  noticetext: {
     color: "#ffffff",
     fontFamily: "KanitMedium",
   },

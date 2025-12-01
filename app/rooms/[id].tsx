@@ -1332,7 +1332,7 @@ export default function RoomDetail() {
                             fontFamily: "KanitSemiBold",
                           }}
                         >
-                          Level {m.member_level}
+                          เลเวล {m.member_level}
                         </Text>
                       </View>
                     </View>
@@ -2575,7 +2575,7 @@ export default function RoomDetail() {
                                 color: "#ffffffff",
                               }}
                             >
-                              Level {item.level}
+                              เลเวล {item.level}
                             </Text>
                           </View>
 
@@ -2771,7 +2771,7 @@ const styles = StyleSheet.create({
   outlineBtnText: { color: "#ffffffff", fontFamily: "KanitSemiBold" },
 
   memberItem: {
-    backgroundColor: "#f8f8f8ff",
+    backgroundColor: "#ffffffff",
     flexDirection: "row",
     alignItems: "center",
     padding: 8,

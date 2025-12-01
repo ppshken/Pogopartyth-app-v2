@@ -453,7 +453,7 @@ export default function Profile() {
           <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
           <View style={{ flex: 1 }} />
           <Text style={styles.rowValue}>
-            {statusFriend?.status === "accepted"
+            {(statusFriend?.status === "accepted" || statusFriend?.status === "pending") 
               ? formatFriendCode(user?.friend_code || "-")
               : "-"}
           </Text>
@@ -528,7 +528,7 @@ export default function Profile() {
                 style={styles.outlineBtn}
                 onPress={onCopyFriendCode}
               >
-                <Ionicons name="copy-outline" size={16} color="#ffffffff" />
+                <Ionicons name="copy-outline" size={16} color="#000000ff" />
                 <Text style={styles.outlineBtnText}>คัดลอกรหัส</Text>
               </TouchableOpacity>
             )}
@@ -821,10 +821,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#3973beff",
+    backgroundColor: "#ffffffff",
+    borderWidth: 1,
+    borderColor: "#000000ff",
   },
   outlineBtnText: {
-    color: "#ffffffff",
+    color: "#000000ff",
     fontFamily: "KanitSemiBold",
     fontSize: 14,
   },

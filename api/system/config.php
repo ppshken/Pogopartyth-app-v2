@@ -46,7 +46,7 @@ try {
         ],
         'features' => [
             'ads_enabled'         => (bool)($config['enable_ads'] ?? 1),
-            'guest_login_enabled' => (bool)($config['enable_guest_login'] ?? 1),
+            'vip_enables'         => (bool)($config['vip'] ?? 1),         
         ],
         'announcement' => [
             'show'  => (bool)($config['show_announcement'] ?? 0),

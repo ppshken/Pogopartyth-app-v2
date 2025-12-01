@@ -42,8 +42,6 @@ const colorbageviptext = "#ffc400ff";
 
 const MIN_LEVEL_OPTIONS = [30, 40, 50, 60, 70];
 
-const MIN_HOUR = 5; // 05:00
-const MAX_HOUR = 16; // 23:00
 const STEP_MIN = 5; // step 5 นาที
 
 const pad = (n: number) => n.toString().padStart(2, "0");
@@ -94,6 +92,7 @@ export default function CreateRoom() {
   const [howto, setHowto] = useState(true);
 
   // เช็ค user VIP
+  const [vipConfig, setVipConfig] = useState(false);
   const [vip, setVip] = useState(false);
 
   // 1) Boss (จาก API)
@@ -312,6 +311,7 @@ export default function CreateRoom() {
                             style={{
                               color: "#ffffffff",
                               fontFamily: "KanitMedium",
+                              fontSize: 12,
                             }}
                           >
                             Special
@@ -431,266 +431,270 @@ export default function CreateRoom() {
           </View>
 
           {/* VIP Zone */}
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => {
-              router.push("/package/premium_plan");
-            }}
-            disabled={vip}
-          >
-            {/* เลเวลขั้นต่ำ */}
-            <View style={{ opacity: vip ? 1 : 0.3 }}>
-              <View style={{ marginBottom: 12 }}>
-                <Text style={{ fontFamily: "KanitSemiBold", fontSize: 24 }}>
-                  เฉพาะ VIP
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: "KanitMedium",
-                    fontSize: 14,
-                    color: "#6B7280",
-                  }}
-                >
-                  ผู้ใช้ระดับ Premium สามารถตั้งค่าเพิ่มเติมได้
-                </Text>
-              </View>
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-              >
-                <Text style={styles.label}>เลเวลขั้นต่ำ</Text>
-                {/* VIP Badge */}
-                {vip && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      backgroundColor: colorbagevip,
-                      borderRadius: 4,
-                      paddingHorizontal: 6,
-                      marginBottom: 8,
-                      gap: 4,
-                    }}
-                  >
-                    <Ionicons
-                      name="sparkles"
-                      size={12}
-                      color={colorbageviptext}
-                    />
-                    <Text
-                      style={{
-                        color: colorbageviptext,
-                        fontFamily: "KanitMedium",
-                      }}
-                    >
-                      VIP
-                    </Text>
-                  </View>
-                )}
-              </View>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                {MIN_LEVEL_OPTIONS.map((lv) => (
-                  <TouchableOpacity
-                    key={lv}
-                    style={[
-                      styles.mm_level,
-                      minLevel === lv && styles.mm_levelActive,
-                    ]}
-                    onPress={() => {
-                      if (minLevel === lv) setMinLevel(null);
-                      else setMinLevel(lv);
-                    }}
-                    disabled={!vip}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: "KanitMedium",
-                        color: minLevel === lv ? "#fff" : "#111827",
-                      }}
-                    >
-                      {lv} {"+"}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <Text
-                style={{
-                  color: "#6B7280",
-                  marginTop: 6,
-                  marginBottom: 16,
-                  fontSize: 12,
-                  fontFamily: "KanitRegular",
-                }}
-              >
-                เลเวล 20 - 80
-              </Text>
-            </View>
-
-            {/* เฉพาะผู้ใช้ Premium */}
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
-                  opacity: vip ? 1 : 0.3,
-                }}
-              >
-                <Text style={styles.label}>เฉพาะผู้ใช้ Premium</Text>
-                {/* VIP Badge */}
-                {vip && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      backgroundColor: colorbagevip,
-                      borderRadius: 4,
-                      paddingHorizontal: 6,
-                      marginBottom: 8,
-                      gap: 4,
-                    }}
-                  >
-                    <Ionicons
-                      name="sparkles"
-                      size={12}
-                      color={colorbageviptext}
-                    />
-                    <Text
-                      style={{
-                        color: colorbageviptext,
-                        fontFamily: "KanitMedium",
-                      }}
-                    >
-                      VIP
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              <View style={{ alignSelf: "flex-start" }}>
-                <Switch
-                  style={{ opacity: 1 }}
-                  value={vipOnly}
-                  onValueChange={setVipOnly}
-                  disabled={!vip}
-                  trackColor={{
-                    false: vip ? "#767577" : "#b5b4b6ff",
-                    true: "#b2dad6",
-                  }}
-                  thumbColor={vipOnly ? "#018375" : "#f4f3f4"}
-                />
-              </View>
-
-              <Text
-                style={{
-                  color: "#6B7280",
-                  marginTop: 6,
-                  marginBottom: 16,
-                  fontSize: 12,
-                  fontFamily: "KanitRegular",
-                  opacity: vip ? 1 : 0.3,
-                }}
-              >
-                ล็อคให้แค่ เฉพาะผู้ใช้ระดับ Premium เท่านั้น
-              </Text>
-            </View>
-
-            {/* ล็อคห้อง ระบุ รหัสผ่าน */}
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
-                  opacity: vip ? 1 : 0.3,
-                }}
-              >
-                <Text style={styles.label}>ล็อคห้อง</Text>
-                {/* VIP Badge */}
-                {vip && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      backgroundColor: colorbagevip,
-                      borderRadius: 4,
-                      paddingHorizontal: 6,
-                      marginBottom: 8,
-                      gap: 4,
-                    }}
-                  >
-                    <Ionicons
-                      name="sparkles"
-                      size={12}
-                      color={colorbageviptext}
-                    />
-                    <Text
-                      style={{
-                        color: colorbageviptext,
-                        fontFamily: "KanitMedium",
-                      }}
-                    >
-                      VIP
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
-                <Switch
-                  style={{ opacity: 1 }}
-                  value={lockRoom}
-                  onValueChange={(v) => {
-                    setLockRoom(v);
-                    if (!v) setPasswordRoom("");
-                  }}
-                  disabled={!vip}
-                  trackColor={{
-                    false: vip ? "#767577" : "#b5b4b6ff",
-                    true: "#b2dad6",
-                  }}
-                  thumbColor={lockRoom ? "#018375" : "#f4f3f4"}
-                />
-              </View>
-
-              {lockRoom && (
-                <>
-                  <TextInput
-                    placeholder="ระบุรหัสผ่านห้อง"
-                    value={passwordRoom}
-                    secureTextEntry={true}
-                    onChangeText={setPasswordRoom}
-                    style={[styles.dropdown, { fontFamily: "KanitRegular" }]}
-                    placeholderTextColor="#9CA3AF"
-                  />
-
-                  {passwordRoom && passwordRoom.trim().length < 6 && (
-                    <Text
-                      style={{
-                        color: "#EF4444",
-                        fontSize: 12,
-                        fontFamily: "KanitMedium",
-                      }}
-                    >
-                      อย่างน้อย 6 ตัวอักษร
-                    </Text>
-                  )}
-
+          {vipConfig ? (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => {
+                router.push("/package/premium_plan");
+              }}
+              disabled={vip}
+            >
+              {/* เลเวลขั้นต่ำ */}
+              <View style={{ opacity: vip ? 1 : 0.3 }}>
+                <View style={{ marginBottom: 12 }}>
+                  <Text style={{ fontFamily: "KanitSemiBold", fontSize: 24 }}>
+                    เฉพาะ VIP
+                  </Text>
                   <Text
                     style={{
+                      fontFamily: "KanitMedium",
+                      fontSize: 14,
                       color: "#6B7280",
-                      marginTop: 6,
-                      marginBottom: 16,
-                      fontSize: 12,
-                      fontFamily: "KanitRegular",
-                      opacity: vip ? 1 : 0.3,
                     }}
                   >
-                    ระบุรหัสผ่านสำหรับห้อง อย่างน้อย 6 ตัวอักษร
+                    ผู้ใช้ระดับ Premium สามารถตั้งค่าเพิ่มเติมได้
                   </Text>
-                </>
-              )}
-            </View>
-          </TouchableOpacity>
+                </View>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <Text style={styles.label}>เลเวลขั้นต่ำ</Text>
+                  {/* VIP Badge */}
+                  {vip && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        backgroundColor: colorbagevip,
+                        borderRadius: 4,
+                        paddingHorizontal: 6,
+                        marginBottom: 8,
+                        gap: 4,
+                      }}
+                    >
+                      <Ionicons
+                        name="sparkles"
+                        size={12}
+                        color={colorbageviptext}
+                      />
+                      <Text
+                        style={{
+                          color: colorbageviptext,
+                          fontFamily: "KanitMedium",
+                        }}
+                      >
+                        VIP
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                <View
+                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                >
+                  {MIN_LEVEL_OPTIONS.map((lv) => (
+                    <TouchableOpacity
+                      key={lv}
+                      style={[
+                        styles.mm_level,
+                        minLevel === lv && styles.mm_levelActive,
+                      ]}
+                      onPress={() => {
+                        if (minLevel === lv) setMinLevel(null);
+                        else setMinLevel(lv);
+                      }}
+                      disabled={!vip}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: "KanitMedium",
+                          color: minLevel === lv ? "#fff" : "#111827",
+                        }}
+                      >
+                        {lv} {"+"}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text
+                  style={{
+                    color: "#6B7280",
+                    marginTop: 6,
+                    marginBottom: 16,
+                    fontSize: 12,
+                    fontFamily: "KanitRegular",
+                  }}
+                >
+                  เลเวล 20 - 80
+                </Text>
+              </View>
+
+              {/* เฉพาะผู้ใช้ Premium */}
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    opacity: vip ? 1 : 0.3,
+                  }}
+                >
+                  <Text style={styles.label}>เฉพาะผู้ใช้ Premium</Text>
+                  {/* VIP Badge */}
+                  {vip && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        backgroundColor: colorbagevip,
+                        borderRadius: 4,
+                        paddingHorizontal: 6,
+                        marginBottom: 8,
+                        gap: 4,
+                      }}
+                    >
+                      <Ionicons
+                        name="sparkles"
+                        size={12}
+                        color={colorbageviptext}
+                      />
+                      <Text
+                        style={{
+                          color: colorbageviptext,
+                          fontFamily: "KanitMedium",
+                        }}
+                      >
+                        VIP
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                <View style={{ alignSelf: "flex-start" }}>
+                  <Switch
+                    style={{ opacity: 1 }}
+                    value={vipOnly}
+                    onValueChange={setVipOnly}
+                    disabled={!vip}
+                    trackColor={{
+                      false: vip ? "#767577" : "#b5b4b6ff",
+                      true: "#b2dad6",
+                    }}
+                    thumbColor={vipOnly ? "#018375" : "#f4f3f4"}
+                  />
+                </View>
+
+                <Text
+                  style={{
+                    color: "#6B7280",
+                    marginTop: 6,
+                    marginBottom: 16,
+                    fontSize: 12,
+                    fontFamily: "KanitRegular",
+                    opacity: vip ? 1 : 0.3,
+                  }}
+                >
+                  ล็อคให้แค่ เฉพาะผู้ใช้ระดับ Premium เท่านั้น
+                </Text>
+              </View>
+
+              {/* ล็อคห้อง ระบุ รหัสผ่าน */}
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    opacity: vip ? 1 : 0.3,
+                  }}
+                >
+                  <Text style={styles.label}>ล็อคห้อง</Text>
+                  {/* VIP Badge */}
+                  {vip && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        backgroundColor: colorbagevip,
+                        borderRadius: 4,
+                        paddingHorizontal: 6,
+                        marginBottom: 8,
+                        gap: 4,
+                      }}
+                    >
+                      <Ionicons
+                        name="sparkles"
+                        size={12}
+                        color={colorbageviptext}
+                      />
+                      <Text
+                        style={{
+                          color: colorbageviptext,
+                          fontFamily: "KanitMedium",
+                        }}
+                      >
+                        VIP
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
+                  <Switch
+                    style={{ opacity: 1 }}
+                    value={lockRoom}
+                    onValueChange={(v) => {
+                      setLockRoom(v);
+                      if (!v) setPasswordRoom("");
+                    }}
+                    disabled={!vip}
+                    trackColor={{
+                      false: vip ? "#767577" : "#b5b4b6ff",
+                      true: "#b2dad6",
+                    }}
+                    thumbColor={lockRoom ? "#018375" : "#f4f3f4"}
+                  />
+                </View>
+
+                {lockRoom && (
+                  <>
+                    <TextInput
+                      placeholder="ระบุรหัสผ่านห้อง"
+                      value={passwordRoom}
+                      secureTextEntry={true}
+                      onChangeText={setPasswordRoom}
+                      style={[styles.dropdown, { fontFamily: "KanitRegular" }]}
+                      placeholderTextColor="#9CA3AF"
+                    />
+
+                    {passwordRoom && passwordRoom.trim().length < 6 && (
+                      <Text
+                        style={{
+                          color: "#EF4444",
+                          fontSize: 12,
+                          fontFamily: "KanitMedium",
+                        }}
+                      >
+                        อย่างน้อย 6 ตัวอักษร
+                      </Text>
+                    )}
+
+                    <Text
+                      style={{
+                        color: "#6B7280",
+                        marginTop: 6,
+                        marginBottom: 16,
+                        fontSize: 12,
+                        fontFamily: "KanitRegular",
+                        opacity: vip ? 1 : 0.3,
+                      }}
+                    >
+                      ระบุรหัสผ่านสำหรับห้อง อย่างน้อย 6 ตัวอักษร
+                    </Text>
+                  </>
+                )}
+              </View>
+            </TouchableOpacity>
+          ) : null}
 
           {/* Submit */}
           <TouchableOpacity
@@ -782,12 +786,9 @@ export default function CreateRoom() {
                 keyExtractor={(x) => String(x.raid_boss_id)}
                 renderItem={({ item }) => {
                   const selected = boss?.raid_boss_id === item.raid_boss_id;
-                  const bossVip = !vip && !!item.special;
                   return (
                     <TouchableOpacity
                       onPress={() => {
-                        if (bossVip)
-                          return router.push("/package/premium_plan");
                         setBoss(item);
                         const limit = item.maximum > 0 ? item.maximum : 10;
                         setMaximum(limit);
@@ -797,7 +798,6 @@ export default function CreateRoom() {
                       style={[
                         styles.itemRow,
                         selected && { backgroundColor: "#e5ebf7ff" },
-                        bossVip && { opacity: 0.3 },
                       ]}
                     >
                       <BossImage
@@ -850,6 +850,7 @@ export default function CreateRoom() {
                                   style={{
                                     color: "#ffffffff",
                                     fontFamily: "KanitMedium",
+                                    fontSize: 12,
                                   }}
                                 >
                                   Special
@@ -1039,7 +1040,7 @@ export default function CreateRoom() {
               <Ionicons name="time-outline" size={18} color="#111827" />
               <Text style={styles.bulletText}>
                 เลือกเวลาเริ่ม (ดรอปดาวน์): วันนี้จากเวลาปัจจุบัน +5 นาที ทุกๆ 5
-                นาทีจนถึง 23:00 ถ้าเลยช่วงแล้วจะแสดงของพรุ่งนี้ 05:00–23:00
+                ไปจนถึงมากสุด + 45 นาที ต่อ 1 รอบ
               </Text>
             </View>
 

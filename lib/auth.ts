@@ -49,6 +49,7 @@ export async function forget_password(payload: {
   return data.data as { user: User; type: boolean; };
 }
 
+/** ยืนยันลืมรหัสผ่าน */
 export async function reset_password(payload: {
   user_id: number;
   password: string;
