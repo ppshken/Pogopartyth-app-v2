@@ -37,6 +37,30 @@ type FullUser = {
   plan: string;
 };
 
+const event = [
+  {
+    id: 1,
+    menu: "ปฏิทินกิจกรรม",
+    icon: "calendar",
+    icon_color: "#d79251ff",
+    router: "/calendar/calendar",
+  },
+  {
+    id: 2,
+    menu: "วิจัยภาคสนาม",
+    icon: "compass",
+    icon_color: "#0044b9ff",
+    router: "/calendar/research",
+  },
+  {
+    id: 3,
+    menu: "ฟักไข่",
+    icon: "egg",
+    icon_color: "#b90041ff",
+    router: "/calendar/eggs",
+  },
+];
+
 const menu = [
   {
     id: 1,
@@ -166,7 +190,7 @@ export default function Profile() {
             <Text
               style={[
                 styles.name,
-                { color: user.plan === "premium" ? "#d6d6d6ff" : "#000000" },
+                { color: user.plan === "premium" ? "#ffffffff" : "#000000" },
               ]}
               numberOfLines={1}
             >
@@ -183,7 +207,7 @@ export default function Profile() {
               <Text
                 style={[
                   styles.email,
-                  { color: user.plan === "premium" ? "#d6d6d6ff" : "#000000" },
+                  { color: user.plan === "premium" ? "#ffffffff" : "#000000" },
                 ]}
                 numberOfLines={1}
               >
@@ -196,13 +220,13 @@ export default function Profile() {
                 <Ionicons
                   name="calendar-outline"
                   size={14}
-                  color={user.plan === "premium" ? "#d6d6d6ff" : "#000000"}
+                  color={user.plan === "premium" ? "#ffffffff" : "#000000"}
                 />
                 <Text
                   style={[
                     styles.badgeDarkText,
                     {
-                      color: user.plan === "premium" ? "#d6d6d6ff" : "#000000",
+                      color: user.plan === "premium" ? "#ffffffff" : "#000000",
                     },
                   ]}
                 >
@@ -224,6 +248,41 @@ export default function Profile() {
         </View>
       </View>
 
+      {/* กิจกรรม */}
+      <View style={styles.card_stats}>
+        <Text style={styles.cardTitle}>ฟีเจอร์</Text>
+        {event.map((eventitem) => (
+          <View style={styles.menuSection} key={eventitem.id}>
+            <TouchableOpacity
+              style={styles.menuItemBtn}
+              onPress={() => {
+                if (eventitem.router) {
+                  router.push(eventitem.router as any);
+                }
+              }}
+            >
+              <View style={styles.menuItemLeft}>
+                <View
+                  style={{
+                    backgroundColor: eventitem.icon_color,
+                    padding: 6,
+                    borderRadius: 8,
+                  }}
+                >
+                  <Ionicons
+                    name={eventitem.icon as any}
+                    size={18}
+                    color="#ffffffff"
+                  />
+                </View>
+                <Text style={styles.menuItemText}>{eventitem.menu}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+
       {/* เมนู */}
       <View style={styles.card_stats}>
         <Text style={styles.cardTitle}>เมนู</Text>
@@ -238,7 +297,13 @@ export default function Profile() {
               }}
             >
               <View style={styles.menuItemLeft}>
-                <View style={{backgroundColor: menuitem.icon_color, padding: 6, borderRadius: 8}}>
+                <View
+                  style={{
+                    backgroundColor: menuitem.icon_color,
+                    padding: 6,
+                    borderRadius: 8,
+                  }}
+                >
                   <Ionicons
                     name={menuitem.icon as any}
                     size={18}

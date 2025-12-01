@@ -404,7 +404,7 @@ export default function CreateRoom() {
                 fontFamily: "KanitRegular",
               }}
             >
-              เลือกสมาชิกได้สูงสุด 2–20 คน
+              เลือกสมาชิกได้สูงสุด 2–10 คน
             </Text>
 
             {/* Note */}
@@ -791,8 +791,9 @@ export default function CreateRoom() {
                       onPress={() => {
                         setBoss(item);
                         const limit = item.maximum > 0 ? item.maximum : 10;
+                        const recommend = item.maximum > 5 ? 6 : item.maximum;
                         setMaximum(limit);
-                        setMax(limit);
+                        setMax(recommend);
                         setBossOpen(false);
                       }}
                       style={[

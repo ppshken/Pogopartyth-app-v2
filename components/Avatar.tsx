@@ -30,11 +30,8 @@ export function AvatarComponent({
           style={{
             justifyContent: "center",
             alignItems: "center",
-            width: width+4,
-            height: height+4,
-            borderWidth: 4,
-            borderColor: plan === "premium" ? "#ffc400ff" : "#ffffffff",
-            borderRadius: borderRadius + 2,
+            width: width,
+            height: height,
           }}
         >
           <Image

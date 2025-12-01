@@ -30,8 +30,8 @@ export default function Layout() {
   const [maintenanceMsg, setMaintenanceMsg] = useState(""); // ข้อความปิดปรับปรุง
   const [isRetrying, setIsRetrying] = useState(false); // state สำหรับ loading ตอนกดปุ่ม retry
 
-  const [onUpdate, setOnUpdate] = useState(false);
-  const [onEvent, setOnEvent] = useState(false);
+  const [onUpdate, setOnUpdate] = useState(false); // เปิด modal แจ้งเตือนอัพเดทแอพ
+  const [onEvent, setOnEvent] = useState(false); // เปิด modal แจ้งเตือนอีเวนท์ใหม่
   const [eventData, setEventData] = useState<Events>();
 
   // ----------------------------------------------------------------------
@@ -218,7 +218,14 @@ export default function Layout() {
           <Stack.Screen name="friends/[id]" options={{ title: "โปรไฟล์เพื่อน", headerShown: true }} />
           <Stack.Screen name="friends/request_friend" options={{ title: "แจ้งเตือน", headerShown: true }} />
           <Stack.Screen name="friends/chat" options={{ title: "แชท", headerShown: true }} />
+
           <Stack.Screen name="events/[id]" options={{ title: "รายละเอียดอีเวนท์", headerShown: true }} />
+
+          <Stack.Screen name="calendar/calendar" options={{ title: "ปฏิทินกิจกรรม", headerShown: true }} />
+
+          <Stack.Screen name="calendar/research" options={{ title: "วิจัยภาคสนาม", headerShown: true }} />
+
+          <Stack.Screen name="calendar/eggs" options={{ title: "ฟักไข่", headerShown: true }} />
           
           <Stack.Screen name="package/premium_plan" options={{ title: "Premium", headerShown: true, animation: "slide_from_bottom" }} />
         </Stack>

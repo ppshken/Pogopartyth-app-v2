@@ -75,7 +75,7 @@ export default function EventsScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: "ข่าวสารและกิจกรรม",
+          title: "ข่าวสาร",
           headerShown: true,
           headerStyle: { backgroundColor: "#fff" },
           headerTitleStyle: { fontFamily: "KanitSemiBold" },

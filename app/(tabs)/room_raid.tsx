@@ -70,7 +70,7 @@ export default function RoomsIndex() {
             accessibilityRole="button"
             accessibilityLabel="อีเวนท์"
           >
-            <Ionicons name="calendar" size={22} color="#2f60a0ff" />
+            <Ionicons name="newspaper-outline" size={22} color="#000000ff" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setHowto(true)}
@@ -78,7 +78,7 @@ export default function RoomsIndex() {
             accessibilityRole="button"
             accessibilityLabel="วิธีการใช้งาน"
           >
-            <Ionicons name="help-circle" size={26} color="#2f60a0ff" />
+            <Ionicons name="help-circle-outline" size={26} color="#000000ff" />
           </TouchableOpacity>
         </View>
       ),
@@ -93,6 +93,8 @@ export default function RoomsIndex() {
         setAnnouncement_title(system.announcement.title);
         setAnnouncement_body(system.announcement.body);
         setAnnouncement_link(system.announcement.link);
+      } else {
+        setModalannouncement(false);
       }
       const res = await listRooms({ status: "active", page: 1, limit: 100 });
       setItems(res.items || res.rooms || []);

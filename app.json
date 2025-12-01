@@ -3,7 +3,7 @@
     "owner": "kenzanaqq",
     "name": "PogopartyTH",
     "slug": "pogopartyth-app",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "icon": "./assets/pogopartyth.png",
     "userInterfaceStyle": "light",
     "scheme": "pogopartyth",

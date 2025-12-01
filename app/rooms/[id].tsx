@@ -1986,7 +1986,7 @@ export default function RoomDetail() {
                     color: "#666666",
                   }}
                 >
-                  Premium
+                  VIP
                 </Text>
               </View>
               <Text style={{ fontFamily: "KanitSemiBold", fontSize: 16 }}>
@@ -2030,7 +2030,7 @@ export default function RoomDetail() {
               style={[styles.modalBtn, { backgroundColor: "#EFBF04" }]}
             >
               <Text style={[styles.modalBtnText, { color: "#414141ff" }]}>
-                สมัคร Premium
+                สมัคร VIP
               </Text>
             </TouchableOpacity>
 
