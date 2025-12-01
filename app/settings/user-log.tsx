@@ -253,7 +253,7 @@ export default function UserLogScreen() {
   if (userId === null) {
     return (
       <View style={styles.container && { alignItems: "center" }}>
-        <ActivityIndicator style={{ marginTop: 20 }} />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -293,7 +293,6 @@ export default function UserLogScreen() {
           loading && items.length > 0 ? (
             <View style={styles.footerLoading}>
               <ActivityIndicator size="large" />
-              <Text style={styles.footerText}>กำลังโหลด...</Text>
             </View>
           ) : null
         }

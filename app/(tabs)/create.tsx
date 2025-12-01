@@ -33,6 +33,7 @@ type RaidBoss = {
   end_date: string;
   type: string;
   special: boolean;
+  maximum: number;
   created_at: string;
 };
 
@@ -118,7 +119,16 @@ export default function CreateRoom() {
 
   // 3) Max members
   const [peopleOpen, setPeopleOpen] = useState(false);
-  const PEOPLE = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 2), []);
+  const [maximum, setMaximum] = useState(0);
+  const PEOPLE = useMemo(() => {
+    const limit = maximum > 0 ? maximum : 20; // ใช้ maximum เป็นเพดานสูงสุด
+    const list = [];
+    for (let i = 2; i <= limit; i++) {
+      list.push(i);
+    }
+    return list;
+  }, [maximum]);
+
   const [max, setMax] = useState<number>(6);
 
   // 4) Note
@@ -779,6 +789,9 @@ export default function CreateRoom() {
                         if (bossVip)
                           return router.push("/package/premium_plan");
                         setBoss(item);
+                        const limit = item.maximum > 0 ? item.maximum : 10;
+                        setMaximum(limit);
+                        setMax(limit);
                         setBossOpen(false);
                       }}
                       style={[

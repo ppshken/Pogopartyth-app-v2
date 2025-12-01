@@ -11,6 +11,7 @@ export type RaidBoss = {
   end_date: string;
   type: string;
   special: boolean;
+  maximum: number;
   created_at: string;
 };
 

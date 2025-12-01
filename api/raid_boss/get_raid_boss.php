@@ -58,6 +58,7 @@ $sql = "
     rb.cp_normal_max,
     rb.cp_boost_min,
     rb.cp_boost_max,
+    rb.maximum,
     rb.created_at
   FROM raid_boss rb
   $where
@@ -88,6 +89,7 @@ if ($isAll) {
       'cp_normal_max' => (int)$r['cp_normal_max'],
       'cp_boost_min'  => (int)$r['cp_boost_min'],
       'cp_boost_max'  => (int)$r['cp_boost_max'],
+      'maximum'       => (int)$r['maximum'],
       'created_at'    => $r['created_at'],
     ];
   }, $rows);
@@ -128,6 +130,7 @@ $items = array_map(function(array $r) {
     'cp_normal_max' => (int)$r['cp_normal_max'],
     'cp_boost_min'  => (int)$r['cp_boost_min'],
     'cp_boost_max'  => (int)$r['cp_boost_max'],
+    'maximum'       => (int)$r['maximum'],
     'created_at'    => $r['created_at'],
   ];
 }, $rows);
