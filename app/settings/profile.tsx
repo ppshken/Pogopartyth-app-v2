@@ -153,7 +153,7 @@ export default function Profile() {
             <Text
               style={[
                 styles.name,
-                { color: user.plan === "premium" ? "#d6d6d6ff" : "#000000" },
+                { color: user.plan === "premium" ? "#ffffffff" : "#000000" },
               ]}
               numberOfLines={1}
             >
@@ -177,7 +177,7 @@ export default function Profile() {
               <Text
                 style={[
                   styles.email,
-                  { color: user.plan === "premium" ? "#d6d6d6ff" : "#000000" },
+                  { color: user.plan === "premium" ? "#ffffffff" : "#000000" },
                 ]}
                 numberOfLines={1}
               >
@@ -199,13 +199,13 @@ export default function Profile() {
                 <Ionicons
                   name="calendar-outline"
                   size={14}
-                  color={user.plan === "premium" ? "#d6d6d6ff" : "000000"}
+                  color={user.plan === "premium" ? "#ffffffff" : "000000"}
                 />
                 <Text
                   style={[
                     styles.badgeDarkText,
                     {
-                      color: user.plan === "premium" ? "#d6d6d6ff" : "#000000",
+                      color: user.plan === "premium" ? "#ffffffff" : "#000000",
                     },
                   ]}
                 >

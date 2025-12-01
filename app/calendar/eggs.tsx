@@ -116,7 +116,7 @@ export default function EggPoolScreen() {
         {/* Shiny Badge */}
         {item.canBeShiny && (
           <View style={styles.shinyBadge}>
-            <Ionicons name="sparkles" size={10} color="#F59E0B" />
+            <Ionicons name="sparkles" size={16} color="#F59E0B" />
           </View>
         )}
 
