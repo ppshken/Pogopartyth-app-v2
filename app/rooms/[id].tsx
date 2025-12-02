@@ -201,10 +201,13 @@ export default function RoomDetail() {
   // สถานะ “เพิ่มเพื่อนแล้ว”
   const [friendAdded, setFriendAdded] = useState<Record<number, boolean>>({});
 
-  // โมดัลผลลัพธ์/รีวิว
+  // Modal ผลลัพธ์/รีวิว
   const [resultModal, setResultModal] = useState(false); // เลือก สำเร็จ/ไม่สำเร็จ
   const [ratingModal, setRatingModal] = useState(false); // ให้คะแนน 1-5
   const [failureModal, setFailureModal] = useState(false); // กรอกเหตุผลไม่สำเร็จ
+
+  // Modal เปิด Pokemon go
+  const [onOpenPokemonGo, setOnOpenPokemonGo] = useState(true);
 
   // Modal ยกเลิกห้อง
   const [cancelRoomModal, setCancelRoomModal] = useState(false);
@@ -2147,6 +2150,39 @@ export default function RoomDetail() {
                   รีวิวตอนนี้
                 </Text>
               )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: หัวห้องกดเชิญ แล้วแสดง เปิด Pokemon go */}
+      <Modal
+        visible={onOpenPokemonGo && room.status === "invited" && !isOwner}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>
+              หัวห้อง ทำการเชิญเพื่อนในเกมแล้ว กรุณาเข้าเกม
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                openPokemonGo();
+                setOnOpenPokemonGo(false);
+              }}
+              style={[styles.modalBtn, { backgroundColor: "#d34228ff" }]}
+            >
+              <Image
+                source={{ uri: PokemonGoIcon }}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginRight: 6,
+                  borderRadius: 4,
+                }}
+              />
+              <Text style={styles.modalBtnText}>เปิด Pokemon Go</Text>
             </TouchableOpacity>
           </View>
         </View>

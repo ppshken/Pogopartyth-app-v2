@@ -25,6 +25,7 @@ import {
 } from "@react-native-google-signin/google-signin"; // ⭐️ ใช้วิธี 2
 import { API_BASE } from "../../lib/config";
 import { showSnack } from "../../components/Snackbar";
+import { userLog } from "@/lib/auth";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -171,15 +172,28 @@ export default function Login() {
         }),
       });
 
+      // เช็คความถูกต้อง
       const json = await res.json();
       if (!json?.success)
         throw new Error(json?.message || "Google login failed");
 
+      // เช็คข้อมูลที่ส่งมาจาก backend
       const { token, user: appUser } = json.data || {};
       if (!token || !appUser) throw new Error("Invalid login payload");
 
+      // เช็ค setup แล้ว บันทึก auth
       const isSetup = json.data?.is_setup === "yes";
       await setAuth(appUser, token);
+
+      //บันทึก Log User
+      const payload = {
+        type: "login",
+        target: appUser.id,
+        description: "ล็อคอินล่าสุดโดย Google",
+      };
+      await userLog(payload);
+
+      // เช็ค setup ถ้ายังให้ไป setup
       const tosetup = !isSetup;
       router.replace(tosetup ? "/settings/profile-setup" : "/room_raid");
     } catch (e: any) {

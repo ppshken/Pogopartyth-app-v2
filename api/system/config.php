@@ -45,8 +45,8 @@ try {
             ]
         ],
         'features' => [
-            'ads_enabled'         => (bool)($config['enable_ads'] ?? 1),
-            'vip_enables'         => (bool)($config['vip'] ?? 1),         
+            'vip'         => (bool)($config['vip'] ?? 0),
+            'feature'     => (bool)($config['feature'] ?? 0),         
         ],
         'announcement' => [
             'show'  => (bool)($config['show_announcement'] ?? 0),

@@ -370,7 +370,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     alignItems: "center",
-    justifyContent: "center",
   },
   noticetitle: {
     color: "#ffffff",
@@ -381,5 +380,6 @@ const styles = StyleSheet.create({
   noticetext: {
     color: "#ffffff",
     fontFamily: "KanitMedium",
+    alignSelf: "flex-start",
   },
 });

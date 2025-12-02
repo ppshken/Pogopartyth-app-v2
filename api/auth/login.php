@@ -33,6 +33,16 @@ if (!$user || !password_verify($password, (string)$user['password_hash'])) {
 
 $userId = (int)$user['id'];
 
+$stmt = $db->prepare("
+  INSERT INTO user_log (user_id, type, target, description)
+  VALUES (:user_id, 'login', :target, 'ล็อคอินล่าสุดโดย Email')
+");
+
+$stmt->execute([
+  ':user_id'     => $userId,
+  ':target'      => $userId,
+]);
+
 if ($deviceToken) {
   $upd = $db->prepare(
     "UPDATE users SET device_token = :t WHERE id = :id"

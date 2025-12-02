@@ -10,7 +10,7 @@ import * as Notifications from "expo-notifications";
 import * as Font from "expo-font";
 import { Events, getEvents } from "@/lib/events";
 import { systemConfig } from "@/lib/system_config";
-import MaintenanceComponent from "../components/Maintenance"; 
+import MaintenanceComponent from "../components/Maintenance";
 import {
   Modal,
   View,
@@ -18,8 +18,9 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
+import { userLog } from "@/lib/auth";
 
 // ✅ ป้องกัน Splash Screen หายไปเอง จนกว่าเราจะสั่ง
 SplashScreen.preventAutoHideAsync();
@@ -41,13 +42,13 @@ export default function Layout() {
     try {
       // 1. โหลด Config ระบบ
       const system = await systemConfig();
-      
+
       // กรณี: ปิดปรับปรุง
       if (system.maintenance.is_active) {
         setMaintenanceMsg(system.maintenance.message);
         setIsMaintenance(true);
         // ถึงจะติด Maintenance ก็ต้องถือว่า App Ready (เพื่อซ่อน Splash Screen และโชว์หน้า Maintenance)
-        setAppIsReady(true); 
+        setAppIsReady(true);
         return; // จบการทำงานตรงนี้ ไม่ไปต่อ
       }
 
@@ -61,6 +62,16 @@ export default function Layout() {
       const token = await AsyncStorage.getItem("token");
       if (token) {
         api.defaults.headers.common.Authorization = `Bearer ${token}`;
+        const user = await AsyncStorage.getItem("user");
+        if (user) {
+          const parsedUser = JSON.parse(user);
+          const payload = {
+            type: "online_lasted",
+            target: parsedUser.id,
+            description: "ออนไลน์ล่าสุด",
+          };
+          await userLog(payload);
+        }
         const events = await getEvents();
         if (events) {
           setEventData(events);
@@ -72,11 +83,10 @@ export default function Layout() {
       }
 
       setAppIsReady(true);
-
     } catch (e) {
       console.warn("System Check Error:", e);
       // กรณี Error อาจจะให้เข้าแอพไปก่อน หรือโชว์ Error แล้วแต่ Policy
-      setAppIsReady(true); 
+      setAppIsReady(true);
     }
   };
 
@@ -93,10 +103,9 @@ export default function Layout() {
           KanitSemiBold: require("../assets/fonts/Kanit-SemiBold.ttf"),
           KanitBold: require("../assets/fonts/Kanit-Bold.ttf"),
         });
-        
+
         // เริ่มเช็คระบบ
         await checkSystemAndAuth();
-
       } catch (e) {
         console.warn(e);
       }
@@ -134,7 +143,9 @@ export default function Layout() {
 
     (async () => {
       const last = await Notifications.getLastNotificationResponseAsync();
-      const data = last?.notification.request.content.data as { url?: string } | undefined;
+      const data = last?.notification.request.content.data as
+        | { url?: string }
+        | undefined;
       if (data?.url) setTimeout(() => navigateByUrl(data.url), 500);
     })();
 
@@ -155,7 +166,7 @@ export default function Layout() {
   // ----------------------------------------------------------------------
   // 6. Render Logic
   // ----------------------------------------------------------------------
-  
+
   // ถ้ายังโหลดไม่เสร็จ (appIsReady = false) ให้คืนค่า null หรือ View ว่างๆ
   // Splash Screen ของ Native จะบังไว้อยู่แล้ว
   if (!appIsReady) {
@@ -166,18 +177,15 @@ export default function Layout() {
   if (isMaintenance) {
     return (
       <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-         {/* ส่ง props ไปให้ component ที่เราสร้างไว้ */}
-         <MaintenanceComponent 
-            message={maintenanceMsg} 
-            onRetry={handleRetry} 
-         />
-         
-         {/* Loading Indicator ทับหน้าจอตอนกด Retry */}
-         {isRetrying && (
-           <View style={styles.loadingOverlay}>
-             <ActivityIndicator size="large" color="#0047AB" />
-           </View>
-         )}
+        {/* ส่ง props ไปให้ component ที่เราสร้างไว้ */}
+        <MaintenanceComponent message={maintenanceMsg} onRetry={handleRetry} />
+
+        {/* Loading Indicator ทับหน้าจอตอนกด Retry */}
+        {isRetrying && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#0047AB" />
+          </View>
+        )}
       </View>
     );
   }
@@ -200,45 +208,109 @@ export default function Layout() {
         >
           {/* ... (รายชื่อ Screen ของคุณเหมือนเดิมเป๊ะ) ... */}
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)/register" options={{ title: "สมัครสมาชิก", headerShown: true }} />
-          <Stack.Screen name="(auth)/email_verify_otp" options={{ title: "ยืนยัน OTP", headerShown: true }} />
-          <Stack.Screen name="(auth)/forget_password" options={{ title: "ลืมรหัสผ่าน", headerShown: true }} />
-          <Stack.Screen name="(auth)/reset_password" options={{ title: "รหัสผ่านใหม่", headerShown: true }} />
+          <Stack.Screen
+            name="(auth)/register"
+            options={{ title: "สมัครสมาชิก", headerShown: true }}
+          />
+          <Stack.Screen
+            name="(auth)/email_verify_otp"
+            options={{ title: "ยืนยัน OTP", headerShown: true }}
+          />
+          <Stack.Screen
+            name="(auth)/forget_password"
+            options={{ title: "ลืมรหัสผ่าน", headerShown: true }}
+          />
+          <Stack.Screen
+            name="(auth)/reset_password"
+            options={{ title: "รหัสผ่านใหม่", headerShown: true }}
+          />
 
-          <Stack.Screen name="rooms/[id]" options={{ title: "ห้องบอส", headerShown: true }} />
-          <Stack.Screen name="rooms/[id]/chat" options={{ title: "แชท", headerShown: true }} />
+          <Stack.Screen
+            name="rooms/[id]"
+            options={{ title: "ห้องบอส", headerShown: true }}
+          />
+          <Stack.Screen
+            name="rooms/[id]/chat"
+            options={{ title: "แชท", headerShown: true }}
+          />
 
-          <Stack.Screen name="settings/profile" options={{ title: "โปรไฟล์", headerShown: true }} />
-          <Stack.Screen name="settings/profile-edit" options={{ title: "แก้ไขโปรไฟล์", headerShown: true }} />
-          <Stack.Screen name="settings/user-log" options={{ title: "ประวัติ", headerShown: true }} />
-          <Stack.Screen name="settings/profile-setup" options={{ title: "ตั้งค่าโปรไฟล์", headerShown: true }} />
-          <Stack.Screen name="settings/setting-app" options={{ title: "ตั้งค่าแอป", headerShown: true }} />
-          <Stack.Screen name="settings/feedback" options={{ title: "Feedback", headerShown: true }} />
+          <Stack.Screen
+            name="settings/profile"
+            options={{ title: "โปรไฟล์", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/profile-edit"
+            options={{ title: "แก้ไขโปรไฟล์", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/user-log"
+            options={{ title: "ประวัติ", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/profile-setup"
+            options={{ title: "ตั้งค่าโปรไฟล์", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/setting-app"
+            options={{ title: "ตั้งค่าแอป", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings/feedback"
+            options={{ title: "Feedback", headerShown: true }}
+          />
 
-          <Stack.Screen name="friends/[id]" options={{ title: "โปรไฟล์เพื่อน", headerShown: true }} />
-          <Stack.Screen name="friends/request_friend" options={{ title: "แจ้งเตือน", headerShown: true }} />
-          <Stack.Screen name="friends/chat" options={{ title: "แชท", headerShown: true }} />
+          <Stack.Screen
+            name="friends/[id]"
+            options={{ title: "โปรไฟล์เพื่อน", headerShown: true }}
+          />
+          <Stack.Screen
+            name="friends/request_friend"
+            options={{ title: "แจ้งเตือน", headerShown: true }}
+          />
+          <Stack.Screen
+            name="friends/chat"
+            options={{ title: "แชท", headerShown: true }}
+          />
 
-          <Stack.Screen name="events/[id]" options={{ title: "รายละเอียดอีเวนท์", headerShown: true }} />
+          <Stack.Screen
+            name="events/[id]"
+            options={{ title: "รายละเอียดอีเวนท์", headerShown: true }}
+          />
 
-          <Stack.Screen name="calendar/calendar" options={{ title: "ปฏิทินกิจกรรม", headerShown: true }} />
+          <Stack.Screen
+            name="calendar/calendar"
+            options={{ title: "ปฏิทินกิจกรรม", headerShown: true }}
+          />
 
-          <Stack.Screen name="calendar/research" options={{ title: "วิจัยภาคสนาม", headerShown: true }} />
+          <Stack.Screen
+            name="calendar/research"
+            options={{ title: "วิจัยภาคสนาม", headerShown: true }}
+          />
 
-          <Stack.Screen name="calendar/eggs" options={{ title: "ฟักไข่", headerShown: true }} />
-          
-          <Stack.Screen name="package/premium_plan" options={{ title: "Premium", headerShown: true, animation: "slide_from_bottom" }} />
+          <Stack.Screen
+            name="calendar/eggs"
+            options={{ title: "ฟักไข่", headerShown: true }}
+          />
+
+          <Stack.Screen
+            name="package/premium_plan"
+            options={{
+              title: "Premium",
+              headerShown: true,
+              animation: "slide_from_bottom",
+            }}
+          />
         </Stack>
 
         <SnackHost />
 
         {/* Modal Update & Event (โค้ดเดิมของคุณ) */}
         {/* ... */}
-        
+
         {/* Event Modal Code (Copy ของคุณมาใส่ตรงนี้ได้เลย) */}
         <Modal visible={onEvent} transparent animationType="fade">
-             {/* ... เนื้อหา Modal Event เดิมของคุณ ... */}
-             <View style={styles.modalOverlay}>
+          {/* ... เนื้อหา Modal Event เดิมของคุณ ... */}
+          <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{eventData?.title}</Text>
               <Image
@@ -255,7 +327,12 @@ export default function Layout() {
                   setOnEvent(false);
                 }}
               >
-                <Text style={[styles.modalDesc, { color: "#2636ccff", fontFamily: "KanitSemiBold" }]}>
+                <Text
+                  style={[
+                    styles.modalDesc,
+                    { color: "#2636ccff", fontFamily: "KanitSemiBold" },
+                  ]}
+                >
                   ดูอีเวนท์ทั้งหมด
                 </Text>
               </TouchableOpacity>
@@ -268,7 +345,6 @@ export default function Layout() {
             </View>
           </View>
         </Modal>
-
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
@@ -278,9 +354,9 @@ export default function Layout() {
 const styles = StyleSheet.create({
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject, // คลุมทั้งหน้าจอ
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255,255,255,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 999,
   },
   modalOverlay: {

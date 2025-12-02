@@ -24,6 +24,7 @@ import { minutesAgoTH } from "../../hooks/useTimeAgoTH";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AvatarComponent } from "@/components/Avatar";
+import { userLog } from "@/lib/auth";
 
 type PendingItem = {
   request_id: number;
@@ -146,6 +147,15 @@ export default function RequestFriend() {
     setLoadingAccept(true);
     try {
       await AcceptFriend(requester_id);
+
+      //บันทึก Log User
+      const payload = {
+        type: "acceptfriend",
+        target: requester_id,
+        description: "รับเพื่อน",
+      };
+      await userLog(payload);
+
       showSnack({ text: "รับเพื่อนแล้วเรียบร้อย", variant: "success" });
       setOnmodal(false);
       setLoadingAccept(false);
@@ -162,6 +172,16 @@ export default function RequestFriend() {
     setLoadingDeclin(true);
     try {
       await DeclineFriend(requester_id);
+
+      //บันทึก Log User
+      const payload = {
+        type: "declinfriend",
+        target: requester_id,
+        description: "ปฏิเสธรับเพื่อน",
+      };
+      await userLog(payload);
+
+
       showSnack({ text: "ปฏิเสธเพื่อนแล้วเรียบร้อย", variant: "success" });
       load();
     } catch (e: any) {

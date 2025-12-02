@@ -89,3 +89,17 @@ export async function loginWithGoogleIdToken(idToken: string): Promise<LoginResu
 export async function logout() {
   await AsyncStorage.multiRemove(["token", "me"]);
 }
+
+/** บันทึกประวัติผู้ใช้งาน */
+export async function userLog(payload:
+  {
+    type?: string;
+    target?: string | number;
+    description?: string;
+  }) {
+  const { data } = await api.post("/api/auth/user_log/create.php", payload, {
+    validateStatus: () => true,
+  });
+  if (!data?.success) throw new Error(data?.message || "Created Log User failed");
+  return data.data;
+}

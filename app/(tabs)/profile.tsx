@@ -17,6 +17,7 @@ import { profile } from "../../lib/auth";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { AvatarComponent } from "../../components/Avatar";
 import Constants from "expo-constants"; // ✅ เพิ่มเพื่อดึง Version
+import { systemConfig } from "@/lib/system_config";
 
 // ✅ Import รูปภาพรอไว้ข้างบน (Performance & Safety)
 const IMG_PREMIUM_BG = require("../../assets/background_premium/background-premium.png");
@@ -107,11 +108,20 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<FullUser | null>(null);
 
+  const [feature, setFeature] = useState(false);
+
   // ดึงเลขเวอร์ชันจาก app.json
   const appVersion = Constants.expoConfig?.version || "1.0.0";
 
   const load = useCallback(async () => {
     try {
+      const system = await systemConfig();
+      if (system.features.feature) {
+        setFeature(true);
+      } else {
+        setFeature(false);
+      }
+
       const { user } = await profile();
       setUser(user as FullUser);
     } catch (e: any) {
@@ -249,39 +259,41 @@ export default function Profile() {
       </View>
 
       {/* กิจกรรม */}
-      <View style={styles.card_stats}>
-        <Text style={styles.cardTitle}>ฟีเจอร์</Text>
-        {event.map((eventitem) => (
-          <View style={styles.menuSection} key={eventitem.id}>
-            <TouchableOpacity
-              style={styles.menuItemBtn}
-              onPress={() => {
-                if (eventitem.router) {
-                  router.push(eventitem.router as any);
-                }
-              }}
-            >
-              <View style={styles.menuItemLeft}>
-                <View
-                  style={{
-                    backgroundColor: eventitem.icon_color,
-                    padding: 6,
-                    borderRadius: 8,
-                  }}
-                >
-                  <Ionicons
-                    name={eventitem.icon as any}
-                    size={18}
-                    color="#ffffffff"
-                  />
+      {feature && (
+        <View style={styles.card_stats}>
+          <Text style={styles.cardTitle}>ฟีเจอร์</Text>
+          {event.map((eventitem) => (
+            <View style={styles.menuSection} key={eventitem.id}>
+              <TouchableOpacity
+                style={styles.menuItemBtn}
+                onPress={() => {
+                  if (eventitem.router) {
+                    router.push(eventitem.router as any);
+                  }
+                }}
+              >
+                <View style={styles.menuItemLeft}>
+                  <View
+                    style={{
+                      backgroundColor: eventitem.icon_color,
+                      padding: 6,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Ionicons
+                      name={eventitem.icon as any}
+                      size={18}
+                      color="#ffffffff"
+                    />
+                  </View>
+                  <Text style={styles.menuItemText}>{eventitem.menu}</Text>
                 </View>
-                <Text style={styles.menuItemText}>{eventitem.menu}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
+                <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
 
       {/* เมนู */}
       <View style={styles.card_stats}>

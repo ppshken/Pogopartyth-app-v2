@@ -534,7 +534,7 @@ export default function ChatScreen() {
               alignItems: "center",
               gap: 8,
             }}
-            onPress={() => router.push("/friends/" + OtherUserId)}
+            onPress={() => router.push(`/friends/${OtherUserId}`)}
           >
             <Ionicons name="person" size={20} color="#111827" />
             <Text style={{ fontFamily: "KanitSemiBold" }}>ดูโปรไฟล์</Text>

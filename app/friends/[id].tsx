@@ -30,7 +30,7 @@ import { useLocalSearchParams } from "expo-router";
 import { AddFriend, AcceptFriend, DeclineFriend } from "../../lib/friend";
 import { createReport } from "../../lib/reports";
 import { AvatarComponent } from "../../components/Avatar";
-import { RoomLog } from "../../lib/raid";
+import { userLog } from "@/lib/auth";
 
 const PokemonGoIcon =
   "https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk"; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
@@ -138,6 +138,15 @@ export default function Profile() {
     try {
       setActing(true);
       const { message } = await AddFriend(userId);
+
+      // บันทึก Log User
+      const payload = {
+        type: "addfriend",
+        target: userId,
+        description: "เพิ่มเพื่อน",
+      };
+      await userLog(payload);
+
       showSnack({ text: message, variant: "success" });
       setOnAdded(true);
       await load(); // รีโหลดสถานะโปรไฟล์/เพื่อน
@@ -158,6 +167,15 @@ export default function Profile() {
     try {
       setActing(true);
       const { message } = await AcceptFriend(userId); // userId = โปรไฟล์ที่กำลังดู (เป็น requester)
+
+      // บันทึก Log User
+      const payload = {
+        type: "acceptfriend",
+        target: userId,
+        description: "รับเพื่อน",
+      };
+      await userLog(payload);
+
       setOnAccepted(false);
       showSnack({ text: message, variant: "success" });
       await load(); // รีเฟรชสถานะโปรไฟล์
@@ -178,6 +196,15 @@ export default function Profile() {
     try {
       setActing(true);
       const { message } = await DeclineFriend(userId); // true = ปฏิเสธ
+
+      // บันทึก Log User
+      const payload = {
+        type: "declinfriend",
+        target: userId,
+        description: "ปฏิเสธรับเพื่อน",
+      };
+      await userLog(payload);
+
       setOnDecline(false);
       showSnack({ text: message, variant: "success" });
       await load(); // รีเฟรชสถานะโปรไฟล์
@@ -453,7 +480,8 @@ export default function Profile() {
           <Text style={styles.rowText}>รหัสเพิ่มเพื่อน</Text>
           <View style={{ flex: 1 }} />
           <Text style={styles.rowValue}>
-            {(statusFriend?.status === "accepted" || statusFriend?.status === "pending") 
+            {statusFriend?.status === "accepted" ||
+            statusFriend?.status === "pending"
               ? formatFriendCode(user?.friend_code || "-")
               : "-"}
           </Text>

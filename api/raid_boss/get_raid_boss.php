@@ -62,7 +62,7 @@ $sql = "
     rb.created_at
   FROM raid_boss rb
   $where
-  ORDER BY rb.end_date ASC, rb.pokemon_tier DESC, rb.pokemon_name ASC
+  ORDER BY rb.pokemon_tier DESC, rb.end_date ASC, rb.pokemon_name ASC
 ";
 
 // โหมด all=1 (ดึงทั้งหมดที่ active ตอนนี้ เหมาะสำหรับ dropdown)

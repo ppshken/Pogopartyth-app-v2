@@ -11,8 +11,8 @@ export type AppConfig = {
         ios: { min_version: string; store_url: string };
     };
     features: {
-        ads_enabled: boolean;
-        vip_enables: boolean;
+        vip: boolean;
+        feature: boolean;
     };
     announcement: {
         show: boolean;
