@@ -209,6 +209,9 @@ export default function RoomDetail() {
   // Modal เปิด Pokemon go
   const [onOpenPokemonGo, setOnOpenPokemonGo] = useState(true);
 
+  // Modal คัดลอกชื่อ หลังจากเชิณในเกม
+  const [onInviteInGame, setOnInviteInGame] = useState(false);
+
   // Modal ยกเลิกห้อง
   const [cancelRoomModal, setCancelRoomModal] = useState(false);
   const [cancelReasonId, setCancelReasonId] = useState<number | null>(null);
@@ -299,9 +302,9 @@ export default function RoomDetail() {
     const ss = totalSec % 60;
 
     let label = "";
-    if (hh > 0) label = `เหลือ ${hh} ชม. ${pad2(mm)} นาที ${pad2(ss)} วินาที`;
-    else if (mm > 0) label = `เหลือ ${mm} นาที ${pad2(ss)} วินาที`;
-    else label = `เหลือ ${ss} วินาที`;
+    if (hh > 0) label = `${hh} ชม. ${pad2(mm)} นาที ${pad2(ss)} วินาที`;
+    else if (mm > 0) label = `${mm} นาที ${pad2(ss)} วินาที`;
+    else label = `${ss} วินาที`;
 
     return { expired: false, label };
   }
@@ -801,6 +804,7 @@ export default function RoomDetail() {
       showSnack({ text: e.message, variant: "error" });
     } finally {
       setLoading(false);
+      setOnInviteInGame(false);
     }
   };
 
@@ -979,11 +983,11 @@ export default function RoomDetail() {
             </View>
 
             <View style={styles.lineRow}>
-              <Ionicons name="time-outline" size={16} color="#374151" />
+              <Ionicons name="time" size={16} color="#3066dbff" />
               <Text style={styles.lineText}>{countdownLabel}</Text>
             </View>
             <View style={styles.lineRow}>
-              <Ionicons name="people-outline" size={16} color="#374151" />
+              <Ionicons name="people" size={16} color="#0f0f0fff" />
               <Text style={styles.lineText}>
                 สมาชิก {room.current_members}/{room.max_members}
               </Text>
@@ -1105,7 +1109,7 @@ export default function RoomDetail() {
           <Text style={styles.sectionTitle}>รหัสเพิ่มเพื่อนหัวห้อง</Text>
           <View style={styles.friendRow}>
             <View
-              style={{ flexDirection: "row", gap: 5, alignItems: "center" }}
+              style={{ flexDirection: "row", alignItems: "center" }}
             >
               <Text style={styles.friendCodeText}>
                 {isMember
@@ -1187,8 +1191,10 @@ export default function RoomDetail() {
                 <Ionicons name="copy-outline" size={16} color="#ffffffff" />
               )}
               <Text style={styles.outlineBtnText}>
-                {allAdded
+                {allAdded && !copied
                   ? "คัดลอกรายชื่อผู้เล่น"
+                  : allAdded && copied
+                  ? "คัดลอกรายชื่อผู้เล่นอีกครั้ง"
                   : "รอสมาชิกเข้าร่วมและเพิ่มเพื่อน...."}
               </Text>
             </TouchableOpacity>
@@ -1646,7 +1652,7 @@ export default function RoomDetail() {
         {/* ปุ่มเชิญในเกม */}
         {isOwner && allAdded && room.status == "active" ? (
           <TouchableOpacity
-            onPress={onInvite}
+            onPress={() => setOnInviteInGame(true)}
             style={[styles.primaryBtn, { backgroundColor: "#2563EB" }]}
           >
             {loading ? (
@@ -2155,9 +2161,83 @@ export default function RoomDetail() {
         </View>
       </Modal>
 
+      {/* Modal: หัวห้องกดเชิญ แสดง Modal คัดลอกและ เปิด Pokemon go*/}
+      <Modal
+        visible={onInviteInGame && room.status === "active" && isOwner}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>
+              ทำการคัดลอกรายชื่อและ เชิญเพื่อนในเกม
+            </Text>
+            <TouchableOpacity
+              onPress={copyUsernames}
+              style={[
+                styles.outlineBtn,
+                { backgroundColor: allAdded ? "#13bcc2ff" : "#9ab3e9ff" },
+              ]}
+              disabled={!allAdded}
+            >
+              {copied ? (
+                <Ionicons name="checkmark" size={18} color="#ffffffff" />
+              ) : (
+                <Ionicons name="copy-outline" size={16} color="#ffffffff" />
+              )}
+              <Text style={styles.outlineBtnText}>
+                {allAdded && !copied
+                  ? "คัดลอกรายชื่อผู้เล่น"
+                  : allAdded && copied
+                  ? "คัดลอกรายชื่อผู้เล่นอีกครั้ง"
+                  : "รอสมาชิกเข้าร่วมและเพิ่มเพื่อน...."}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={openPokemonGo}
+              style={[styles.modalBtn, { backgroundColor: "#d34228ff" }]}
+            >
+              <Image
+                source={{ uri: PokemonGoIcon }}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginRight: 6,
+                  borderRadius: 4,
+                }}
+              />
+              <Text style={styles.modalBtnText}>เปิด Pokemon Go</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onInvite}
+              style={[styles.outlineBtn, { backgroundColor: "#2563EB" }]}
+            >
+              {loading ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <>
+                  <Ionicons name="send-outline" size={18} color="#fff" />
+                  <Text style={styles.primaryBtnText}>เชิญในเกมแล้ว</Text>
+                </>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setOnInviteInGame(false)}
+              style={[styles.modalBtn, styles.modalCancel]}
+            >
+              <Text style={[styles.modalBtnText, { color: "#111827" }]}>
+                ยกเลิก
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Modal: หัวห้องกดเชิญ แล้วแสดง เปิด Pokemon go */}
       <Modal
-        visible={onOpenPokemonGo && room.status === "invited" && !isOwner}
+        visible={
+          onOpenPokemonGo && room.status === "invited" && !isOwner && !expired
+        }
         transparent
         animationType="fade"
       >
@@ -2552,6 +2632,7 @@ export default function RoomDetail() {
                 renderItem={({ item }) => {
                   const invited = !!invitedMap[item.id]; // เช็คจาก invitedMap
                   const loading = !!loadingMap[item.id];
+                  const premium = item.plan === "premium";
                   const teamColor =
                     item.team === "Valor"
                       ? "#ef4444ff"
@@ -2561,7 +2642,7 @@ export default function RoomDetail() {
                       ? "#ffc107"
                       : "#9CA3AF";
                   return (
-                    <View style={styles.itemRow}>
+                    <View style={[styles.itemRow, premium && styles.premium]}>
                       <View
                         style={{
                           flexDirection: "row",
@@ -2797,7 +2878,7 @@ const styles = StyleSheet.create({
   outlineBtn: {
     marginTop: 10,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: "#2563EB",
     alignItems: "center",
     flexDirection: "row",
@@ -2975,7 +3056,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: "#fff",
+    backgroundColor: "#F9FAFB",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
@@ -3010,7 +3091,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 8,
-    borderWidth: 1,
     borderColor: "#F3F4F6",
     borderRadius: 12,
     paddingHorizontal: 10,
@@ -3038,5 +3118,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 1,
     borderRadius: 4,
+  },
+  premium: {
+    backgroundColor: "#e6d8f3ff",
   },
 });

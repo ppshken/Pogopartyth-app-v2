@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontSize: 14,
-    fontFamily: "KanitSemiBold", // <--- Font
+    fontFamily: "KanitMedium", // <--- Font
     color: "#4B5563",
   },
   filterTextActive: {

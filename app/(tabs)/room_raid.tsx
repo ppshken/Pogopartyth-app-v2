@@ -16,6 +16,7 @@ import {
   StyleSheet,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,6 +50,7 @@ type Room = {
 export default function RoomsIndex() {
   const [items, setItems] = useState<Room[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(false);
   const [q, setQ] = useState("");
   const [selectedBossId, setSelectedBossId] = useState<number | null>(null); // ✅ ตัวกรองบอส
   const router = useRouter();
@@ -70,7 +72,7 @@ export default function RoomsIndex() {
             accessibilityRole="button"
             accessibilityLabel="อีเวนท์"
           >
-            <Ionicons name="newspaper-outline" size={22} color="#000000ff" />
+            <Ionicons name="calendar-outline" size={22} color="#000000ff" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setHowto(true)}
@@ -85,7 +87,7 @@ export default function RoomsIndex() {
     });
   }, [navigation]);
 
-  const load = useCallback(async () => {
+  const loadSystemConfig = async () => {
     try {
       const system = await systemConfig();
       if (system.announcement.show) {
@@ -96,17 +98,27 @@ export default function RoomsIndex() {
       } else {
         setModalannouncement(false);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const load = useCallback(async () => {
+    setLoadingPage(true);
+    try {
       const res = await listRooms({ status: "active", page: 1, limit: 100 });
       setItems(res.items || res.rooms || []);
     } catch {
       Alert.alert("โหลดข้อมูลไม่สำเร็จ");
     } finally {
       setRefreshing(false);
+      setLoadingPage(false);
     }
   }, []);
 
   useRefetchOnFocus(load, [load]);
   useEffect(() => {
+    loadSystemConfig();
     load();
   }, [load]);
 
@@ -232,6 +244,7 @@ export default function RoomsIndex() {
       <FlatList
         data={filtered}
         keyExtractor={(it) => String(it.id)}
+        ListHeaderComponent={loadingPage ? <ActivityIndicator /> : null}
         contentContainerStyle={{
           paddingLeft: 16,
           paddingRight: 16,
@@ -364,7 +377,7 @@ const styles = StyleSheet.create({
   },
 
   notice: {
-    backgroundColor: "#2f60a0ff",
+    backgroundColor: "#000000ff",
     height: "auto",
     bottom: 0,
     paddingVertical: 8,

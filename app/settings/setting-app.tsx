@@ -119,6 +119,11 @@ export default function SettingApp() {
             value={enabled}
             onValueChange={onToggle}
             disabled={loading || updating}
+            trackColor={{
+              false: "#767577",
+              true: "#b2dad6",
+            }}
+            thumbColor={enabled ? "#018375" : "#f4f3f4"}
           />
         )}
       </View>

@@ -34,6 +34,7 @@ import { userLog } from "@/lib/auth";
 
 const PokemonGoIcon =
   "https://play-lh.googleusercontent.com/cKbYQSRgvec6n2oMJLVRWqHS8BsH9AxBp-cFGrGqve3CpE4EmI3Ofej1RCUciQbqhebCfiDIomUQINqzIL4I7kk"; // ใส่ไอคอน Pokemon Go ที่เหมาะสม
+const IMG_GOOGLE = require("../../assets/google-logo.png");
 
 type FullUser = {
   id: number;
@@ -46,6 +47,7 @@ type FullUser = {
   trainer_name?: string | null;
   created_at?: string | null;
   plan: string;
+  google_sub: string;
 };
 
 type RatingOwner = {
@@ -301,9 +303,9 @@ export default function Profile() {
   };
 
   const teamColors: Record<string, string> = {
-    Mystic: "#3B82F6",
-    Valor: "#EF4444",
-    Instinct: "#e6ae21ff",
+    Mystic: "#3b82f6ff",
+    Valor: "#ef4444ff",
+    Instinct: "#ffc107",
   };
 
   const status_friend_text =
@@ -355,7 +357,7 @@ export default function Profile() {
               style={{
                 position: "absolute",
                 width: "100%",
-                height: 192,
+                height: 195,
                 top: 0,
                 borderRadius: 16,
                 opacity: 0.9,
@@ -377,16 +379,30 @@ export default function Profile() {
           />
 
           {/* Name + email */}
-          <View style={{ flex: 1 }}>
-            <Text
-              style={[
-                styles.name,
-                { color: user?.plan === "premium" ? "#ffffffff" : "#000000" },
-              ]}
-              numberOfLines={1}
+          <View style={{ flex: 1, marginTop: 6 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              {user?.username || "ไม่ระบุชื่อ"}
-            </Text>
+              {user?.google_sub && (
+                <Image
+                  source={IMG_GOOGLE}
+                  style={{ width: 18, height: 18, marginRight: 8 }}
+                />
+              )}
+              <Text
+                style={[
+                  styles.name,
+                  { color: user?.plan === "premium" ? "#ffffffff" : "#000000" },
+                ]}
+                numberOfLines={1}
+              >
+                {user?.username || "ไม่ระบุชื่อ"}
+              </Text>
+            </View>
 
             {/* Chips / quick actions */}
             <View

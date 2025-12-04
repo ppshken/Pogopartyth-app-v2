@@ -33,7 +33,8 @@ $stmt = $db->prepare("
     team,
     level,
     created_at,
-    plan
+    plan,
+    google_sub
   FROM users
   WHERE id = :id
   LIMIT 1

@@ -484,7 +484,7 @@ export default function RequestFriend() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8FAFC" },
+  container: { flex: 1, backgroundColor: "#ffffffff" },
   // Tabs Styles
   tabContainer: {
     flexDirection: "row",

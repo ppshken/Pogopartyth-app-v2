@@ -42,7 +42,7 @@ const event = [
   {
     id: 1,
     menu: "ปฏิทินกิจกรรม",
-    icon: "calendar",
+    icon: "calendar-number",
     icon_color: "#d79251ff",
     router: "/calendar/calendar",
   },
@@ -106,6 +106,7 @@ export default function Profile() {
   const logout = useAuth((s) => s.clear);
 
   const [loading, setLoading] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(false);
   const [user, setUser] = useState<FullUser | null>(null);
 
   const [feature, setFeature] = useState(false);
@@ -113,7 +114,7 @@ export default function Profile() {
   // ดึงเลขเวอร์ชันจาก app.json
   const appVersion = Constants.expoConfig?.version || "1.0.0";
 
-  const load = useCallback(async () => {
+  const loadSystemConfig = async () => {
     try {
       const system = await systemConfig();
       if (system.features.feature) {
@@ -121,7 +122,13 @@ export default function Profile() {
       } else {
         setFeature(false);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const load = useCallback(async () => {
+    try {
       const { user } = await profile();
       setUser(user as FullUser);
     } catch (e: any) {
@@ -129,9 +136,13 @@ export default function Profile() {
     }
   }, [authUser]);
 
+  // โหลดครั้งแรก
   useEffect(() => {
-    setUser(authUser || null);
+    setLoadingPage(true);
     load();
+    setLoadingPage(false);
+    loadSystemConfig();
+    setUser(authUser || null);
   }, [authUser, load]);
 
   useRefetchOnFocus(load, [load]);
@@ -162,7 +173,7 @@ export default function Profile() {
     ]);
   };
 
-  if (!user || !IMG_PREMIUM_BG) {
+  if (loadingPage) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" />
@@ -178,7 +189,7 @@ export default function Profile() {
     >
       {/* Card: User */}
       <View style={styles.card}>
-        {user.plan === "premium" && (
+        {user?.plan === "premium" && (
           <View style={{ alignItems: "center" }}>
             <Image source={IMG_PREMIUM_BG} style={styles.premiumBg} />
           </View>
@@ -186,9 +197,9 @@ export default function Profile() {
 
         <View style={{ alignItems: "center", padding: 16 }}>
           <AvatarComponent
-            avatar={user.avatar}
-            username={user.username}
-            plan={user.plan}
+            avatar={user?.avatar}
+            username={user?.username}
+            plan={user?.plan}
             width={80}
             height={80}
             borderRadius={40}
@@ -200,7 +211,7 @@ export default function Profile() {
             <Text
               style={[
                 styles.name,
-                { color: user.plan === "premium" ? "#ffffffff" : "#000000" },
+                { color: user?.plan === "premium" ? "#ffffffff" : "#000000" },
               ]}
               numberOfLines={1}
             >
@@ -208,7 +219,7 @@ export default function Profile() {
             </Text>
 
             <View style={styles.emailRow}>
-              {user.google_sub && (
+              {user?.google_sub && (
                 <Image
                   source={IMG_GOOGLE}
                   style={{ width: 18, height: 18, marginRight: 8 }}
@@ -217,7 +228,7 @@ export default function Profile() {
               <Text
                 style={[
                   styles.email,
-                  { color: user.plan === "premium" ? "#ffffffff" : "#000000" },
+                  { color: user?.plan === "premium" ? "#ffffffff" : "#000000" },
                 ]}
                 numberOfLines={1}
               >
@@ -230,13 +241,13 @@ export default function Profile() {
                 <Ionicons
                   name="calendar-outline"
                   size={14}
-                  color={user.plan === "premium" ? "#ffffffff" : "#000000"}
+                  color={user?.plan === "premium" ? "#ffffffff" : "#000000"}
                 />
                 <Text
                   style={[
                     styles.badgeDarkText,
                     {
-                      color: user.plan === "premium" ? "#ffffffff" : "#000000",
+                      color: user?.plan === "premium" ? "#ffffffff" : "#000000",
                     },
                   ]}
                 >

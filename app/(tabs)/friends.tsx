@@ -166,7 +166,7 @@ export default function FriendsScreen() {
     ({ item }: { item: Friend }) => {
       // ✅ แก้ไขจุดที่ 2: ถ้าเป็นเพื่อนกันแล้ว (is_friend) หรือ อยู่ในแท็บ Mine ให้เป็นสีฟ้า
       const isFriendStyle = item.is_friend || tab === "mine";
-
+      const premium = item.plan === "premium";
       return (
         <TouchableOpacity
           activeOpacity={0.7}
@@ -174,6 +174,7 @@ export default function FriendsScreen() {
           style={[
             styles.itemContainer,
             isFriendStyle && styles.itemFriendActive, // ใช้เงื่อนไขใหม่ตรงนี้
+            premium && styles.premium,
           ]}
         >
           <AvatarComponent
@@ -317,15 +318,15 @@ const TabButton = ({
     style={[
       styles.tabButton,
       {
-        backgroundColor: active ? "#FFFFFF" : "transparent",
-        borderColor: active ? "#E5E7EB" : "transparent",
+        backgroundColor: active ? "#3b47b3ff" : "transparent",
+        borderColor: active ? "#3b47b3ff" : "transparent",
       },
     ]}
   >
     <Text
       style={{
         fontFamily: "KanitSemiBold",
-        color: active ? "#111827" : "#6B7280",
+        color: active ? "#ffffffff" : "#484d57ff",
       }}
     >
       {label}
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginTop: 12,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#3b47b333",
     padding: 4,
     borderRadius: 10,
     marginBottom: 4,
@@ -387,6 +388,9 @@ const styles = StyleSheet.create({
   },
   itemFriendActive: {
     backgroundColor: "#dde9f5ff", // สีฟ้าเมื่อเป็นเพื่อน
+  },
+  premium: {
+    backgroundColor: "#e6d8f3ff",
   },
   rowCenterGap: {
     flexDirection: "row",

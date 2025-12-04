@@ -22,6 +22,7 @@ import { showSnack } from "../../components/Snackbar";
 import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
 import { profile } from "../../lib/auth";
 import { BossImage } from "../../components/BossImage";
+import { systemConfig } from "@/lib/system_config";
 
 type RaidBoss = {
   raid_boss_id: number;
@@ -34,6 +35,10 @@ type RaidBoss = {
   type: string;
   special: boolean;
   maximum: number;
+  cp_normal_min: number;
+  cp_normal_max: number;
+  cp_boost_min: number;
+  cp_boost_max: number;
   created_at: string;
 };
 
@@ -146,6 +151,19 @@ export default function CreateRoom() {
 
   const canSubmit = !loading && !!boss && !isPast && max >= 2 && max <= 20;
 
+  const loadSystemConfig = async () => {
+    try {
+      const system = await systemConfig();
+      if (system.features.vip) {
+        setVipConfig(true);
+      } else {
+        setVipConfig(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // โหลด บอส
   const loadBosses = useCallback(async () => {
     setLoadingBoss(true);
@@ -179,6 +197,7 @@ export default function CreateRoom() {
   useRefetchOnFocus(loadBosses, [loadBosses]);
 
   useEffect(() => {
+    loadSystemConfig();
     loadBosses();
   }, [loadBosses]);
 
@@ -319,6 +338,23 @@ export default function CreateRoom() {
                         </View>
                       </>
                     ) : null}
+
+                    {/* CP */}
+                    {!!boss && (
+                      <Text
+                        style={{
+                          color: "#111827",
+                          fontFamily: "KanitMedium",
+                          fontSize: 10,
+                        }}
+                      >
+                        {"CP ( "}
+                        {boss?.cp_normal_min}
+                        {" - "}
+                        {boss?.cp_boost_max}
+                        {" )"}
+                      </Text>
+                    )}
                   </View>
                   {!!boss && (
                     <View style={{ marginTop: 2 }}>
@@ -859,6 +895,21 @@ export default function CreateRoom() {
                               </View>
                             </>
                           ) : null}
+
+                          {/* CP */}
+                          <Text
+                            style={{
+                              color: "#111827",
+                              fontFamily: "KanitMedium",
+                              fontSize: 10,
+                            }}
+                          >
+                            {"CP ( "}
+                            {item?.cp_normal_min}
+                            {" - "}
+                            {item?.cp_boost_max}
+                            {" )"}
+                          </Text>
                         </View>
                         <View style={{ marginTop: 2 }}>
                           <TierStars

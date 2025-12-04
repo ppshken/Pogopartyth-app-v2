@@ -98,9 +98,9 @@ export default function Profile() {
   }
 
   const teamColors: Record<string, string> = {
-    Mystic: "#3B82F6",
-    Valor: "#EF4444",
-    Instinct: "#F59E0B",
+    Mystic: "#3b82f6ff",
+    Valor: "#ef4444ff",
+    Instinct: "#ffc107",
   };
 
   if (!user) {
@@ -302,10 +302,10 @@ export default function Profile() {
         <Text style={styles.cardTitle}>รายงาน</Text>
         <View style={styles.cardSection}>
           <View style={styles.card_stats_detail}>
-            <Ionicons name="paw-outline" size={24} />
+            <Ionicons name="paw" size={24} color="#40ca8cff" />
             <Text
               style={{
-                fontSize: 14,
+                fontSize: 12,
                 fontFamily: "KanitSemiBold",
                 color: "#111827",
               }}
@@ -323,10 +323,10 @@ export default function Profile() {
             </Text>
           </View>
           <View style={styles.card_stats_detail}>
-            <Ionicons name="invert-mode-outline" size={24} />
+            <Ionicons name="invert-mode" size={24} color="#407ccaff" />
             <Text
               style={{
-                fontSize: 14,
+                fontSize: 12,
                 fontFamily: "KanitSemiBold",
                 color: "#111827",
               }}
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#525252ff",
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",

@@ -1,3 +1,4 @@
+// app/_layout.tsx
 import { Stack, SplashScreen, router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
@@ -8,9 +9,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SnackHost } from "../components/Snackbar";
 import * as Notifications from "expo-notifications";
 import * as Font from "expo-font";
-import { Events, getEvents } from "@/lib/events";
-import { systemConfig } from "@/lib/system_config";
-import MaintenanceComponent from "../components/Maintenance";
 import {
   Modal,
   View,
@@ -19,19 +17,48 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from "react-native";
+import Constants from "expo-constants"; // ✅ เพิ่ม: สำหรับดึง Version ของ App
+
+import { Events, getEvents } from "@/lib/events";
+import { systemConfig } from "@/lib/system_config";
+import MaintenanceComponent from "../components/Maintenance";
 import { userLog } from "@/lib/auth";
+
+// ✅ เพิ่ม: Import หน้า ForceUpdate (ตรวจสอบ Path ให้ถูกต้องตามที่คุณสร้างไฟล์ไว้)
+import ForceUpdate from "../components/ForceUpdate";
 
 // ✅ ป้องกัน Splash Screen หายไปเอง จนกว่าเราจะสั่ง
 SplashScreen.preventAutoHideAsync();
+
+// ✅ Helper Function: เปรียบเทียบ Version (Return true ถ้าต้องอัปเดต)
+const isVersionOutdated = (currentGen: string, minGen: string) => {
+  if (!minGen) return false;
+
+  const v1 = currentGen.split(".").map(Number);
+  const v2 = minGen.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+    const num1 = v1[i] || 0;
+    const num2 = v2[i] || 0;
+    if (num1 < num2) return true; // ต้องอัปเดต (current น้อยกว่า min)
+    if (num1 > num2) return false; // เวอร์ชั่นใหม่กว่า ไม่ต้องอัปเดต
+  }
+  return false; // เท่ากัน หรือ ใหม่กว่า
+};
 
 export default function Layout() {
   const [appIsReady, setAppIsReady] = useState(false); // พร้อม render Stack หรือยัง
   const [isMaintenance, setIsMaintenance] = useState(false); // ติดสถานะปิดปรับปรุงหรือไม่
   const [maintenanceMsg, setMaintenanceMsg] = useState(""); // ข้อความปิดปรับปรุง
-  const [isRetrying, setIsRetrying] = useState(false); // state สำหรับ loading ตอนกดปุ่ม retry
 
-  const [onUpdate, setOnUpdate] = useState(false); // เปิด modal แจ้งเตือนอัพเดทแอพ
+  // ✅ เพิ่ม: State สำหรับ Force Update
+  const [isForceUpdate, setIsForceUpdate] = useState(false);
+  const [ios_url, setIos_url] = useState("");
+  const [android_url, setAndroid_url] = useState("");
+
+  const [isRetrying, setIsRetrying] = useState(false); // state สำหรับ loading ตอนกดปุ่ม retry
   const [onEvent, setOnEvent] = useState(false); // เปิด modal แจ้งเตือนอีเวนท์ใหม่
   const [eventData, setEventData] = useState<Events>();
 
@@ -43,7 +70,9 @@ export default function Layout() {
       // 1. โหลด Config ระบบ
       const system = await systemConfig();
 
-      // กรณี: ปิดปรับปรุง
+      // --------------------------
+      // A. กรณี: ปิดปรับปรุง (Maintenance)
+      // --------------------------
       if (system.maintenance.is_active) {
         setMaintenanceMsg(system.maintenance.message);
         setIsMaintenance(true);
@@ -55,10 +84,32 @@ export default function Layout() {
       // กรณี: ปกติ (หรือหายปิดปรับปรุงแล้ว)
       setIsMaintenance(false);
 
-      // 2. เช็ค Version (ถ้ามี Logic นี้)
-      // if (system.version_check...) { ... }
+      // --------------------------
+      // B. กรณี: เช็ค Version (Force Update) ✅
+      // --------------------------
+      const currentVersion = Constants.expoConfig?.version ?? "1.0.0";
+      let minVersion = "0.0.0";
 
-      // 3. เช็ค Auth Token & Load Data
+      // แยกเช็คตาม Platform (เผื่อ Android/iOS ปล่อยไม่พร้อมกัน)
+      if (Platform.OS === "ios") {
+        minVersion = system.version_check.ios.min_version || "0.0.0";
+      } else {
+        minVersion = system.version_check.android.min_version || "0.0.0";
+      }
+
+      // ถ้าเวอร์ชันปัจจุบัน เก่ากว่า ขั้นต่ำ -> บังคับอัปเดต
+      if (isVersionOutdated(currentVersion, minVersion)) {
+        setIsForceUpdate(true);
+        setIos_url(system.version_check.ios.store_url);
+        setAndroid_url(system.version_check.android.store_url);
+        setAppIsReady(true);
+        return; // จบการทำงานตรงนี้ ไม่ไปเช็ค Auth ต่อ
+      }
+      setIsForceUpdate(false);
+
+      // --------------------------
+      // C. เช็ค Auth Token & Load Data (Logic เดิมของคุณ)
+      // --------------------------
       const token = await AsyncStorage.getItem("token");
       if (token) {
         api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -173,6 +224,19 @@ export default function Layout() {
     return null;
   }
 
+  // ✅ กรณี: ต้อง Force Update (แสดงหน้านี้ก่อน Maintenance)
+  if (isForceUpdate) {
+    return (
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <ForceUpdate
+          version={Constants.expoConfig?.version}
+          ios_url={ios_url}
+          android_url={android_url}
+        />
+      </View>
+    );
+  }
+
   // กรณี: ติด Maintenance Mode
   if (isMaintenance) {
     return (
@@ -206,7 +270,7 @@ export default function Layout() {
             animation: "ios_from_right",
           }}
         >
-          {/* ... (รายชื่อ Screen ของคุณเหมือนเดิมเป๊ะ) ... */}
+          {/* --- Screens ทั้งหมดของคุณ --- */}
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
           <Stack.Screen
             name="(auth)/register"
@@ -304,12 +368,8 @@ export default function Layout() {
 
         <SnackHost />
 
-        {/* Modal Update & Event (โค้ดเดิมของคุณ) */}
-        {/* ... */}
-
-        {/* Event Modal Code (Copy ของคุณมาใส่ตรงนี้ได้เลย) */}
+        {/* Event Modal */}
         <Modal visible={onEvent} transparent animationType="fade">
-          {/* ... เนื้อหา Modal Event เดิมของคุณ ... */}
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{eventData?.title}</Text>
@@ -350,7 +410,6 @@ export default function Layout() {
   );
 }
 
-// Styles เดิมของคุณ + เพิ่ม loadingOverlay
 const styles = StyleSheet.create({
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject, // คลุมทั้งหน้าจอ

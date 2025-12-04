@@ -12,6 +12,10 @@ export type RaidBoss = {
   type: string;
   special: boolean;
   maximum: number;
+  cp_normal_min: number;
+  cp_normal_max: number;
+  cp_boost_min: number;
+  cp_boost_max: number;
   created_at: string;
 };
 

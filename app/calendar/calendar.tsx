@@ -192,7 +192,7 @@ export default function CleanCalendarScreen() {
 
       {loading ? (
         <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color="#6366F1" />
+          <ActivityIndicator size="large" />
         </View>
       ) : (
         <>
